@@ -48,10 +48,12 @@ typedef struct block_properties {
 // given localtion.
 BlockProperties properties[grid_width][grid_height][grid_depth] = 
 {
-	{{{true},{true},{false},{false}}, {{false},{false},{false},{false}}, {{false},{false},{false},{false}}, {{false},{false},{false},{false}}},
-	{{{false},{false},{false},{false}}, {{false},{false},{false},{false}}, {{false},{false},{false},{false}}, {{false},{false},{false},{false}}},
-	{{{false},{false},{false},{false}}, {{false},{false},{false},{false}}, {{false},{false},{false},{false}}, {{false},{false},{false},{false}}},
-	{{{false},{false},{false},{false}}, {{false},{false},{false},{false}}, {{false},{false},{false},{false}}, {{false},{false},{false},{false}}},
+	// first floor									// second floor						// third floor						// fourth floor
+	// back   mid    mid    front					// back   mid     mid     front		// back   mid    mid    front		// back   mid    mid    front
+	{{{true},{true},{true},{true}},		/*left*/	{{false},{false},{false},{true}},	{{false},{false},{false},{true}},	{{false},{false},{false},{true}}},
+	{{{false},{false},{false},{false}},	/*centre*/	{{false},{false},{false},{false}},	{{false},{false},{false},{false}},	{{false},{false},{false},{true}}},
+	{{{false},{false},{false},{false}},	/*centre*/	{{false},{false},{false},{false}},	{{false},{false},{false},{false}},	{{false},{false},{false},{true}}},
+	{{{true},{false},{false},{false}},	/*right*/	{{true},{false},{false},{false}},	{{true},{false},{false},{false}},	{{true},{true},{true},{true}}},
 };
 
 // Flag used to inform the main loop if the program should now terminate.
@@ -66,6 +68,64 @@ int average_frames_per_second;
 // screen.
 GLuint textTexture;
 GLuint textBase;
+
+
+bool mouse_down = false;
+int mouse_down_x = 0;
+int mouse_down_y = 0;
+
+
+
+/*typedef struct
+{
+	GLfloat r;
+	GLfloat g;
+	GLfloat b;
+	GLfloat a;
+} RGBA;
+typedef struct
+{
+	GLfloat x;
+	GLfloat y;
+	GLfloat z;
+	GLfloat w;
+} XYZW;*/
+
+typedef struct
+{
+	GLfloat ambient[4];
+	GLfloat diffuse[4];
+	GLfloat position[4];
+} LIGHT;
+
+#define NUM_LIGHTS	(1)
+LIGHT light[NUM_LIGHTS] =	{
+								{{0.5f, 0.5f, 0.5f, 1.0f}, {1.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 0.0f, 1.0f}},
+							};
+
+
+
+
+
+
+void init_lighting()
+{
+	glEnable(GL_LIGHTING);
+
+	glEnable(GL_COLOR_MATERIAL);
+
+	glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
+
+	for(int i=0; i<NUM_LIGHTS; i++)
+	{
+		glLightfv(GL_LIGHT1+i, GL_AMBIENT, light[i].ambient);
+		glLightfv(GL_LIGHT1+i, GL_DIFFUSE, light[i].diffuse);
+		glLightfv(GL_LIGHT1+i, GL_POSITION, light[i].position);
+		glEnable(GL_LIGHT1+i);
+	}
+
+	//glEnableClientState(GL_NORMAL_ARRAY);
+}
 
 // Initialise the graphics subsystem. This is pretty much boiler plate
 // code with very little to worry about.
@@ -139,6 +199,8 @@ bool init_graphics()
     }
     glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
+	init_lighting();
+
     return true;
 }
 
@@ -179,13 +241,22 @@ void setup()
 
 void draw_unit_cube()
 {
+	glEnableClientState(GL_NORMAL_ARRAY);
+
     static const float front_vertices[] = {
         0.f, 0.f, 1.f,
         1.f, 0.f, 1.f,
         1.f, 1.f, 1.f,
         0.f, 1.f, 1.f,
     };
+    static const float front_normals[] = {
+        0.f, 0.f, 1.f,
+        0.f, 0.f, 1.f,
+        0.f, 0.f, 1.f,
+        0.f, 0.f, 1.f,
+    };
     glVertexPointer(3, GL_FLOAT, 0, front_vertices);
+	glNormalPointer(GL_FLOAT, 0, front_normals);
     glDrawArrays(GL_QUADS, 0, 4);
 
     static const float left_vertices[] = {
@@ -194,7 +265,14 @@ void draw_unit_cube()
         0.f, 1.f, 1.f,
         0.f, 1.f, 0.f,
     };
+    static const float left_normals[] = {
+        -1.f, 0.f, 0.f,
+        -1.f, 0.f, 0.f,
+        -1.f, 0.f, 0.f,
+        -1.f, 0.f, 0.f,
+    };
     glVertexPointer(3, GL_FLOAT, 0, left_vertices);
+	glNormalPointer(GL_FLOAT, 0, left_normals);
     glDrawArrays(GL_QUADS, 0, 4);
 
     static const float right_vertices[] = {
@@ -203,7 +281,14 @@ void draw_unit_cube()
         1.f, 1.f, 0.f,
         1.f, 1.f, 1.f,
     };
+    static const float right_normals[] = {
+        1.f, 0.f, 0.f,
+        1.f, 0.f, 0.f,
+        1.f, 0.f, 0.f,
+        1.f, 0.f, 0.f,
+    };
     glVertexPointer(3, GL_FLOAT, 0, right_vertices);
+	glNormalPointer(GL_FLOAT, 0, right_normals);
     glDrawArrays(GL_QUADS, 0, 4);
 
     static const float top_vertices[] = {
@@ -212,7 +297,14 @@ void draw_unit_cube()
         1.f, 1.f, 0.f,
         0.f, 1.f, 0.f,
     };
+    static const float top_normals[] = {
+        0.f, 1.f, 0.f,
+        0.f, 1.f, 0.f,
+        0.f, 1.f, 0.f,
+        0.f, 1.f, 0.f,
+    };
     glVertexPointer(3, GL_FLOAT, 0, top_vertices);
+	glNormalPointer(GL_FLOAT, 0, top_normals);
     glDrawArrays(GL_QUADS, 0, 4);
 
     static const float bottom_vertices[] = {
@@ -221,7 +313,14 @@ void draw_unit_cube()
         1.f, 0.f, 1.f,
         0.f, 0.f, 1.f,
     };
+    static const float bottom_normals[] = {
+        0.f, -1.f, 0.f,
+        0.f, -1.f, 0.f,
+        0.f, -1.f, 0.f,
+        0.f, -1.f, 0.f,
+    };
     glVertexPointer(3, GL_FLOAT, 0, bottom_vertices);
+	glNormalPointer(GL_FLOAT, 0, bottom_normals);
     glDrawArrays(GL_QUADS, 0, 4);
 }
 
@@ -240,7 +339,7 @@ void draw_grid()
         0.f, 0.f, grid_depth,
     };
 
-    glColor3f(0.3, 0.3, 0.3);
+    glColor3f(0.3f, 0.3f, 0.3f);
 
     // Move to the origin of the grid
     glTranslatef(-(float)grid_width/2.0f, -(float)grid_height/2.0f, -(float)grid_depth/2.0f);
@@ -250,18 +349,19 @@ void draw_grid()
 	glPushMatrix();
 
 	//for each z value of the grid
-	for (int k = 0; k <= grid_depth; ++k) {
+	for (int k = 0; k <= grid_depth; ++k)
+	{
+		glPushMatrix();
 		// Draw vertical lines
 		glVertexPointer(3, GL_FLOAT, 0, vertical_line_vertices);
 		for (int i = 0; i <= grid_width; ++i) {
 			glDrawArrays(GL_LINES, 0, 2);
 			glTranslatef(1.0f, 0.0f, 0.0f);
 		}
-
-		// Reset to the origin
 		glPopMatrix();
-		glPushMatrix();
 
+
+		glPushMatrix();
 		// Draw horizontal lines
 		glVertexPointer(3, GL_FLOAT, 0, horizontal_line_vertices);
 		for (int j = 0; j <= grid_height; ++j) {
@@ -269,11 +369,10 @@ void draw_grid()
 			glTranslatef(0.0f, 1.0f, 0.0f);
 		}
 	    glPopMatrix();
+
         glTranslatef(0.0f, 0.0f, 1.0f);
-		glPushMatrix();
     }
 	glPopMatrix();
-	// Reset to the origin
 
 
 	glPushMatrix();
@@ -283,8 +382,8 @@ void draw_grid()
 			for(int k = 0; k < grid_depth; ++k) {
 				if ((properties[i][j][k].block)) {
 					draw_unit_cube();
-		            glTranslatef(0.0f, 0.0f, 1.0f);
 				}
+				glTranslatef(0.0f, 0.0f, 1.0f);
 			}
             glTranslatef(0.0f, 1.0f, -grid_depth);
         }
@@ -301,6 +400,9 @@ void draw_grid()
 }
 
 float camera_rotation = 0.0f;
+float camera_rotation_x = 0.0f;
+float camera_rotation_y = 0.0f;
+float camera_dist = -20.0f;
 
 void camera_pos()
 {
@@ -309,9 +411,11 @@ void camera_pos()
     // Reset the camera
     glLoadIdentity();
     // Move the camera 20 units from the objects
-    glTranslatef(0.0f, 0.0f, -20.0f);
+    glTranslatef(0.0f, 0.0f, camera_dist);
     // Add a little camera movement
-    glRotatef(10, sin(camera_rotation), cos(camera_rotation), 0.0f);
+    //glRotatef(10, sin(camera_rotation), cos(camera_rotation), 0.0f);
+	glRotatef(camera_rotation_x, 0.0, 1.0, 0.0);
+	glRotatef(camera_rotation_y, 1.0, 0.0, 0.0);
 	//glRotatef(-75, 1,0,0);
 	//glRotatef(-45, 0,1,0);
 
@@ -550,8 +654,34 @@ void loop()
                     if (event.button.button == SDL_BUTTON_LEFT) {
                         mouse_click(event.button.x,
                                     screen_height - event.button.y);
+						mouse_down = true;
+						mouse_down_x = event.button.x;
+						mouse_down_y = event.button.y;
                     }
+					else if(event.button.button == 4)
+					{
+						camera_dist++;
+					}
+					else if(event.button.button == 5)
+					{
+						camera_dist--;
+					}
                     break;
+				case SDL_MOUSEBUTTONUP:
+					if(event.button.button == SDL_BUTTON_LEFT)
+					{
+						mouse_down = false;
+						printf("x=%d; y=%d;\n", event.button.x, event.button.y);
+					}
+					break;
+				case SDL_MOUSEMOTION:
+					//printf("%d %d %d %d\n", event.motion.x, event.motion.xrel, event.motion.y, event.motion.yrel);
+					if(mouse_down)
+					{
+						//camera_rotation += (event.motion.x - mouse_down_x) * M_PI/180;
+						camera_rotation_x += 15 * (event.motion.xrel) * M_PI/180;
+						camera_rotation_y += 15 * (event.motion.yrel) * M_PI/180;
+					}
                 default:
                     break;
             }
@@ -576,10 +706,10 @@ void loop()
         elapsed_time = ticks;
 
         // Update the rotation on the camera
-        camera_rotation += delta;
+        /*camera_rotation += delta;
         if (camera_rotation > (2 * M_PI)) {
             camera_rotation -= (2 * M_PI);
-        }
+        }*/
 
         // Render the screen
         render_scene();
@@ -606,14 +736,15 @@ int main()
 
 #ifdef WIN32
 
-int WinMain(
+int _stdcall WinMain(
     HINSTANCE hInstance,
     HINSTANCE hPrevInstance,
     LPSTR lpCmdLine,
     int nCmdShow
 )
 {
-    main();
+    return main();
 }
 
 #endif
+
