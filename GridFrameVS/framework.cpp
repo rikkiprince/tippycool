@@ -38,11 +38,39 @@ static int block_x = 2;
 static int block_y = 2;
 static int block_z = 0;
 
+#include "AbstractBlock.h"
+#include "NormalBlock.h"
+
+typedef struct
+{
+	bool blocking;
+
+} BlockType;
+
 // Structure to hold the properties of a single square on the grid.
 // If you want to add more information to the grid, add new members here.
 typedef struct block_properties {
     bool block;
 } BlockProperties;
+
+AbstractBlock* blocks[grid_width][grid_height][grid_depth];
+
+void init_grid()
+{
+	for(int k=0; k<grid_depth; k++)
+	{
+		for(int j=0; j<grid_height; j++)
+		{
+			for(int i=0; i<grid_width; i++)
+			{
+				blocks[i][j][k] = NULL;
+			}
+		}
+	}
+
+	blocks[0][0][0] = new NormalBlock();
+}
+
 
 // Current blocks on the grid, stored as true if there is a block at the
 // given localtion.
@@ -234,6 +262,7 @@ void gl_print(const char * str)
 
 void setup()
 {
+	init_grid();
     // Clear the block store
     clear();
 
@@ -381,7 +410,11 @@ void draw_grid()
         for(int j = 0; j < grid_height; ++j) {
 			for(int k = 0; k < grid_depth; ++k) {
 				if ((properties[i][j][k].block)) {
-					draw_unit_cube();
+					//draw_unit_cube();
+				}
+				if(blocks[i][j][k] != NULL)
+				{
+					blocks[i][j][k]->render();
 				}
 				glTranslatef(0.0f, 0.0f, 1.0f);
 			}
@@ -601,11 +634,95 @@ void step()
 {
 }
 
+void handleEvents()
+{
+    SDL_Event event;
+
+	while (SDL_PollEvent(&event))
+	{
+        switch (event.type)
+		{
+            case SDL_QUIT:
+                // The user closed the window
+                program_finished = true;
+                break;
+            case SDL_KEYDOWN:
+                // We have a keypress
+                if ( event.key.keysym.sym == SDLK_ESCAPE )
+				{
+                    // quit
+                    program_finished = true;
+                }
+                if ( event.key.keysym.sym == SDLK_UP )
+				{
+                    if ((block_y < (grid_height-1)) && !properties[block_x][block_y + 1][block_z].block) {
+                        ++block_y;
+                    }
+                }
+                if ( event.key.keysym.sym == SDLK_DOWN )
+				{
+                    // Move block down
+                    if ((block_y > 0) && !properties[block_x][block_y - 1][block_z].block) {
+                        --block_y;
+                    }
+                }
+                if ( event.key.keysym.sym == SDLK_LEFT )
+				{
+                    // Move block left
+                    if ((block_x > 0) && !properties[block_x - 1][block_y][block_z].block) {
+                        --block_x;
+                    }
+                }
+                if ( event.key.keysym.sym == SDLK_RIGHT )
+				{
+                    // Move block right
+                    if ((block_x < (grid_width-1)) && !properties[block_x + 1][block_y][block_z].block) {
+                        ++block_x;
+                    }
+                }
+                break;
+            case SDL_MOUSEBUTTONDOWN:
+                if (event.button.button == SDL_BUTTON_LEFT)
+				{
+                    mouse_click(event.button.x, screen_height - event.button.y);
+					mouse_down = true;
+					mouse_down_x = event.button.x;
+					mouse_down_y = event.button.y;
+                }
+				else if(event.button.button == 4)
+				{
+					camera_dist++;
+				}
+				else if(event.button.button == 5)
+				{
+					camera_dist--;
+				}
+                break;
+			case SDL_MOUSEBUTTONUP:
+				if(event.button.button == SDL_BUTTON_LEFT)
+				{
+					mouse_down = false;
+					printf("x=%d; y=%d;\n", event.button.x, event.button.y);
+				}
+				break;
+			case SDL_MOUSEMOTION:
+				//printf("%d %d %d %d\n", event.motion.x, event.motion.xrel, event.motion.y, event.motion.yrel);
+				if(mouse_down)
+				{
+					//camera_rotation += (event.motion.x - mouse_down_x) * M_PI/180;
+					camera_rotation_x += 15 * (event.motion.xrel) * M_PI/180;
+					camera_rotation_y += 15 * (event.motion.yrel) * M_PI/180;
+				}
+            default:
+                break;
+        }
+    }
+}
+
 // The main program loop function. This does not return until the program
 // has finished.
 void loop()
 {
-    SDL_Event event;
     int elapsed_time = SDL_GetTicks();
     int last_step = elapsed_time;
     int frame_count = 0;
@@ -614,78 +731,7 @@ void loop()
     // the flag to indicate we are done.
     while (!program_finished) {
         // Check for events
-        while (SDL_PollEvent(&event)) {
-            switch (event.type) {
-                case SDL_QUIT:
-                    // The user closed the window
-                    program_finished = true;
-                    break;
-                case SDL_KEYDOWN:
-                    // We have a keypress
-                    if ( event.key.keysym.sym == SDLK_ESCAPE ) {
-                        // quit
-                        program_finished = true;
-                    }
-                    if ( event.key.keysym.sym == SDLK_UP ) {
-                        if ((block_y < (grid_height-1)) && !properties[block_x][block_y + 1][block_z].block) {
-                            ++block_y;
-                        }
-                    }
-                    if ( event.key.keysym.sym == SDLK_DOWN ) {
-                        // Move block down
-                        if ((block_y > 0) && !properties[block_x][block_y - 1][block_z].block) {
-                            --block_y;
-                        }
-                    }
-                    if ( event.key.keysym.sym == SDLK_LEFT ) {
-                        // Move block left
-                        if ((block_x > 0) && !properties[block_x - 1][block_y][block_z].block) {
-                            --block_x;
-                        }
-                    }
-                    if ( event.key.keysym.sym == SDLK_RIGHT ) {
-                        // Move block right
-                        if ((block_x < (grid_width-1)) && !properties[block_x + 1][block_y][block_z].block) {
-                            ++block_x;
-                        }
-                    }
-                    break;
-                case SDL_MOUSEBUTTONDOWN:
-                    if (event.button.button == SDL_BUTTON_LEFT) {
-                        mouse_click(event.button.x,
-                                    screen_height - event.button.y);
-						mouse_down = true;
-						mouse_down_x = event.button.x;
-						mouse_down_y = event.button.y;
-                    }
-					else if(event.button.button == 4)
-					{
-						camera_dist++;
-					}
-					else if(event.button.button == 5)
-					{
-						camera_dist--;
-					}
-                    break;
-				case SDL_MOUSEBUTTONUP:
-					if(event.button.button == SDL_BUTTON_LEFT)
-					{
-						mouse_down = false;
-						printf("x=%d; y=%d;\n", event.button.x, event.button.y);
-					}
-					break;
-				case SDL_MOUSEMOTION:
-					//printf("%d %d %d %d\n", event.motion.x, event.motion.xrel, event.motion.y, event.motion.yrel);
-					if(mouse_down)
-					{
-						//camera_rotation += (event.motion.x - mouse_down_x) * M_PI/180;
-						camera_rotation_x += 15 * (event.motion.xrel) * M_PI/180;
-						camera_rotation_y += 15 * (event.motion.yrel) * M_PI/180;
-					}
-                default:
-                    break;
-            }
-        }
+        handleEvents();
 
         ++frame_count;
 
@@ -719,7 +765,7 @@ void loop()
     }
 }
 
-int main()
+int main( int argc, char **argv )
 {
     // Initialise the graphics
     if (!init_graphics()) {
@@ -734,6 +780,7 @@ int main()
     return 0;
 }
 
+/*
 #ifdef WIN32
 
 int _stdcall WinMain(
@@ -747,4 +794,4 @@ int _stdcall WinMain(
 }
 
 #endif
-
+*/
