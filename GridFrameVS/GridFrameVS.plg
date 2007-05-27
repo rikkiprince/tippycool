@@ -3,9 +3,34 @@
 <pre>
 <h1>Build Log</h1>
 <h3>
---------------------Configuration: GridFrameVS - Win32 Debug--------------------
+--------------------Configuration: GridFrameVS - Win32 Release--------------------
 </h3>
 <h3>Command Lines</h3>
+Creating temporary file "C:\Users\rprince\AppData\Local\Temp\RSP713B.tmp" with contents
+[
+/nologo /MD /W3 /GX /O2 /I ".\include" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /Fp"Release/GridFrameVS.pch" /YX /Fo"Release/" /Fd"Release/" /FD /c 
+"C:\Users\rprince\Desktop\DEGREE\IES\Final\GridFrameVS\framework.cpp"
+"C:\Users\rprince\Desktop\DEGREE\IES\Final\GridFrameVS\EmptyBlock.cpp"
+"C:\Users\rprince\Desktop\DEGREE\IES\Final\GridFrameVS\NormalBlock.cpp"
+"C:\Users\rprince\Desktop\DEGREE\IES\Final\GridFrameVS\SpecialBlock.cpp"
+]
+Creating command line "cl.exe @C:\Users\rprince\AppData\Local\Temp\RSP713B.tmp" 
+Creating temporary file "C:\Users\rprince\AppData\Local\Temp\RSP714B.tmp" with contents
+[
+SDL.LIB SDLmain.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib opengl32.lib glu32.lib /nologo /subsystem:windows /incremental:no /pdb:"Release/GridFrameVS.pdb" /machine:I386 /out:"Release/GridFrameVS.exe" /libpath:".\lib\\" 
+.\Release\framework.obj
+.\Release\EmptyBlock.obj
+.\Release\NormalBlock.obj
+.\Release\SpecialBlock.obj
+]
+Creating command line "link.exe @C:\Users\rprince\AppData\Local\Temp\RSP714B.tmp"
+<h3>Output Window</h3>
+Compiling...
+framework.cpp
+EmptyBlock.cpp
+NormalBlock.cpp
+SpecialBlock.cpp
+Linking...
 
 
 
