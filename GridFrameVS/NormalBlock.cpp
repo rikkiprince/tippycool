@@ -28,3 +28,7 @@ void NormalBlock::render()
 	else
 		draw_unit_cube();
 }
+void NormalBlock::print(int i)
+{
+	printf("i = %d\n", i);
+}

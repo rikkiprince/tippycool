@@ -16,3 +16,8 @@ void SpecialBlock::render()
 {
 	printf("Hello\n");
 }
+
+void SpecialBlock::print(int i)
+{
+	printf("Hello\n");
+}

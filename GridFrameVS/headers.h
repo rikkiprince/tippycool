@@ -28,6 +28,10 @@ extern "C" {
 #include "AbstractBlock.h"
 #include "NormalBlock.h"
 
+#include "textures.h"
 #include "primitives.h"
+#include "md3model.h"
+
+#include "Level.h"
 
 #endif // __HEADERS_H__

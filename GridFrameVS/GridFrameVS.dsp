@@ -97,6 +97,10 @@ SOURCE=.\framework.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\md3model.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\primitives.cpp
 # End Source File
 # Begin Source File
@@ -117,6 +121,10 @@ SOURCE=.\headers.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\md3model.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\primitives.h
 # End Source File
 # Begin Source File
@@ -128,7 +136,7 @@ SOURCE=.\textures.h
 
 # PROP Default_Filter "ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
 # End Group
-# Begin Group "Blocks"
+# Begin Group "Level"
 
 # PROP Default_Filter "h;cpp"
 # Begin Source File
@@ -142,6 +150,14 @@ SOURCE=.\EmptyBlock.cpp
 # Begin Source File
 
 SOURCE=.\EmptyBlock.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\Level.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\Level.h
 # End Source File
 # Begin Source File
 

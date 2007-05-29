@@ -18,6 +18,7 @@ public:
 	NormalBlock(GLuint texture);
 	~NormalBlock();
 	void render();
+	void print(int i);
 };
 
 #endif // __NORMAL_BLOCK_H__

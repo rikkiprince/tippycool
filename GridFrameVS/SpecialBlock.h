@@ -12,6 +12,7 @@ public:
 	SpecialBlock();
 	~SpecialBlock();
 	void render();
+	void print(int i);
 };
 
 #endif // __SPECIAL_BLOCK_H__
