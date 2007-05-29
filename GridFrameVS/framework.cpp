@@ -230,7 +230,7 @@ libmd3_file * load_model(const char * filename)
 
 bool init_models()
 {
-	if((model = load_model("models/testbox2.md3")) == NULL) return false;
+	if((model = load_model("models/testbox4.md3")) == NULL) return false;
 
 	return true;
 }
@@ -516,7 +516,7 @@ void draw_grid()
 				else
 				{
 					glPushMatrix();
-					glTranslatef(0.5f, 0.5f, 0.5f);
+					//glTranslatef(0.5f, 0.5f, 0.5f);
 					draw_md3_file(model);
 					glPopMatrix();
 				}
