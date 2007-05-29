@@ -2,22 +2,7 @@
 // the GNU General Public License (See COPYING for details).
 // Copyright (C) 2000,2004 Alistair Riddoch
 
-#ifdef WIN32
-#include <Windows.h>
-#define M_PI 3.14159265f
-#endif
-
-#include <SDL.h>
-
-#include <GL/gl.h>
-#include <GL/glu.h>
-
-#include "font.h"
-
-#include <iostream>
-
-#include <cmath>
-#include <cstring>
+#include "headers.h"
 
 // Constants
 
@@ -38,14 +23,6 @@ static int block_x = 2;
 static int block_y = 2;
 static int block_z = 0;
 
-#include "AbstractBlock.h"
-#include "NormalBlock.h"
-
-typedef struct
-{
-	bool blocking;
-
-} BlockType;
 
 // Structure to hold the properties of a single square on the grid.
 // If you want to add more information to the grid, add new members here.
@@ -53,7 +30,23 @@ typedef struct block_properties {
     bool block;
 } BlockProperties;
 
+
+// Current blocks on the grid, stored as true if there is a block at the
+// given localtion.
+BlockProperties properties[grid_width][grid_height][grid_depth] = 
+{
+	// first floor									// second floor						// third floor						// fourth floor
+	// back   mid    mid    front					// back   mid     mid     front		// back   mid    mid    front		// back   mid    mid    front
+	{{{true},{true},{true},{true}},		/*left*/	{{false},{false},{false},{true}},	{{false},{false},{false},{true}},	{{false},{false},{false},{true}}},
+	{{{false},{false},{false},{false}},	/*centre*/	{{false},{false},{false},{false}},	{{false},{false},{false},{false}},	{{false},{false},{false},{true}}},
+	{{{false},{false},{false},{false}},	/*centre*/	{{false},{false},{false},{false}},	{{false},{false},{false},{false}},	{{false},{false},{false},{true}}},
+	{{{true},{false},{false},{false}},	/*right*/	{{true},{false},{false},{false}},	{{true},{false},{false},{false}},	{{true},{true},{true},{true}}},
+};
+
+
 AbstractBlock* blocks[grid_width][grid_height][grid_depth];
+
+#include "textures.h"
 
 void init_grid()
 {
@@ -68,21 +61,40 @@ void init_grid()
 		}
 	}
 
-	blocks[0][0][0] = new NormalBlock();
+	GLuint texture = LoadGLTexture("texture.bmp");
+
+	blocks[0][0][0] = new NormalBlock(texture);
+	blocks[3][0][0] = new NormalBlock(texture);
+	blocks[3][1][0] = new NormalBlock(texture);
+	blocks[3][2][0] = new NormalBlock(texture);
+	blocks[3][3][0] = new NormalBlock(texture);
+	blocks[0][0][1] = new NormalBlock(texture);
+	blocks[3][3][1] = new NormalBlock(texture);
+	blocks[0][0][2] = new NormalBlock(texture);
+	blocks[3][3][2] = new NormalBlock(texture);
+	blocks[0][0][3] = new NormalBlock(texture);
+	blocks[0][1][3] = new NormalBlock(texture);
+	blocks[0][2][3] = new NormalBlock(texture);
+	blocks[0][3][3] = new NormalBlock(texture);
+	blocks[1][3][3] = new NormalBlock(texture);
+	blocks[2][3][3] = new NormalBlock(texture);
+	blocks[3][3][3] = new NormalBlock(texture);
+
+	
+	/*for(k=0; k<grid_depth; k++)
+	{
+		for(int j=0; j<grid_height; j++)
+		{
+			for(int i=0; i<grid_width; i++)
+			{
+				if(properties[i][j][k].block)
+				{
+					printf("blocks[%d][%d][%d] = new NormalBlock(texture);\n", i, j, k);
+				}
+			}
+		}
+	}*/
 }
-
-
-// Current blocks on the grid, stored as true if there is a block at the
-// given localtion.
-BlockProperties properties[grid_width][grid_height][grid_depth] = 
-{
-	// first floor									// second floor						// third floor						// fourth floor
-	// back   mid    mid    front					// back   mid     mid     front		// back   mid    mid    front		// back   mid    mid    front
-	{{{true},{true},{true},{true}},		/*left*/	{{false},{false},{false},{true}},	{{false},{false},{false},{true}},	{{false},{false},{false},{true}}},
-	{{{false},{false},{false},{false}},	/*centre*/	{{false},{false},{false},{false}},	{{false},{false},{false},{false}},	{{false},{false},{false},{true}}},
-	{{{false},{false},{false},{false}},	/*centre*/	{{false},{false},{false},{false}},	{{false},{false},{false},{false}},	{{false},{false},{false},{true}}},
-	{{{true},{false},{false},{false}},	/*right*/	{{true},{false},{false},{false}},	{{true},{false},{false},{false}},	{{true},{true},{true},{true}}},
-};
 
 // Flag used to inform the main loop if the program should now terminate.
 // Set this to true if its done.
@@ -126,9 +138,10 @@ typedef struct
 	GLfloat position[4];
 } LIGHT;
 
-#define NUM_LIGHTS	(1)
+#define NUM_LIGHTS	(2)
 LIGHT light[NUM_LIGHTS] =	{
-								{{0.5f, 0.5f, 0.5f, 1.0f}, {1.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 0.0f, 1.0f}},
+								{{0.5f, 0.5f, 0.5f, 1.0f}, {1.0f, 0.0f, 0.0f, 1.0f}, {-5.0f, -5.0f, -5.0f, 1.0f}},
+								{{0.5f, 0.5f, 0.5f, 1.0f}, {0.0f, 1.0f, 0.0f, 1.0f}, {+5.0f, +5.0f, +5.0f, 1.0f}},
 							};
 
 
@@ -155,6 +168,170 @@ void init_lighting()
 	//glEnableClientState(GL_NORMAL_ARRAY);
 }
 
+void render_lights()
+{
+	for(int i=0; i<NUM_LIGHTS; i++)
+	{
+		glColor3fv(light[i].diffuse);
+		glBegin(GL_LINES);
+			// X
+			glVertex3f(light[i].position[0]-1, light[i].position[1], light[i].position[2]);
+			glVertex3f(light[i].position[0]+1, light[i].position[1], light[i].position[2]);
+			
+			// Y
+			glVertex3f(light[i].position[0], light[i].position[1]-1, light[i].position[2]);
+			glVertex3f(light[i].position[0], light[i].position[1]+1, light[i].position[2]);
+			
+			// Z
+			glVertex3f(light[i].position[0], light[i].position[1], light[i].position[2]-1);
+			glVertex3f(light[i].position[0], light[i].position[1], light[i].position[2]+1);
+		glEnd();
+	}
+}
+
+void move_lights()
+{
+	glEnable(GL_LIGHTING);
+
+	for(int i=0; i<NUM_LIGHTS; i++)
+	{
+		glLightfv(GL_LIGHT1+i, GL_POSITION, light[i].position);
+	}
+}
+
+
+
+
+
+
+
+libmd3_file *model = 0;
+
+static void draw_md3_file(libmd3_file *modelFile);
+int get_normals(libmd3_mesh * mesh);
+void libmd3_unpack_normals(libmd3_mesh * mesh);
+static void fixPath(char * filename);
+
+libmd3_file * load_model(const char * filename)
+{
+	libmd3_file *temp;
+
+	temp = libmd3_file_load(filename);
+	if (temp == NULL) {
+        return NULL;
+    }
+
+    for(int i = 0; i < temp->header->mesh_count; ++i) {
+		libmd3_unpack_normals(&temp->meshes[i]);
+    }
+
+	return temp;
+}
+
+bool init_models()
+{
+	if((model = load_model("models/testbox2.md3")) == NULL) return false;
+
+	return true;
+}
+
+/*void libmd3_unpack_normals(libmd3_mesh * mesh)
+{
+    int i;
+    uint8_t lat, lng;
+    float flat, flng;
+
+    if (mesh->mesh_header->vertex_count < 2) {
+        return;
+    }
+
+    mesh->normals = (float *)calloc(mesh->mesh_header->vertex_count * 3, sizeof(float));
+
+    for(i = 0; i < mesh->mesh_header->vertex_count; ++i) {
+        lat = (mesh->vertices[i * 4 + 3] >> 8) & 0xff;
+        lng = (mesh->vertices[i * 4 + 3]) & 0xff;
+
+        flat = lat * (3.14159265f / 128.f);
+        flng = lng * (3.14159265f / 128.f);
+
+        mesh->normals[i * 3 + 0] = cos(flat) * sin(flng);
+        mesh->normals[i * 3 + 1] = sin(flat) * sin(flng);
+        mesh->normals[i * 3 + 2] =             cos(flng);
+
+        if (i == 0) { continue; }
+
+        memmove(&mesh->vertices[i * 3],
+                &mesh->vertices[i * 4],
+                3 * sizeof(int16_t));
+    }
+}*/
+
+static void draw_one_mesh(libmd3_mesh * mesh)
+{
+    if (mesh->mesh_header->skin_count != 0) {
+        if (mesh->user.u == 0) {
+            fixPath((char*)mesh->skins[0].name);
+            mesh->user.u = LoadGLTexture((char*)mesh->skins[0].name);
+        }
+    }
+
+    if (mesh->user.u != 0) {
+        glEnable(GL_TEXTURE_2D);
+        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+        glBindTexture(GL_TEXTURE_2D, mesh->user.u);
+    }
+	
+	glEnableClientState(GL_NORMAL_ARRAY);
+
+    glVertexPointer(3, GL_SHORT, 0, mesh->vertices);
+	glNormalPointer(GL_FLOAT, 0, mesh->normals);
+    glTexCoordPointer(2, GL_FLOAT, 0, mesh->texcoords);
+    glDrawElements(GL_TRIANGLES, mesh->mesh_header->triangle_count * 3,
+                   GL_UNSIGNED_INT, mesh->triangles);
+
+    if (mesh->user.u != 0) {
+        glDisable(GL_TEXTURE_2D);
+        glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+    }
+}
+
+static void draw_md3_file(libmd3_file *modelFile)
+{   
+	int i;
+    libmd3_mesh * meshp;
+
+	if (modelFile->header->mesh_count == 0) {
+        printf("[No meshes in file]\n");
+        return;
+    }
+
+    glPushMatrix(); 
+	glScalef(0.001f, 0.001f, 0.001f);
+    meshp = modelFile->meshes;
+    for(i = 0; i < modelFile->header->mesh_count; ++i, ++meshp) {
+        draw_one_mesh(meshp);
+    }
+	glPopMatrix(); 
+}
+
+static void fixPath(char * filename)
+{
+    unsigned int i;
+    for(i = 0; i < strlen(filename); ++i) {
+        if (filename[i] == '\\') {
+            filename[i] = '/';
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
 // Initialise the graphics subsystem. This is pretty much boiler plate
 // code with very little to worry about.
 bool init_graphics()
@@ -172,6 +349,9 @@ bool init_graphics()
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
     SDL_Surface * screen;
+
+	SDL_WM_SetCaption("Title-Bar", "Icon name");
+	SDL_WM_SetIcon(SDL_LoadBMP("icon.bmp"), NULL);
 
     // Create the window
     screen = SDL_SetVideoMode(screen_width, screen_height, 0, SDL_OPENGL);
@@ -191,7 +371,8 @@ bool init_graphics()
     // glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
     // Set the colour the screen will be when cleared - black
-    glClearColor(0.0, 0.0, 0.0, 0.0);
+    //glClearColor(0.0, 0.0, 0.0, 0.0);
+	glClearColor(0.6f, 0.85f, 0.917f, 0.0);
 
     // Initialise the texture used for rendering text
     glGenTextures(1, &textTexture);
@@ -268,93 +449,9 @@ void setup()
 
 }
 
-void draw_unit_cube()
-{
-	glEnableClientState(GL_NORMAL_ARRAY);
-
-    static const float front_vertices[] = {
-        0.f, 0.f, 1.f,
-        1.f, 0.f, 1.f,
-        1.f, 1.f, 1.f,
-        0.f, 1.f, 1.f,
-    };
-    static const float front_normals[] = {
-        0.f, 0.f, 1.f,
-        0.f, 0.f, 1.f,
-        0.f, 0.f, 1.f,
-        0.f, 0.f, 1.f,
-    };
-    glVertexPointer(3, GL_FLOAT, 0, front_vertices);
-	glNormalPointer(GL_FLOAT, 0, front_normals);
-    glDrawArrays(GL_QUADS, 0, 4);
-
-    static const float left_vertices[] = {
-        0.f, 0.f, 0.f,
-        0.f, 0.f, 1.f,
-        0.f, 1.f, 1.f,
-        0.f, 1.f, 0.f,
-    };
-    static const float left_normals[] = {
-        -1.f, 0.f, 0.f,
-        -1.f, 0.f, 0.f,
-        -1.f, 0.f, 0.f,
-        -1.f, 0.f, 0.f,
-    };
-    glVertexPointer(3, GL_FLOAT, 0, left_vertices);
-	glNormalPointer(GL_FLOAT, 0, left_normals);
-    glDrawArrays(GL_QUADS, 0, 4);
-
-    static const float right_vertices[] = {
-        1.f, 0.f, 1.f,
-        1.f, 0.f, 0.f,
-        1.f, 1.f, 0.f,
-        1.f, 1.f, 1.f,
-    };
-    static const float right_normals[] = {
-        1.f, 0.f, 0.f,
-        1.f, 0.f, 0.f,
-        1.f, 0.f, 0.f,
-        1.f, 0.f, 0.f,
-    };
-    glVertexPointer(3, GL_FLOAT, 0, right_vertices);
-	glNormalPointer(GL_FLOAT, 0, right_normals);
-    glDrawArrays(GL_QUADS, 0, 4);
-
-    static const float top_vertices[] = {
-        0.f, 1.f, 1.f,
-        1.f, 1.f, 1.f,
-        1.f, 1.f, 0.f,
-        0.f, 1.f, 0.f,
-    };
-    static const float top_normals[] = {
-        0.f, 1.f, 0.f,
-        0.f, 1.f, 0.f,
-        0.f, 1.f, 0.f,
-        0.f, 1.f, 0.f,
-    };
-    glVertexPointer(3, GL_FLOAT, 0, top_vertices);
-	glNormalPointer(GL_FLOAT, 0, top_normals);
-    glDrawArrays(GL_QUADS, 0, 4);
-
-    static const float bottom_vertices[] = {
-        0.f, 0.f, 0.f,
-        1.f, 0.f, 0.f,
-        1.f, 0.f, 1.f,
-        0.f, 0.f, 1.f,
-    };
-    static const float bottom_normals[] = {
-        0.f, -1.f, 0.f,
-        0.f, -1.f, 0.f,
-        0.f, -1.f, 0.f,
-        0.f, -1.f, 0.f,
-    };
-    glVertexPointer(3, GL_FLOAT, 0, bottom_vertices);
-	glNormalPointer(GL_FLOAT, 0, bottom_normals);
-    glDrawArrays(GL_QUADS, 0, 4);
-}
-
 void draw_grid()
 {
+	glPushMatrix();
     float horizontal_line_vertices[] = {
         0.f, 0.f, 0.f,
         grid_width, 0.f, 0.f,
@@ -416,6 +513,13 @@ void draw_grid()
 				{
 					blocks[i][j][k]->render();
 				}
+				else
+				{
+					glPushMatrix();
+					glTranslatef(0.5f, 0.5f, 0.5f);
+					draw_md3_file(model);
+					glPopMatrix();
+				}
 				glTranslatef(0.0f, 0.0f, 1.0f);
 			}
             glTranslatef(0.0f, 1.0f, -grid_depth);
@@ -430,6 +534,7 @@ void draw_grid()
     // Draw the user controlled block
     glTranslatef(block_x, block_y, block_z);
     //draw_unit_cube();
+	glPopMatrix();
 }
 
 float camera_rotation = 0.0f;
@@ -476,6 +581,12 @@ void render_scene()
 
     // Draw the scene
     draw_grid();
+
+	move_lights();
+
+	render_lights();
+
+	draw_md3_file(model);
 }
 
 // Draw any text output and other screen oriented user interface
@@ -771,6 +882,10 @@ int main( int argc, char **argv )
     if (!init_graphics()) {
         return 1;
     }
+	
+	if(!init_models()) {
+		return 1;
+	}
 
     // Intialise the game state
     setup();

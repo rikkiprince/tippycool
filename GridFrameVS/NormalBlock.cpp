@@ -1,11 +1,18 @@
 #include "NormalBlock.h"
-#include "primitives.h"
-
-#include <stdio.h>
 
 NormalBlock::NormalBlock()
 {
 	printf("Constructing NormalBlock!\n");
+
+	this->textured = false;
+}
+
+NormalBlock::NormalBlock(GLuint texture)
+{
+	printf("Constructing NormalBlock with texture %d!\n", texture);
+	this->texture[0] = this->texture[1] = this->texture[2] = this->texture[3] = this->texture[4] = this->texture[5] = texture;
+
+	this->textured = true;
 }
 
 NormalBlock::~NormalBlock()
@@ -16,5 +23,8 @@ NormalBlock::~NormalBlock()
 void NormalBlock::render()
 {
 	//printf("Hello\n");
-	draw_unit_cube();
+	if(this->textured)
+		draw_textured_unit_cube(this->texture[0]);
+	else
+		draw_unit_cube();
 }
