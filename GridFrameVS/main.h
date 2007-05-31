@@ -5,6 +5,7 @@
 #include "headers.h"
 
 #include "Level.h"
+#include "Camera.h"
 
 #endif // __MAIN_H__
 

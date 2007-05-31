@@ -10,7 +10,7 @@ Level::Level(int x, int y, int z)
 {
 	printf("Constructing Level!\n");
 
-	this->ball = new Ball();
+	this->blockSize = 1.0;
 
 //	char buf[256];
 	//GetPrivateProfileString("1,1,1", "type", NULL, buf, 256, ".\\test.ini");
@@ -60,6 +60,25 @@ Level::Level(int x, int y, int z)
 			}
 		}
 	}
+
+	char sx[256], sy[256], sz[256];
+	GetPrivateProfileString("start", "x", NULL, sx, 256, filename);
+	GetPrivateProfileString("start", "y", NULL, sy, 256, filename);
+	GetPrivateProfileString("start", "z", NULL, sz, 256, filename);
+//	ini.getInt("start", "x");
+	int startX = atoi(sx);
+	int startY = atoi(sy);
+	int startZ = atoi(sz);
+
+	/*char or[256];
+	ini.getString("start", "orientation", 256, buf);
+	GetPrivateProfileString("start", "orientation", NULL, or, 256, filename);*/
+
+	this->offsetX = -(float)(this->grid_width*this->blockSize)/2.0f;
+	this->offsetY = -(float)(this->grid_height*this->blockSize)/2.0f;
+	this->offsetZ = -(float)(this->grid_depth*this->blockSize)/2.0f;
+
+	this->ball = new Ball(this->blockSize, this->offsetX + (startX * this->blockSize), this->offsetY + (startY * this->blockSize), this->offsetZ + (startZ * this->blockSize));
 }
 
 Level::~Level()
@@ -73,7 +92,18 @@ Level::~Level()
 void Level::render()
 {
 	//printf("Render Level here\n");
+	glPushMatrix();
 	draw_grid();
+	glPopMatrix();
+
+	/*glPushMatrix();
+	glTranslatef(offsetX, offsetY, offsetZ);
+	draw_unit_cube();
+	glPopMatrix();*/
+
+	glPushMatrix();
+	this->ball->render();
+	glPopMatrix();
 }
 
 
@@ -96,11 +126,12 @@ void Level::draw_grid()
     glColor3f(0.3f, 0.3f, 0.3f);
 
     // Move to the origin of the grid
-    glTranslatef(-(float)this->grid_width/2.0f, -(float)this->grid_height/2.0f, -(float)this->grid_depth/2.0f);
+    //glTranslatef(-(float)this->grid_width/2.0f, -(float)this->grid_height/2.0f, -(float)this->grid_depth/2.0f);
+	glTranslatef(this->offsetX, this->offsetY, this->offsetZ);
 
 
 	// Store this position
-	glPushMatrix();
+	/*glPushMatrix();
 
 	//for each z value of the grid
 	for (int k = 0; k <= this->grid_depth; ++k)
@@ -126,7 +157,7 @@ void Level::draw_grid()
 
         glTranslatef(0.0f, 0.0f, 1.0f);
     }
-	glPopMatrix();
+	glPopMatrix();*/
 
 
 	glPushMatrix();
@@ -142,7 +173,7 @@ void Level::draw_grid()
 				if(block[offset] != NULL)
 				{
 					//block->render();
-					//block[offset]->render();
+					block[offset]->render();
 				}
 				/*else
 				{
@@ -166,8 +197,6 @@ void Level::draw_grid()
     //glTranslatef(block_x, block_y, block_z);
     //draw_unit_cube();
 	glPopMatrix();
-
-	this->ball->render();
 }
 
 int Level::getOffset(int i, int j, int k)
@@ -175,8 +204,17 @@ int Level::getOffset(int i, int j, int k)
 	return (i + (j * this->grid_width) + (k * this->grid_width * this->grid_height));
 }
 
-void Level::updateCameraPosition()
+void Level::updateCameraPosition(Camera *c)
 {
-	ball->lookAtMe();
+	ball->lookAtMe(c);
 }
 
+void Level::turnLeft()
+{
+	ball->turnLeft();
+}
+
+void Level::turnRight()
+{
+	ball->turnRight();
+}

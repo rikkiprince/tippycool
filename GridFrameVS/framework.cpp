@@ -4,7 +4,7 @@
 
 #include "main.h"
 
-bool testing = false;
+bool testing = true;
 
 // Constants
 
@@ -46,6 +46,7 @@ BlockProperties properties[grid_width][grid_height][grid_depth] =
 };
 
 Level *level;
+Camera *camera;
 
 AbstractBlock* blocks[grid_width][grid_height][grid_depth];
 
@@ -53,6 +54,7 @@ AbstractBlock* blocks[grid_width][grid_height][grid_depth];
 void init_grid()
 {
 	level = new Level(4,4,4);
+	camera = new Camera();
 	/*GLuint texture = LoadGLTexture("texture.bmp");
 
 	//Level level = new Level();
@@ -373,6 +375,7 @@ void camera_pos()
 		glRotatef(camera_rotation_y, 1.0, 0.0, 0.0);
 		//glRotatef(-75, 1,0,0);
 		//glRotatef(-45, 0,1,0);
+		level->updateCameraPosition(camera);
 	}
 	else
 	{
@@ -380,8 +383,26 @@ void camera_pos()
 					0,0,0,
 					0,0,1
 				 );*/
-		level->updateCameraPosition();
+		level->updateCameraPosition(camera);
+		camera->updateLookAt();
 	}
+}
+
+void render_axes()
+{
+	glBegin(GL_LINES);
+		glColor3f(1.0f, 0.0f, 0.0f);	// R
+		glVertex3f(0.0f, 0.0f, 0.0f);	// X
+		glVertex3f(1.0f, 0.0f, 0.0f);
+
+		glColor3f(0.0f, 1.0f, 0.0f);	// G
+		glVertex3f(0.0f, 0.0f, 0.0f);	// Y
+		glVertex3f(0.0f, 1.0f, 0.0f);
+
+		glColor3f(0.0f, 0.0f, 1.0f);	// B
+		glVertex3f(0.0f, 0.0f, 0.0f);	// Z
+		glVertex3f(0.0f, 0.0f, 1.0f);
+	glEnd();
 }
 
 void render_scene()
@@ -406,7 +427,12 @@ void render_scene()
 
 	move_lights();
 
-	render_lights();
+	if(testing)
+	{
+		render_axes();
+		render_lights();
+		camera->render();
+	}
 }
 
 // Draw any text output and other screen oriented user interface
@@ -588,8 +614,7 @@ void handleEvents()
 				{
                     if ((block_y < (grid_height-1)) && !properties[block_x][block_y + 1][block_z].block) {
                         ++block_y;
-                    }
-                }
+                    }                }
                 if ( event.key.keysym.sym == SDLK_DOWN )
 				{
                     // Move block down
@@ -614,6 +639,16 @@ void handleEvents()
 				if(event.key.keysym.sym == SDLK_t)
 				{
 					testing = !testing;
+				}
+				if(event.key.keysym.sym == SDLK_q)
+				{
+					//if(!testing)
+						level->turnLeft();
+				}
+				if(event.key.keysym.sym == SDLK_w)
+				{
+					//if(!testing)
+						level->turnRight();
 				}
                 break;
             case SDL_MOUSEBUTTONDOWN:

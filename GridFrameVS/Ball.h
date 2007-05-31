@@ -3,7 +3,7 @@
 #define __BALL_H__
 
 #include "headers.h"
-
+#include "Camera.h"
 
 class Ball
 {
@@ -17,10 +17,10 @@ protected:
 
 	libmd3_file *model;
 public:
-	Ball();
+	Ball(GLfloat blockSize, GLfloat offsetX, GLfloat offsetY, GLfloat offsetZ);
 	~Ball();
 	void render();
-	void lookAtMe();
+	void lookAtMe(Camera *c);
 
 	void turnLeft();
 	void turnRight();
