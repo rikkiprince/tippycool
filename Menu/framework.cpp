@@ -3,6 +3,7 @@
 // Copyright (C) 2000,2004 Alistair Riddoch
 
 #include "headers.h"
+ 
 
 #include "MenuItem.h";
 #include "Menu.h";
@@ -12,7 +13,9 @@
 static const int screen_width = 600;
 static const int screen_height = 400;
 
-Menu m("Game Menu", screen_width, screen_height);
+//Menu m("Game Menu", screen_width, screen_height);
+Menu *m;
+TTF_Font *font;
 
 // Number of squares in the grid. The number of points is this number +1.
 static const int grid_width = 12;
@@ -329,7 +332,7 @@ void render_interface()
     sprintf(buf, "FPS: %d", average_frames_per_second);
     gl_print(buf);
 
-	m.render();
+	m->render();
 
 }
 
@@ -549,7 +552,7 @@ void loop()
     }
 }
 
-/*void init_fonts()
+void init_fonts()
 {
 	if(TTF_Init()==-1) {
 		printf("TTF_Init: %s\n", TTF_GetError());
@@ -557,30 +560,38 @@ void loop()
 	}
 
 	// load font.ttf, face 0, at size 16 into font
-	TTF_Font *font;
-	font=TTF_OpenFontIndex("font.ttf", 16, 0);
+	
+	font=TTF_OpenFontIndex("arial.ttf", 16, 0);
 	if(!font) {
 		printf("TTF_OpenFontIndex: %s\n", TTF_GetError());
 		// handle error
 	}
-
 }
+
 
 void uninit_fonts()
 {
+	// free the font
+	// TTF_Font *font;
+	TTF_CloseFont(font);
+	font=NULL; // to be safe...
 	TTF_Quit();
 }
-*/
+
 
 void createMenus()
 {
+	init_fonts();
 
-	m.add(new MenuItem("Start"));
-	m.add(new MenuItem("Select Level"));
-	m.add(new MenuItem("Instructions"));
-	m.add(new MenuItem("Exit"));
+	//m.setFont(font);
+	m = new Menu("Game Menu", screen_width, screen_height, font);
 
-	m.layout();
+	m->add(new MenuItem("Start"));
+	m->add(new MenuItem("Select Level"));
+	m->add(new MenuItem("Instructions"));
+	m->add(new MenuItem("Exit"));
+
+	m->layout();
 
 
 }

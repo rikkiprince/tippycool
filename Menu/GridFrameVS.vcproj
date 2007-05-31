@@ -32,7 +32,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="opengl32.lib glu32.lib SDL.lib"
+				AdditionalDependencies="opengl32.lib glu32.lib SDL.lib SDL_ttf.lib"
 				OutputFile="$(OutDir)/GridFrameVS.exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="lib"

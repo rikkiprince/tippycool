@@ -13,8 +13,9 @@ public:
 	MenuItem(char *t);
 	~MenuItem();
 	void setXY(int x, int y);
-	void render(bool highlighted);
+	void render(TTF_Font *font, bool highlighted);
 	bool click(int x, int y);
+	void SDL_GL_RenderText(char *text, TTF_Font *font, SDL_Color color, SDL_Rect *location);
 	//void setWidth(int w);
 	int getWidth();
 	void setHeight(int h);

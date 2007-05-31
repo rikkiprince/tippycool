@@ -1,10 +1,16 @@
 #include "Menu.h"
 
-Menu::Menu(char *t, int w, int h)
+Menu::Menu(char *t, int w, int h, TTF_Font *font)
 {
 	screenWidth = w;
 	screenHeight = h;
 	selected = 0;
+	this->font = font;
+
+	for(int i = 0; i < max; i++) 
+	{
+		items[i] = NULL;
+	}
 }
 
 Menu::~Menu()
@@ -75,7 +81,7 @@ void Menu::render()
 	{
 		if(items[i] != NULL)
 		{
-			items[i]->render((i == selected));
+			items[i]->render(font, (i == selected));
 		}
 	}
 }
