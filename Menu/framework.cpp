@@ -54,13 +54,15 @@ GLuint textBase;
 
 // Initialise the graphics subsystem. This is pretty much boiler plate
 // code with very little to worry about.
-bool init_graphics()
+bool init_graphics(/*SDL_Surface** screen*/)
 {
     // Initialise SDL
     if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_TIMER) != 0) {
         // std::cerr << "Failed to initialise video" << std::endl << std::flush;
         return false;
-    }
+	}
+
+	//*screen = SDL_SetVideoMode(screen_width, screen_height, 0, SDL_OPENGL);
 
     SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 5);
     SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 5);
@@ -77,7 +79,7 @@ bool init_graphics()
         SDL_Quit();
         return false;
     }
-
+/**/
     // Setup the viewport transform
     glViewport(0, 0, screen_width, screen_height);
 
@@ -89,8 +91,15 @@ bool init_graphics()
 
     // Set the colour the screen will be when cleared - black
     glClearColor(0.0, 0.0, 0.0, 0.0);
+	glClearDepth(1.0f);
+	glDepthFunc(GL_LEQUAL);
+	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
-    // Initialise the texture used for rendering text
+	/* Required if you want alpha-blended textures (for our fonts) */
+	glBlendFunc(GL_ONE, GL_ONE);
+	glEnable(GL_BLEND);
+    
+	// Initialise the texture used for rendering text
     glGenTextures(1, &textTexture);
     glBindTexture(GL_TEXTURE_2D, textTexture);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -301,6 +310,30 @@ void render_scene()
     draw_grid();
 }
 
+void glEnable2D()
+{
+	int vPort[4];
+  
+	glGetIntegerv(GL_VIEWPORT, vPort);
+  
+	glMatrixMode(GL_PROJECTION);
+	glPushMatrix();
+	glLoadIdentity();
+  
+	glOrtho(0, vPort[2], 0, vPort[3], -1, 1);
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
+	glLoadIdentity();
+}
+
+void glDisable2D()
+{
+	glMatrixMode(GL_PROJECTION);
+	glPopMatrix();   
+	glMatrixMode(GL_MODELVIEW);
+	glPopMatrix();	
+}
+
 // Draw any text output and other screen oriented user interface
 // If you want any kind of text or other information overlayed on top
 // of the 3d view, put it here.
@@ -332,8 +365,25 @@ void render_interface()
     sprintf(buf, "FPS: %d", average_frames_per_second);
     gl_print(buf);
 
-	m->render();
+	/*SDL_Event event;
 
+	int done = 0;
+	while (!done)
+	{*/
+		//glEnable2D();
+		//glDisable(GL_DEPTH_TEST);
+		m->render();
+		//glEnable(GL_DEPTH_TEST);
+		//glDisable2D();
+/*		SDL_GL_SwapBuffers( );
+		SDL_WaitEvent(&event);
+		switch(event.type)
+		{
+			case SDL_QUIT:
+				done = 1;
+				break;
+		}
+	}*/
 }
 
 // Handle a mouse click. Call this function with the screen coordinates where
@@ -552,6 +602,8 @@ void loop()
     }
 }
 
+char fontpath[] = "arial.ttf";
+
 void init_fonts()
 {
 	if(TTF_Init()==-1) {
@@ -559,13 +611,17 @@ void init_fonts()
 		exit(2);
 	}
 
+	if(!(font = TTF_OpenFont(fontpath, 20))) {
+		printf("Error loading font: %s", TTF_GetError());
+		//return 1;
+	}
+
 	// load font.ttf, face 0, at size 16 into font
-	
-	font=TTF_OpenFontIndex("arial.ttf", 16, 0);
+	/*font=TTF_OpenFontIndex("arial.ttf", 16, 0);
 	if(!font) {
 		printf("TTF_OpenFontIndex: %s\n", TTF_GetError());
 		// handle error
-	}
+	}*/
 }
 
 
@@ -586,6 +642,7 @@ void createMenus()
 	//m.setFont(font);
 	m = new Menu("Game Menu", screen_width, screen_height, font);
 
+
 	m->add(new MenuItem("Start"));
 	m->add(new MenuItem("Select Level"));
 	m->add(new MenuItem("Instructions"));
@@ -598,8 +655,9 @@ void createMenus()
 
 int main()
 {
+	//SDL_Surface *screen;
     // Initialise the graphics
-    if (!init_graphics()) {
+    if (!init_graphics(/*&screen*/)) {
         return 1;
     }
 

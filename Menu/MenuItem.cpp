@@ -1,5 +1,10 @@
 #include "MenuItem.h"
 
+	SDL_Color color;
+	SDL_Rect position;
+	SDL_Event event;
+
+
 MenuItem::MenuItem(char *t)
 {
 	this->width = 10;
@@ -33,9 +38,15 @@ void MenuItem::render(TTF_Font *font, bool highlighted)
     glEnd();
 	glColor3f(1.0, 1.0, 1.0);
 
-	SDL_Color color={1,0,0};
-	SDL_Rect location={x, y, width, height};
-	SDL_GL_RenderText("Hello", font, color, &location);
+		color.r = 255;
+		color.g = 0;
+		color.b = 0;
+			
+		position.x = this->x;
+		position.y = this->y;
+
+		//SDL_Rect location={x, y, width, height};
+	SDL_GL_RenderText("Hello", font, color, &position);
 }
 
 int round(double x)
@@ -51,6 +62,7 @@ int nextpoweroftwo(int x)
 
 #define GL_BGRA	0x80e1
 
+// http://www.gamedev.net/community/forums/topic.asp?topic_id=284259
 void MenuItem::SDL_GL_RenderText(char *text, 
                       TTF_Font *font,
                       SDL_Color color,
@@ -94,9 +106,9 @@ void MenuItem::SDL_GL_RenderText(char *text,
 		/* Recall that the origin is in the lower-left corner
 		   That is why the TexCoords specify different corners
 		   than the Vertex coors seem to. */
-		glTexCoord2f(0.0f, 1.0f); 
+		glTexCoord2f(0.0f, -1.0f); 
 			glVertex2f(location->x    , location->y);
-		glTexCoord2f(1.0f, 1.0f); 
+		glTexCoord2f(1.0f, -1.0f); 
 			glVertex2f(location->x + w, location->y);
 		glTexCoord2f(1.0f, 0.0f); 
 			glVertex2f(location->x + w, location->y + h);
