@@ -4,7 +4,11 @@
 
 #include "headers.h"
 
-#include <stdio.h>
+#include "AbstractBlock.h"
+#include "NormalBlock.h"
+#include "Ball.h"
+
+
 class Level
 {
 protected:
@@ -13,12 +17,15 @@ protected:
 	int grid_depth;
 	AbstractBlock **block;
 
+	Ball *ball;
+
 	void draw_grid();
 	int getOffset(int i, int j, int k);
 public:
 	Level(int x, int y, int z);
 	~Level();
 	void render();
+	void updateCameraPosition();
 };
 
 #endif // __LEVEL_H__

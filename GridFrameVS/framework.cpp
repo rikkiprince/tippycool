@@ -2,7 +2,9 @@
 // the GNU General Public License (See COPYING for details).
 // Copyright (C) 2000,2004 Alistair Riddoch
 
-#include "headers.h"
+#include "main.h"
+
+bool testing = false;
 
 // Constants
 
@@ -360,19 +362,26 @@ void camera_pos()
     glMatrixMode(GL_MODELVIEW);
     // Reset the camera
     glLoadIdentity();
-    // Move the camera 20 units from the objects
-    glTranslatef(0.0f, 0.0f, camera_dist);
-    // Add a little camera movement
-    //glRotatef(10, sin(camera_rotation), cos(camera_rotation), 0.0f);
-	glRotatef(camera_rotation_x, 0.0, 1.0, 0.0);
-	glRotatef(camera_rotation_y, 1.0, 0.0, 0.0);
-	//glRotatef(-75, 1,0,0);
-	//glRotatef(-45, 0,1,0);
 
-	/*gluLookAt(	grid_width * 1.0, 10.0, grid_height * 1.0,
-				0,0,0,
-				0,0,1
-			 );*/
+	if(testing)
+	{
+		// Move the camera 20 units from the objects
+		glTranslatef(0.0f, 0.0f, camera_dist);
+		// Add a little camera movement
+		//glRotatef(10, sin(camera_rotation), cos(camera_rotation), 0.0f);
+		glRotatef(camera_rotation_x, 0.0, 1.0, 0.0);
+		glRotatef(camera_rotation_y, 1.0, 0.0, 0.0);
+		//glRotatef(-75, 1,0,0);
+		//glRotatef(-45, 0,1,0);
+	}
+	else
+	{
+		/*gluLookAt(	grid_width * 1.0, 10.0, grid_height * 1.0,
+					0,0,0,
+					0,0,1
+				 );*/
+		level->updateCameraPosition();
+	}
 }
 
 void render_scene()
@@ -602,6 +611,10 @@ void handleEvents()
                         ++block_x;
                     }
                 }
+				if(event.key.keysym.sym == SDLK_t)
+				{
+					testing = !testing;
+				}
                 break;
             case SDL_MOUSEBUTTONDOWN:
                 if (event.button.button == SDL_BUTTON_LEFT)
@@ -613,11 +626,13 @@ void handleEvents()
                 }
 				else if(event.button.button == 4)
 				{
-					camera_dist++;
+					if(testing)
+						camera_dist++;
 				}
 				else if(event.button.button == 5)
 				{
-					camera_dist--;
+					if(testing)
+						camera_dist--;
 				}
                 break;
 			case SDL_MOUSEBUTTONUP:
@@ -631,9 +646,12 @@ void handleEvents()
 				//printf("%d %d %d %d\n", event.motion.x, event.motion.xrel, event.motion.y, event.motion.yrel);
 				if(mouse_down)
 				{
-					//camera_rotation += (event.motion.x - mouse_down_x) * M_PI/180;
-					camera_rotation_x += 15 * (event.motion.xrel) * M_PI/180;
-					camera_rotation_y += 15 * (event.motion.yrel) * M_PI/180;
+					if(testing)
+					{
+						//camera_rotation += (event.motion.x - mouse_down_x) * M_PI/180;
+						camera_rotation_x += 15 * (event.motion.xrel) * M_PI/180;
+						camera_rotation_y += 15 * (event.motion.yrel) * M_PI/180;
+					}
 				}
             default:
                 break;

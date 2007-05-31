@@ -10,7 +10,9 @@ Level::Level(int x, int y, int z)
 {
 	printf("Constructing Level!\n");
 
-	char buf[256];
+	this->ball = new Ball();
+
+//	char buf[256];
 	//GetPrivateProfileString("1,1,1", "type", NULL, buf, 256, ".\\test.ini");
 	char *filename = ".\\levels\\level1.ini";
 
@@ -140,7 +142,7 @@ void Level::draw_grid()
 				if(block[offset] != NULL)
 				{
 					//block->render();
-					block[offset]->render();
+					//block[offset]->render();
 				}
 				/*else
 				{
@@ -164,9 +166,17 @@ void Level::draw_grid()
     //glTranslatef(block_x, block_y, block_z);
     //draw_unit_cube();
 	glPopMatrix();
+
+	this->ball->render();
 }
 
 int Level::getOffset(int i, int j, int k)
 {
 	return (i + (j * this->grid_width) + (k * this->grid_width * this->grid_height));
 }
+
+void Level::updateCameraPosition()
+{
+	ball->lookAtMe();
+}
+

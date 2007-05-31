@@ -20,18 +20,17 @@ extern "C" {
 
 #include "font.h"
 
+#include <stdio.h>
+
 #include <iostream>
 
 #include <cmath>
 #include <cstring>
 
-#include "AbstractBlock.h"
-#include "NormalBlock.h"
-
 #include "textures.h"
 #include "primitives.h"
 #include "md3model.h"
 
-#include "Level.h"
+enum Orientation { UP, DOWN, LEFT, RIGHT, FRONT, BACK };
 
 #endif // __HEADERS_H__
