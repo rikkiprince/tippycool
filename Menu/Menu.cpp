@@ -58,7 +58,7 @@ void Menu::layout()
 		{
 			x = midWidth - (items[i]->getWidth() / 2);
 			items[i]->setXY(x, y);
-			items[i]->setHeight(rowHeight);
+			//items[i]->setHeight(rowHeight);
 			y = y + rowHeight + rowHeight;
 		}
 	}

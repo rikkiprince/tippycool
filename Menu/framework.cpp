@@ -643,10 +643,10 @@ void createMenus()
 	m = new Menu("Game Menu", screen_width, screen_height, font);
 
 
-	m->add(new MenuItem("Start"));
-	m->add(new MenuItem("Select Level"));
-	m->add(new MenuItem("Instructions"));
-	m->add(new MenuItem("Exit"));
+	m->add(new MenuItem("Start", font));
+	m->add(new MenuItem("Select Level", font));
+	m->add(new MenuItem("Instructions", font));
+	m->add(new MenuItem("Exit", font));
 
 	m->layout();
 
