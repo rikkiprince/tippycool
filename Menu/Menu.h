@@ -6,8 +6,8 @@
 class Menu
 {
 protected:
-	static const int max = 10;
-	MenuItem *items[10];
+	static const int max = 15;
+	MenuItem *items[15];
 	int selected;
 	TTF_Font *font;
 	int screenWidth, screenHeight;
@@ -19,7 +19,7 @@ public:
 	void remove(int index);
 	void layout();
 	void render();
-	bool click(int x, int y);
+	int click(int x, int y);
 };
 
 #endif

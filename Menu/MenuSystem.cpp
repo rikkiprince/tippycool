@@ -42,18 +42,12 @@ void MenuSystem::render()
 	}
 }
 
-bool MenuSystem::click(int x, int y)
+int MenuSystem::click(int x, int y)
 {
-	for(int i = 0; i < this->max; i++)
+	int newMenu = this->menus[selected]->click(x, y);
+	if(newMenu > -1 && newMenu < 3)
 	{
-		if(this->menus[i] != NULL)
-		{
-			if(this->menus[i]->click(x, y))
-			{
-				//item i was clicked
-			}
-		}
+		selected = newMenu;
 	}
-
-	return false;
+	return newMenu;
 }

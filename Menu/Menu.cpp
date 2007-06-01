@@ -2,6 +2,8 @@
 
 Menu::Menu(char *t, int w, int h, TTF_Font *font)
 {
+	strncpy(title,t,255);
+	title[255]='\0';
 	screenWidth = w;
 	screenHeight = h;
 	selected = 0;
@@ -46,20 +48,59 @@ void Menu::layout()
 		}
 	}
 
-	int rowHeight = screenHeight / (count + count + 1);
-	int midWidth = screenWidth / 2;
-
-	int x = 0;
-	int y = 0 + rowHeight;
-
-	for(int i = 0; i < max; i++)
+	if(count > 5)
 	{
-		if(items[i] != NULL)
+		int numButtons = 5;//screenWidth / (items[0]->getWidth() * 2);
+		int gapWidth = (screenWidth - (items[0]->getWidth() * numButtons)) / (numButtons + 2);
+		int rowHeight = 20;//screenHeight / (((count / numButtons) * 2) + 1);
+		int midWidth = screenWidth / 2;
+
+		int x = 0 + gapWidth;
+		int y = 50;//0 + rowHeight;
+
+		for(int i = 0; i < max; i++)
 		{
-			x = midWidth - (items[i]->getWidth() / 2);
-			items[i]->setXY(x, y);
-			//items[i]->setHeight(rowHeight);
-			y = y + rowHeight + rowHeight;
+			if(items[i] != NULL)
+			{
+				items[i]->setXY(x, y);
+				//items[i]->setHeight(rowHeight);
+				if(i % numButtons == numButtons-1)
+				{
+					if (i == 9)
+					{
+						y = y + (rowHeight * 5);
+						x = midWidth - (items[i+1]->getWidth() / 2);
+					}
+					else
+					{
+						y = y + rowHeight + rowHeight;
+						x = 0 + gapWidth;
+					}
+				}
+				else
+				{
+					x = x + items[i]->getWidth() + gapWidth;
+				}
+			}
+		}
+	}
+	else
+	{
+		int rowHeight = screenHeight / (count + count + 1);
+		int midWidth = screenWidth / 2;
+
+		int x = 0;
+		int y = 0 + rowHeight;
+
+		for(int i = 0; i < max; i++)
+		{
+			if(items[i] != NULL)
+			{
+				x = midWidth - (items[i]->getWidth() / 2);
+				items[i]->setXY(x, y);
+				//items[i]->setHeight(rowHeight);
+				y = y + rowHeight + rowHeight;
+			}
 		}
 	}
 }
@@ -86,7 +127,7 @@ void Menu::render()
 	}
 }
 
-bool Menu::click(int x, int y)
+int Menu::click(int x, int y)
 {
 	for(int i = 0; i < this->max; i++)
 	{
@@ -94,10 +135,9 @@ bool Menu::click(int x, int y)
 		{
 			if(this->items[i]->click(x, y))
 			{
-				//item i was clicked
+				return items[i]->getMenu();
 			}
 		}
 	}
-
-	return false;
+	return -1;
 }

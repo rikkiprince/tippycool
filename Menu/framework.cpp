@@ -16,7 +16,7 @@ static const int screen_height = 400;
 //Menu m("Game Menu", screen_width, screen_height);
 MenuSystem *ms;
 Menu *m1, *m2, *m3;
-TTF_Font *font;
+TTF_Font *font20, *font16;
 
 // Number of squares in the grid. The number of points is this number +1.
 static const int grid_width = 12;
@@ -498,9 +498,11 @@ void mouse_click(unsigned int x, unsigned int y)
     int hit_y = hitName / grid_width;
 
     // Place or remove a block on the square the user clicked.
-    if (hit_x < grid_width && hit_y < grid_height) {
+    /*if (hit_x < grid_width && hit_y < grid_height) {
         properties[hit_x][hit_y].block = !properties[hit_x][hit_y].block;
-    }
+    }*/
+
+	
 }
 
 // This function is called every step_time milliseconds. In many games you
@@ -562,8 +564,12 @@ void loop()
                     break;
                 case SDL_MOUSEBUTTONDOWN:
                     if (event.button.button == SDL_BUTTON_LEFT) {
-                        mouse_click(event.button.x,
-                                    screen_height - event.button.y);
+						if(ms->click(event.button.x, event.button.y) == 4)
+						{
+							program_finished = true;
+						}
+						//mouse_click(event.button.x,
+                          //          screen_height - event.button.y);
                     }
                     break;
                 default:
@@ -612,7 +618,12 @@ void init_fonts()
 		exit(2);
 	}
 
-	if(!(font = TTF_OpenFont(fontpath, 20))) {
+	if(!(font20 = TTF_OpenFont(fontpath, 20))) {
+		printf("Error loading font: %s", TTF_GetError());
+		//return 1;
+	}
+
+	if(!(font16 = TTF_OpenFont(fontpath, 16))) {
 		printf("Error loading font: %s", TTF_GetError());
 		//return 1;
 	}
@@ -630,8 +641,10 @@ void uninit_fonts()
 {
 	// free the font
 	// TTF_Font *font;
-	TTF_CloseFont(font);
-	font=NULL; // to be safe...
+	TTF_CloseFont(font16);
+	TTF_CloseFont(font20);
+	font16=NULL; // to be safe...
+	font20=NULL; // to be safe...
 	TTF_Quit();
 }
 
@@ -640,42 +653,51 @@ void createMenus()
 {
 	init_fonts();
 
-	m1 = new Menu("Game Menu", screen_width, screen_height, font);
-	m1->add(new MenuItem("Start", font));
-	m1->add(new MenuItem("Select Level", font));
-	m1->add(new MenuItem("Instructions", font));
-	m1->add(new MenuItem("Exit", font));
+	//-1 - No Menu
+	//0 - Game Menu
+	//1 - Level Menu
+	//2 - Instructions Menu
+	//3 - Start Game
+	//4 - Exit Game
+
+	m1 = new Menu("Game Menu", screen_width, screen_height, font20);
+	m1->add(new MenuItem("Start", font20, 3));
+	m1->add(new MenuItem("Select Level", font20, 1));
+	m1->add(new MenuItem("Instructions", font20, 2));
+	m1->add(new MenuItem("Exit", font20, 4));
 	m1->layout();
 
-	m2 = new Menu("Level Menu", screen_width, screen_height, font);
-	m2->add(new MenuItem("Level 1", font));
-	m2->add(new MenuItem("Level 2", font));
-	m2->add(new MenuItem("Level 3", font));
-	m2->add(new MenuItem("Level 4", font));
-	m2->add(new MenuItem("Level 5", font));
-	m2->add(new MenuItem("Level 6", font));
-	m2->add(new MenuItem("Level 7", font));
-	m2->add(new MenuItem("Level 8", font));
-	m2->add(new MenuItem("Level 9", font));
-	m2->add(new MenuItem("Level 10", font));
+	m2 = new Menu("Level Menu", screen_width, screen_height, font20);
+	m2->add(new MenuItem("Level 1", font16, 3));
+	m2->add(new MenuItem("Level 2", font16, 3));
+	m2->add(new MenuItem("Level 3", font16, 3));
+	m2->add(new MenuItem("Level 4", font16, 3));
+	m2->add(new MenuItem("Level 5", font16, 3));
+	m2->add(new MenuItem("Level 6", font16, 3));
+	m2->add(new MenuItem("Level 7", font16, 3));
+	m2->add(new MenuItem("Level 8", font16, 3));
+	m2->add(new MenuItem("Level 9", font16, 3));
+	m2->add(new MenuItem("Level 10", font16, 3));
+	m2->add(new MenuItem("Back to Main Menu", font20, 0));
 	m2->layout();
 
-	m3 = new Menu("Instructions Menu", screen_width, screen_height, font);
-	m3->add(new MenuItem("Instructions", font));
-	m3->add(new MenuItem("TextTextText", font));
-	m3->add(new MenuItem("Back to Main Menu", font));
+	m3 = new Menu("Instructions Menu", screen_width, screen_height, font20);
+	m3->add(new MenuItem("Instructions", font20, -1));
+	m3->add(new MenuItem("TextTextText", font16, -1));
+	m3->add(new MenuItem("Back to Main Menu", font20, 0));
 	m3->layout();
 
 	ms = new MenuSystem();
 	ms->add(m1);
+	ms->add(m2);
+	ms->add(m3);
 
 }
 
 int main()
 {
-	//SDL_Surface *screen;
     // Initialise the graphics
-    if (!init_graphics(/*&screen*/)) {
+    if (!init_graphics()) {
         return 1;
     }
 

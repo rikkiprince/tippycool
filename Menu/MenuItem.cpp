@@ -4,10 +4,12 @@
 
 #define GL_BGRA	0x80e1
 
-MenuItem::MenuItem(char *t, TTF_Font *font)
+MenuItem::MenuItem(char *t, TTF_Font *font, int gotoMenu)
 {
 	strncpy(text,t,255);
 	text[255]='\0';
+
+	this->gotoMenu = gotoMenu;
 
 	int minx,maxx,miny,maxy,advance;
 	TTF_GlyphMetrics(font,'M',&minx,&maxx,&miny,&maxy,&advance);
@@ -28,6 +30,10 @@ MenuItem::MenuItem(char *t, TTF_Font *font)
 	this->height = position.h;
 }
 
+int MenuItem::getMenu()
+{
+	return gotoMenu;
+}
 
 int round(double x)
 {
@@ -168,6 +174,10 @@ bool MenuItem::click(int x, int y)
 	if((x >= this->x && x <= (this->x + width)) && (y >= this->y && y <= (this->y + height)))
 	{
 		return true;
+	}
+	else 
+	{
+		return false;
 	}
 }
 

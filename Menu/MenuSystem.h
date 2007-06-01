@@ -16,7 +16,7 @@ public:
 	bool add(Menu *menu);
 	void remove(int index);
 	void render();
-	bool click(int x, int y);
+	int click(int x, int y);
 };
 
 #endif
