@@ -1,3 +1,6 @@
+#ifndef __MENU_H__
+#define __MENU_H__
+
 #include "MenuItem.h";
 
 class Menu
@@ -18,3 +21,5 @@ public:
 	void render();
 	bool click(int x, int y);
 };
+
+#endif

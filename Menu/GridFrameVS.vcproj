@@ -147,6 +147,12 @@
 			<File
 				RelativePath=".\MenuItem.h">
 			</File>
+			<File
+				RelativePath=".\MenuSystem.cpp">
+			</File>
+			<File
+				RelativePath=".\MenuSystem.h">
+			</File>
 		</Filter>
 	</Files>
 	<Globals>

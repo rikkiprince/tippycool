@@ -4,7 +4,7 @@
 
 #include "headers.h"
  
-
+#include "MenuSystem.h";
 #include "MenuItem.h";
 #include "Menu.h";
 
@@ -14,7 +14,8 @@ static const int screen_width = 600;
 static const int screen_height = 400;
 
 //Menu m("Game Menu", screen_width, screen_height);
-Menu *m;
+MenuSystem *ms;
+Menu *m1, *m2, *m3;
 TTF_Font *font;
 
 // Number of squares in the grid. The number of points is this number +1.
@@ -372,7 +373,7 @@ void render_interface()
 	{*/
 		//glEnable2D();
 		//glDisable(GL_DEPTH_TEST);
-		m->render();
+		ms->render();
 		//glEnable(GL_DEPTH_TEST);
 		//glDisable2D();
 /*		SDL_GL_SwapBuffers( );
@@ -639,17 +640,34 @@ void createMenus()
 {
 	init_fonts();
 
-	//m.setFont(font);
-	m = new Menu("Game Menu", screen_width, screen_height, font);
+	m1 = new Menu("Game Menu", screen_width, screen_height, font);
+	m1->add(new MenuItem("Start", font));
+	m1->add(new MenuItem("Select Level", font));
+	m1->add(new MenuItem("Instructions", font));
+	m1->add(new MenuItem("Exit", font));
+	m1->layout();
 
+	m2 = new Menu("Level Menu", screen_width, screen_height, font);
+	m2->add(new MenuItem("Level 1", font));
+	m2->add(new MenuItem("Level 2", font));
+	m2->add(new MenuItem("Level 3", font));
+	m2->add(new MenuItem("Level 4", font));
+	m2->add(new MenuItem("Level 5", font));
+	m2->add(new MenuItem("Level 6", font));
+	m2->add(new MenuItem("Level 7", font));
+	m2->add(new MenuItem("Level 8", font));
+	m2->add(new MenuItem("Level 9", font));
+	m2->add(new MenuItem("Level 10", font));
+	m2->layout();
 
-	m->add(new MenuItem("Start", font));
-	m->add(new MenuItem("Select Level", font));
-	m->add(new MenuItem("Instructions", font));
-	m->add(new MenuItem("Exit", font));
+	m3 = new Menu("Instructions Menu", screen_width, screen_height, font);
+	m3->add(new MenuItem("Instructions", font));
+	m3->add(new MenuItem("TextTextText", font));
+	m3->add(new MenuItem("Back to Main Menu", font));
+	m3->layout();
 
-	m->layout();
-
+	ms = new MenuSystem();
+	ms->add(m1);
 
 }
 
