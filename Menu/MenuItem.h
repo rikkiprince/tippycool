@@ -10,6 +10,9 @@ protected:
 	int width, height;
 	char text[256];
 	int gotoMenu;
+	bool selectable;
+	bool pressed;
+	TTF_Font *font;
 	SDL_Color textColor;
 	SDL_Color buttonColor;
 	SDL_Rect position;
@@ -17,14 +20,21 @@ protected:
 	SDL_Surface *intermediary;
 	GLuint texture;
 public:
-	MenuItem(char *t, TTF_Font *font, int gotoMenu);
+	MenuItem(char *t, TTF_Font *font, int gotoMenu, bool selectable);
 	~MenuItem();
 	void setXY(int x, int y);
 	int getMenu();
-	void render(TTF_Font *font, bool highlighted);
-	bool click(int x, int y);
-	void SDL_GL_RenderText(char *text, TTF_Font *font, SDL_Color color, SDL_Rect *location);
-	void preRenderFont(char *text, TTF_Font *font, SDL_Color color, SDL_Rect *location);
+	void render(bool highlighted);
+	bool mouseDown(int x, int y);
+	bool mouseUp(int x, int y);
+	void SDL_GL_RenderText();
+	int round(double x);
+	int nextpoweroftwo(int x);
+	void deleteTexture();
+	bool isSelectable();
+	void setPressed(bool state);
+	bool mouseMotion(int x, int y);
+	void preRenderFont();
 	//void setWidth(int w);
 	int getWidth();
 	void setHeight(int h);

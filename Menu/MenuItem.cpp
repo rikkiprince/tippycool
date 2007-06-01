@@ -1,15 +1,15 @@
 #include "MenuItem.h"
-
-
-
 #define GL_BGRA	0x80e1
 
-MenuItem::MenuItem(char *t, TTF_Font *font, int gotoMenu)
+MenuItem::MenuItem(char *t, TTF_Font *font, int gotoMenu, bool selectable)
 {
 	strncpy(text,t,255);
 	text[255]='\0';
 
+	this->font = font;
+	this->pressed = false;
 	this->gotoMenu = gotoMenu;
+	this->selectable = selectable;
 
 	int minx,maxx,miny,maxy,advance;
 	TTF_GlyphMetrics(font,'M',&minx,&maxx,&miny,&maxy,&advance);
@@ -20,14 +20,23 @@ MenuItem::MenuItem(char *t, TTF_Font *font, int gotoMenu)
 	textColor.r = 0;
 	textColor.g = 0;
 	textColor.b = 0;
+
+	buttonColor.r = 61;
+	buttonColor.g = 184;
+	buttonColor.b = 184;
 		
 	position.x = this->x;
 	position.y = this->y;
 
-	preRenderFont(t, font, textColor, &position);
+	preRenderFont();
 
 	this->width = position.w;
 	this->height = position.h;
+}
+
+bool MenuItem::isSelectable()
+{
+	return selectable;
 }
 
 int MenuItem::getMenu()
@@ -35,30 +44,30 @@ int MenuItem::getMenu()
 	return gotoMenu;
 }
 
-int round(double x)
+int MenuItem::round(double x)
 {
 	return (int)(x + 0.5);
 }
 
-int nextpoweroftwo(int x)
+int MenuItem::nextpoweroftwo(int x)
 {
 	double logbase2 = log((double)x) / log((double)2);
 	return round(pow((double)2,(double)ceil(logbase2)));
 }
 
 // http://www.gamedev.net/community/forums/topic.asp?topic_id=284259
-void MenuItem::preRenderFont(char *text, 
-                      TTF_Font *font,
-                      SDL_Color color,
-                      SDL_Rect *location)
+void MenuItem::preRenderFont()
 {
 	SDL_Rect rect;
 	int w,h;
 	int oldw,oldh;
 	SDL_Rect centre;
 	
+	/*buttonColor.r = 61;
+	buttonColor.g = 184;
+	buttonColor.b = 184;*/
 	/* Use SDL_TTF to render our text */
-	initial = TTF_RenderText_Blended(font, text, color);
+	initial = TTF_RenderText_Blended(font, text, textColor);
 
 	oldw = initial->w;
 	oldh = initial->h;
@@ -73,7 +82,7 @@ void MenuItem::preRenderFont(char *text,
 	centre.x = (w - oldw)/2;
 	centre.y = (h - oldh)/2;
 
-	SDL_FillRect(intermediary,NULL, SDL_MapRGB(intermediary->format, buttonColor.r * 255, buttonColor.b * 255, buttonColor.g * 255));
+	SDL_FillRect(intermediary,NULL, SDL_MapRGB(intermediary->format, buttonColor.r /* 255*/, buttonColor.b /* 255*/, buttonColor.g /* 255*/));
 
 	SDL_BlitSurface(initial, 0, intermediary, &centre);
 	
@@ -88,16 +97,14 @@ void MenuItem::preRenderFont(char *text,
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);	
 	
 	/* return the deltas in the unused w,h part of the rect */
-	location->w = w;//initial->w;
-	location->h = h;//initial->h;
+	position.w = w;//initial->w;
+	position.h = h;//initial->h;
 }
 
 MenuItem::~MenuItem()
 {
 	/* Clean up */
-	SDL_FreeSurface(initial);
-	SDL_FreeSurface(intermediary);
-	glDeleteTextures(1, &texture);
+	deleteTexture();
 }
 
 void MenuItem::setXY(int x, int y)
@@ -106,11 +113,15 @@ void MenuItem::setXY(int x, int y)
 	this->y = y;
 }
 
-void MenuItem::render(TTF_Font *font, bool highlighted)
+void MenuItem::deleteTexture()
 {
-	buttonColor.r = 1;
-	buttonColor.g = 0;
-	buttonColor.b = 0;
+	SDL_FreeSurface(initial);
+	SDL_FreeSurface(intermediary);
+	glDeleteTextures(1, &texture);
+}
+
+void MenuItem::render(bool highlighted)
+{
 	glColor3f(buttonColor.r, buttonColor.g, buttonColor.b);
 	glBegin(GL_QUADS); 
 		glVertex2f(x, y); 
@@ -118,14 +129,6 @@ void MenuItem::render(TTF_Font *font, bool highlighted)
 		glVertex2f(x + width, y + height); 
 		glVertex2f(x, y + height); 
     glEnd();
-	glColor3f(0.0, 0.0, 1.0);
-	glBegin(GL_LINE_LOOP); 
-		glVertex2f(x, y); 
-		glVertex2f(x + width, y); 
-		glVertex2f(x + width, y + height);
-		glVertex2f(x, y + height);  
-    glEnd();
-	glColor3f(1.0, 1.0, 1.0);
 
 	textColor.r = 0;
 	textColor.g = 0;
@@ -135,13 +138,59 @@ void MenuItem::render(TTF_Font *font, bool highlighted)
 	position.y = this->y;
 
 	//SDL_Rect location={x, y, width, height};
-	SDL_GL_RenderText(text, font, textColor, &position);
+	SDL_GL_RenderText();
+
+	glColor3f(0.0, 0.0, 0.0);
+	glBegin(GL_LINE_LOOP); 
+		glVertex2f(x, y-1); 
+		glVertex2f(x + width, y); 
+		glVertex2f(x + width, y + height);
+		glVertex2f(x, y + height);  
+	glEnd();
+
+	if(highlighted && selectable && !pressed)
+	{
+		glColor3ub(245, 122, 0);
+		glBegin(GL_LINE_LOOP); 
+			glVertex2f(x-1, y-2); 
+			glVertex2f(x-1 + width + 2, y-1); 
+			glVertex2f(x-1 + width+2, y-1 + height+2);
+			glVertex2f(x-1, y-1 + height+2);  
+		glEnd();
+		glColor3f(0.0, 0.0, 0.0);
+		glBegin(GL_LINE_LOOP); 
+			glVertex2f(x-2, y-3); 
+			glVertex2f(x-2 + width+4, y-2); 
+			glVertex2f(x-2 + width+4, y-2 + height+4);
+			glVertex2f(x-2, y-2 + height+4);
+		glEnd();
+	}
+	glColor3f(1.0, 1.0, 1.0);
 }
 
-void MenuItem::SDL_GL_RenderText(char *text, 
-                      TTF_Font *font,
-                      SDL_Color color,
-                      SDL_Rect *location)
+void MenuItem::setPressed(bool state)
+{
+	this->pressed = state;
+
+	if(state && selectable)
+	{
+		buttonColor.r = 0;
+		buttonColor.g = 46;
+		buttonColor.b = 184;
+		deleteTexture();
+		preRenderFont();
+	}
+	else
+	{
+		buttonColor.r = 61;
+		buttonColor.g = 184;
+		buttonColor.b = 184;
+		deleteTexture();
+		preRenderFont();
+	}
+}
+
+void MenuItem::SDL_GL_RenderText()
 {
 
 	/* prepare to render our texture */
@@ -169,7 +218,7 @@ void MenuItem::SDL_GL_RenderText(char *text,
 	glFinish();
 }
 
-bool MenuItem::click(int x, int y)
+bool MenuItem::mouseUp(int x, int y)
 {
 	if((x >= this->x && x <= (this->x + width)) && (y >= this->y && y <= (this->y + height)))
 	{
@@ -177,6 +226,34 @@ bool MenuItem::click(int x, int y)
 	}
 	else 
 	{
+		return false;
+	}
+}
+
+bool MenuItem::mouseDown(int x, int y)
+{
+	if((x >= this->x && x <= (this->x + width)) && (y >= this->y && y <= (this->y + height)))
+	{
+		setPressed(true);
+		return true;
+	}
+	else 
+	{
+		setPressed(false);
+		return false;
+	}
+}
+
+bool MenuItem::mouseMotion(int x, int y)
+{
+	if((x >= this->x && x <= (this->x + width)) && (y >= this->y && y <= (this->y + height)))
+	{
+		setPressed(true);
+		return true;
+	}
+	else
+	{
+		setPressed(false);
 		return false;
 	}
 }

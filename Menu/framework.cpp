@@ -16,7 +16,7 @@ static const int screen_height = 400;
 //Menu m("Game Menu", screen_width, screen_height);
 MenuSystem *ms;
 Menu *m1, *m2, *m3;
-TTF_Font *font20, *font16;
+TTF_Font *font24, *font20, *font16;
 
 // Number of squares in the grid. The number of points is this number +1.
 static const int grid_width = 12;
@@ -91,7 +91,7 @@ bool init_graphics(/*SDL_Surface** screen*/)
     // glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
     // Set the colour the screen will be when cleared - black
-    glClearColor(0.0, 0.0, 0.0, 0.0);
+    glClearColor(0.0, 0.5, 1.0, 0.0);
 	glClearDepth(1.0f);
 	glDepthFunc(GL_LEQUAL);
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
@@ -539,39 +539,71 @@ void loop()
                         program_finished = true;
                     }
                     if ( event.key.keysym.sym == SDLK_UP ) {
-                        if ((block_y < (grid_height-1)) && !properties[block_x][block_y + 1].block) {
+                        /*if ((block_y < (grid_height-1)) && !properties[block_x][block_y + 1].block) {
                             ++block_y;
-                        }
+                        }*/
+						ms->changeSelected(-1);
                     }
                     if ( event.key.keysym.sym == SDLK_DOWN ) {
                         // Move block down
-                        if ((block_y > 0) && !properties[block_x][block_y - 1].block) {
+                        /*if ((block_y > 0) && !properties[block_x][block_y - 1].block) {
                             --block_y;
-                        }
+                        }*/
+						ms->changeSelected(1);
                     }
                     if ( event.key.keysym.sym == SDLK_LEFT ) {
                         // Move block left
-                        if ((block_x > 0) && !properties[block_x - 1][block_y].block) {
+                        /*if ((block_x > 0) && !properties[block_x - 1][block_y].block) {
                             --block_x;
-                        }
+                        }*/
+						ms->changeSelected(-1);
                     }
                     if ( event.key.keysym.sym == SDLK_RIGHT ) {
                         // Move block right
-                        if ((block_x < (grid_width-1)) && !properties[block_x + 1][block_y].block) {
+                        /*if ((block_x < (grid_width-1)) && !properties[block_x + 1][block_y].block) {
                             ++block_x;
-                        }
+                        }*/
+						ms->changeSelected(1);
+                    }
+                    if ( event.key.keysym.sym == SDLK_RETURN ) {
+                        // Move block right
+                        /*if ((block_x < (grid_width-1)) && !properties[block_x + 1][block_y].block) {
+                            ++block_x;
+                        }*/
+						if(ms->enter() == 4)
+						{
+							program_finished = true;
+						}
                     }
                     break;
                 case SDL_MOUSEBUTTONDOWN:
                     if (event.button.button == SDL_BUTTON_LEFT) {
-						if(ms->click(event.button.x, event.button.y) == 4)
+						ms->mouseDown(event.button.x, event.button.y);
+						/*if(event.button.state == SDL_PRESSED)
 						{
-							program_finished = true;
+							ms->setPressed(true);
 						}
+						else if(event.button.state == SDL_RELEASED)
+						{
+							ms->setPressed(false);
+						*/	
+						//}
 						//mouse_click(event.button.x,
                           //          screen_height - event.button.y);
                     }
                     break;
+				case SDL_MOUSEBUTTONUP:
+					if(event.button.button == SDL_BUTTON_LEFT)
+					{
+						if(ms->mouseUp(event.button.x, event.button.y) == 4)
+						{
+							program_finished = true;
+						}
+					}
+					break;
+				case SDL_MOUSEMOTION:
+					ms->mouseMotion(event.motion.x, event.motion.y);
+					break;
                 default:
                     break;
             }
@@ -618,6 +650,11 @@ void init_fonts()
 		exit(2);
 	}
 
+	if(!(font24 = TTF_OpenFont(fontpath, 24))) {
+		printf("Error loading font: %s", TTF_GetError());
+		//return 1;
+	}
+
 	if(!(font20 = TTF_OpenFont(fontpath, 20))) {
 		printf("Error loading font: %s", TTF_GetError());
 		//return 1;
@@ -643,8 +680,10 @@ void uninit_fonts()
 	// TTF_Font *font;
 	TTF_CloseFont(font16);
 	TTF_CloseFont(font20);
+	TTF_CloseFont(font24);
 	font16=NULL; // to be safe...
 	font20=NULL; // to be safe...
+	font24=NULL; // to be safe...
 	TTF_Quit();
 }
 
@@ -660,31 +699,31 @@ void createMenus()
 	//3 - Start Game
 	//4 - Exit Game
 
-	m1 = new Menu("Game Menu", screen_width, screen_height, font20);
-	m1->add(new MenuItem("Start", font20, 3));
-	m1->add(new MenuItem("Select Level", font20, 1));
-	m1->add(new MenuItem("Instructions", font20, 2));
-	m1->add(new MenuItem("Exit", font20, 4));
+	m1 = new Menu("Main Menu", screen_width, screen_height, font24);
+	m1->add(new MenuItem("Start", font20, 3, true));
+	m1->add(new MenuItem("Select Level", font20, 1, true));
+	m1->add(new MenuItem("Instructions", font20, 2, true));
+	m1->add(new MenuItem("Exit", font20, 4, true));
 	m1->layout();
 
-	m2 = new Menu("Level Menu", screen_width, screen_height, font20);
-	m2->add(new MenuItem("Level 1", font16, 3));
-	m2->add(new MenuItem("Level 2", font16, 3));
-	m2->add(new MenuItem("Level 3", font16, 3));
-	m2->add(new MenuItem("Level 4", font16, 3));
-	m2->add(new MenuItem("Level 5", font16, 3));
-	m2->add(new MenuItem("Level 6", font16, 3));
-	m2->add(new MenuItem("Level 7", font16, 3));
-	m2->add(new MenuItem("Level 8", font16, 3));
-	m2->add(new MenuItem("Level 9", font16, 3));
-	m2->add(new MenuItem("Level 10", font16, 3));
-	m2->add(new MenuItem("Back to Main Menu", font20, 0));
+	m2 = new Menu("Level Menu", screen_width, screen_height, font24);
+	m2->add(new MenuItem("Level 1", font16, 3, true));
+	m2->add(new MenuItem("Level 2", font16, 3, true));
+	m2->add(new MenuItem("Level 3", font16, 3, true));
+	m2->add(new MenuItem("Level 4", font16, 3, true));
+	m2->add(new MenuItem("Level 5", font16, 3, true));
+	m2->add(new MenuItem("Level 6", font16, 3, true));
+	m2->add(new MenuItem("Level 7", font16, 3, true));
+	m2->add(new MenuItem("Level 8", font16, 3, true));
+	m2->add(new MenuItem("Level 9", font16, 3, true));
+	m2->add(new MenuItem("Level 10", font16, 3, true));
+	m2->add(new MenuItem("Back to Main Menu", font20, 0, true));
 	m2->layout();
 
-	m3 = new Menu("Instructions Menu", screen_width, screen_height, font20);
-	m3->add(new MenuItem("Instructions", font20, -1));
-	m3->add(new MenuItem("TextTextText", font16, -1));
-	m3->add(new MenuItem("Back to Main Menu", font20, 0));
+	m3 = new Menu("Instructions Menu", screen_width, screen_height, font24);
+	//m3->add(new MenuItem("Instructions", font20, -1, false));
+	m3->add(new MenuItem("TextTextText", font16, -1, false));
+	m3->add(new MenuItem("Back to Main Menu", font20, 0, true));
 	m3->layout();
 
 	ms = new MenuSystem();

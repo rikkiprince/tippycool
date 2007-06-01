@@ -1,4 +1,5 @@
 #include "Menu.h"
+#define GL_BGRA	0x80e1
 
 Menu::Menu(char *t, int w, int h, TTF_Font *font)
 {
@@ -9,10 +10,90 @@ Menu::Menu(char *t, int w, int h, TTF_Font *font)
 	selected = 0;
 	this->font = font;
 
+	int minx,maxx,miny,maxy,advance;
+	TTF_GlyphMetrics(font,'M',&minx,&maxx,&miny,&maxy,&advance);
+	int length = strlen(title);	
+	this->width = (maxx-minx) * length;
+	this->height = maxy-miny;
+	this->x = 30;
+	this->y = 30;
+
 	for(int i = 0; i < max; i++) 
 	{
 		items[i] = NULL;
 	}
+	textColor.r = 0;
+	textColor.g = 0;
+	textColor.b = 0;
+	
+	buttonColor.r = 255;
+	buttonColor.g = 202;
+	buttonColor.b = 148;
+
+	position.x = x;
+	position.y = y;
+
+	preRenderFont();
+
+	this->width = position.w;
+	this->height = position.h;
+}
+
+int round(double x)
+{
+	return (int)(x + 0.5);
+}
+
+int nextpoweroftwo(int x)
+{
+	double logbase2 = log((double)x) / log((double)2);
+	return round(pow((double)2,(double)ceil(logbase2)));
+}
+
+// http://www.gamedev.net/community/forums/topic.asp?topic_id=284259
+void Menu::preRenderFont()
+{
+	SDL_Rect rect;
+	int w,h;
+	int oldw,oldh;
+	SDL_Rect centre;
+	
+	/*buttonColor.r = 61;
+	buttonColor.g = 184;
+	buttonColor.b = 184;*/
+	/* Use SDL_TTF to render our text */
+	initial = TTF_RenderText_Blended(font, title, textColor);
+
+	oldw = initial->w;
+	oldh = initial->h;
+	
+	/* Convert the rendered text to a known format */
+	w = nextpoweroftwo(initial->w);
+	h = nextpoweroftwo(initial->h);
+	
+	intermediary = SDL_CreateRGBSurface(0, w, h, 32, 
+			0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
+
+	centre.x = (w - oldw)/2;
+	centre.y = (h - oldh)/2;
+
+	SDL_FillRect(intermediary,NULL, SDL_MapRGB(intermediary->format, buttonColor.r /* 255*/, buttonColor.g /* 255*/, buttonColor.b /* 255*/));
+
+	SDL_BlitSurface(initial, 0, intermediary, &centre);
+	
+	/* Tell GL about our new texture */
+	glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	glTexImage2D(GL_TEXTURE_2D, 0, 4, w, h, 0, GL_BGRA, 
+			GL_UNSIGNED_BYTE, intermediary->pixels );
+	
+	/* GL_NEAREST looks horrible, if scaled... */
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);	
+	
+	/* return the deltas in the unused w,h part of the rect */
+	this->position.w = w;//initial->w;
+	this->position.h = h;//initial->h;
 }
 
 Menu::~Menu()
@@ -37,6 +118,35 @@ void Menu::remove(int index)
 	items[index] = NULL;
 }
 
+void Menu::SDL_GL_RenderText()
+{
+	/* prepare to render our texture */
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	glColor3f(1.0f, 1.0f, 1.0f);
+	
+	int midwidth = screenWidth / 2;
+	int startx = midwidth - (this->width / 2);
+
+	/* Draw a quad at location */
+	glBegin(GL_QUADS);
+		/* Recall that the origin is in the lower-left corner
+		   That is why the TexCoords specify different corners
+		   than the Vertex coors seem to. */
+		glTexCoord2f(0.0f, -1.0f); 
+			glVertex2f(startx    , this->y);
+		glTexCoord2f(1.0f, -1.0f); 
+			glVertex2f(startx + this->width, this->y);
+		glTexCoord2f(1.0f, 0.0f); 
+			glVertex2f(startx + this->width, this->y + this->height);
+		glTexCoord2f(0.0f, 0.0f); 
+			glVertex2f(startx    , this->y + this->height);
+	glEnd();
+	
+	/* Bad things happen if we delete the texture before it finishes */
+	glFinish();
+}
+
 void Menu::layout()
 {
 	int count = 0;
@@ -55,51 +165,51 @@ void Menu::layout()
 		int rowHeight = 20;//screenHeight / (((count / numButtons) * 2) + 1);
 		int midWidth = screenWidth / 2;
 
-		int x = 0 + gapWidth;
-		int y = 50;//0 + rowHeight;
+		int tempx = 0 + gapWidth;
+		int tempy = 50;//0 + rowHeight;
 
 		for(int i = 0; i < max; i++)
 		{
 			if(items[i] != NULL)
 			{
-				items[i]->setXY(x, y);
+				items[i]->setXY(tempx, tempy+height+30);
 				//items[i]->setHeight(rowHeight);
 				if(i % numButtons == numButtons-1)
 				{
 					if (i == 9)
 					{
-						y = y + (rowHeight * 5);
-						x = midWidth - (items[i+1]->getWidth() / 2);
+						tempy = tempy + (rowHeight * 5);
+						tempx = midWidth - (items[i+1]->getWidth() / 2);
 					}
 					else
 					{
-						y = y + rowHeight + rowHeight;
-						x = 0 + gapWidth;
+						tempy = tempy + rowHeight + rowHeight;
+						tempx = 0 + gapWidth;
 					}
 				}
 				else
 				{
-					x = x + items[i]->getWidth() + gapWidth;
+					tempx = tempx + items[i]->getWidth() + gapWidth;
 				}
 			}
 		}
 	}
 	else
 	{
-		int rowHeight = screenHeight / (count + count + 1);
+		int rowHeight = (screenHeight-height-30) / (count + count + 1);
 		int midWidth = screenWidth / 2;
 
-		int x = 0;
-		int y = 0 + rowHeight;
+		int tempx = 0;
+		int tempy = 0 + rowHeight;
 
 		for(int i = 0; i < max; i++)
 		{
 			if(items[i] != NULL)
 			{
-				x = midWidth - (items[i]->getWidth() / 2);
-				items[i]->setXY(x, y);
+				tempx = midWidth - (items[i]->getWidth() / 2);
+				items[i]->setXY(tempx, tempy+height+30);
 				//items[i]->setHeight(rowHeight);
-				y = y + rowHeight + rowHeight;
+				tempy = tempy + rowHeight + rowHeight;
 			}
 		}
 	}
@@ -118,22 +228,74 @@ void Menu::render()
 	glScalef(1.0f, -1.0f, 0.0f);
 	glTranslatef(0.0f, -screenHeight, 0.0f);
 
+	SDL_GL_RenderText();
+
 	for(int i = 0; i < max; i++)
 	{
 		if(items[i] != NULL)
 		{
-			items[i]->render(font, (i == selected));
+			items[i]->render((i == selected));
 		}
 	}
 }
 
-int Menu::click(int x, int y)
+void Menu::changeSelected(int change)
+{
+	int newSelected = selected + change;
+	if(newSelected >= 0 && newSelected < max)
+	{
+		if(items[newSelected] != NULL && items[newSelected]->isSelectable())
+		{
+			selected = newSelected;
+		}
+	}
+}
+
+int Menu::enter()
+{
+	return items[selected]->getMenu();
+}
+
+void Menu::mouseMotion(int x, int y)
 {
 	for(int i = 0; i < this->max; i++)
 	{
 		if(this->items[i] != NULL)
 		{
-			if(this->items[i]->click(x, y))
+			if(this->items[i]->mouseMotion(x, y))
+			{
+				if(items[i]->isSelectable())
+				{
+					selected = i;
+				}
+			}
+		}
+	}
+}
+
+void Menu::mouseDown(int x, int y)
+{
+	for(int i = 0; i < this->max; i++)
+	{
+		if(this->items[i] != NULL)
+		{
+			//if(this->items[i]->mouseDown(x, y))
+			//{
+				items[i]->mouseDown(x, y);//setPressed(state);
+				//return items[i]->getMenu();
+			//}
+		}
+	}
+	//return -1;
+}
+
+int Menu::mouseUp(int x, int y)
+{
+	for(int i = 0; i < this->max; i++)
+	{
+		if(this->items[i] != NULL)
+		{
+			if(this->items[i]->mouseUp(x, y))
 			{
 				return items[i]->getMenu();
 			}

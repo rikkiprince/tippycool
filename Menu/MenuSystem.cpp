@@ -13,6 +13,16 @@ MenuSystem::~MenuSystem()
 {
 }
 
+void MenuSystem::mouseMotion(int x, int y)
+{
+	menus[selected]->mouseMotion(x, y);
+}
+
+void MenuSystem::changeSelected(int change)
+{
+	menus[selected]->changeSelected(change);
+}
+
 bool MenuSystem::add(Menu *menu)
 {
 	for(int i = 0; i < max; i++) 
@@ -31,6 +41,16 @@ void MenuSystem::remove(int index)
 	menus[index] = NULL;
 }
 
+int MenuSystem::enter()
+{
+	int newMenu = menus[selected]->enter();
+	if(newMenu > -1 && newMenu < 3)
+	{
+		selected = newMenu;
+	}
+	return newMenu;
+}
+
 void MenuSystem::render()
 {
 	for(int i = 0; i < max; i++)
@@ -42,12 +62,24 @@ void MenuSystem::render()
 	}
 }
 
-int MenuSystem::click(int x, int y)
+void MenuSystem::mouseDown(int x, int y)
 {
-	int newMenu = this->menus[selected]->click(x, y);
+	menus[selected]->mouseDown(x, y);
+	/*int newMenu = this->menus[selected]->mouseDown(x, y);
 	if(newMenu > -1 && newMenu < 3)
 	{
 		selected = newMenu;
+	}*/
+	//return -1;
+}
+
+int MenuSystem::mouseUp(int x, int y)
+{
+	int newMenu = this->menus[selected]->mouseUp(x, y);
+	if(newMenu > -1 && newMenu < 3)
+	{
+		selected = newMenu;
+		menus[selected]->mouseUp(x, y);
 	}
 	return newMenu;
 }

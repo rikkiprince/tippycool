@@ -14,9 +14,13 @@ public:
 	MenuSystem();
 	~MenuSystem();
 	bool add(Menu *menu);
+	void changeSelected(int change);
+	int enter();
+	void mouseMotion(int x, int y);
 	void remove(int index);
 	void render();
-	int click(int x, int y);
+	int mouseUp(int x, int y);
+	void mouseDown(int x, int y);
 };
 
 #endif
