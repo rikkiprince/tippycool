@@ -19,11 +19,25 @@ void Camera::setEye(GLfloat x, GLfloat y, GLfloat z)
 	eyeZ = z;
 }
 
+void Camera::addEye(GLfloat x, GLfloat y, GLfloat z)
+{
+	eyeX += x;
+	eyeY += y;
+	eyeZ += z;
+}
+
 void Camera::setAt(GLfloat x, GLfloat y, GLfloat z)
 {
 	atX = x;
 	atY = y;
 	atZ = z;
+}
+
+void Camera::addAt(GLfloat x, GLfloat y, GLfloat z)
+{
+	atX += x;
+	atY += y;
+	atZ += z;
 }
 
 void Camera::setUp(GLfloat x, GLfloat y, GLfloat z)
@@ -33,11 +47,15 @@ void Camera::setUp(GLfloat x, GLfloat y, GLfloat z)
 	upZ = z;
 }
 
-void Camera::updateLookAt()
+void Camera::print()
 {
 	printf("Camera - Pos (%f, %f, %f)\n", eyeX, eyeY, eyeZ);
 	printf("Camera - At  (%f, %f, %f)\n", atX, atY, atZ);
 	printf("Camera - Up  (%f, %f, %f)\n\n", upX, upY, upZ);
+}
+
+void Camera::updateLookAt()
+{
 	gluLookAt(	eyeX,	eyeY,	eyeZ,
 				atX,	atY,	atZ,
 				upX,	upY,	upZ
@@ -67,3 +85,15 @@ void Camera::render()
 }
 
 
+GLfloat Camera::getEyeX()
+{
+	return this->eyeX;
+}
+GLfloat Camera::getEyeY()
+{
+	return this->eyeY;
+}
+GLfloat Camera::getEyeZ()
+{
+	return this->eyeZ;
+}

@@ -26,16 +26,24 @@ protected:
 	GLfloat offsetY;
 	GLfloat offsetZ;
 
+	GLdouble rotate;
+
+	Camera *camera;
+
 	void draw_grid();
 	int getOffset(int i, int j, int k);
 public:
 	Level(int x, int y, int z);
 	~Level();
 	void render();
-	void updateCameraPosition(Camera *c);
+	void updateCameraPosition(bool lookat);
+	void renderCamera();
 
 	void turnLeft();
 	void turnRight();
+
+	void up();
+	void down();
 };
 
 #endif // __LEVEL_H__

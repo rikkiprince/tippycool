@@ -17,10 +17,17 @@ public:
 	~Camera();
 
 	void setEye(GLfloat x, GLfloat y, GLfloat z);
+	void addEye(GLfloat x, GLfloat y, GLfloat z);
 	void setAt(GLfloat x, GLfloat y, GLfloat z);
+	void addAt(GLfloat x, GLfloat y, GLfloat z);
 	void setUp(GLfloat x, GLfloat y, GLfloat z);
+	void print();
 	void updateLookAt();
 	void render();
+
+	GLfloat getEyeX();
+	GLfloat getEyeY();
+	GLfloat getEyeZ();
 };
 
 #endif // __BALL_H__

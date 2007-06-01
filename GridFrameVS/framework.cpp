@@ -6,6 +6,8 @@
 
 bool testing = true;
 
+int rotate_up=0, rotate_side=0;
+
 // Constants
 
 static const int screen_width = 600;
@@ -46,17 +48,18 @@ BlockProperties properties[grid_width][grid_height][grid_depth] =
 };
 
 Level *level;
-Camera *camera;
+//Camera *camera;
 
 AbstractBlock* blocks[grid_width][grid_height][grid_depth];
 
+GLuint texture;
 
 void init_grid()
 {
 	level = new Level(4,4,4);
-	camera = new Camera();
-	/*GLuint texture = LoadGLTexture("texture.bmp");
-
+//	camera = new Camera();
+	texture = LoadGLTexture("texture.bmp");
+/*
 	//Level level = new Level();
 
 	for(int k=0; k<grid_depth; k++)
@@ -375,7 +378,7 @@ void camera_pos()
 		glRotatef(camera_rotation_y, 1.0, 0.0, 0.0);
 		//glRotatef(-75, 1,0,0);
 		//glRotatef(-45, 0,1,0);
-		level->updateCameraPosition(camera);
+		level->updateCameraPosition(false);
 	}
 	else
 	{
@@ -383,8 +386,9 @@ void camera_pos()
 					0,0,0,
 					0,0,1
 				 );*/
-		level->updateCameraPosition(camera);
-		camera->updateLookAt();
+		//level->updateCameraPosition(camera);
+		level->updateCameraPosition(true);
+		//camera->updateLookAt();
 	}
 }
 
@@ -427,12 +431,16 @@ void render_scene()
 
 	move_lights();
 
-	if(testing)
+//	if(testing)
 	{
 		render_axes();
 		render_lights();
-		camera->render();
+		level->renderCamera();
 	}
+/*	glRotatef(rotate_up, 1.0, 0.0, 0.0);
+	glRotatef(rotate_side, 0.0, 1.0, 0.0);
+	glTranslatef(-0.5, -0.5, -0.5);
+	draw_textured_unit_cube(texture);*/
 }
 
 // Draw any text output and other screen oriented user interface
@@ -614,27 +622,34 @@ void handleEvents()
 				{
                     if ((block_y < (grid_height-1)) && !properties[block_x][block_y + 1][block_z].block) {
                         ++block_y;
-                    }                }
+                    }
+					rotate_up+=10;
+					level->up();
+				}
                 if ( event.key.keysym.sym == SDLK_DOWN )
 				{
                     // Move block down
                     if ((block_y > 0) && !properties[block_x][block_y - 1][block_z].block) {
                         --block_y;
-                    }
+                    }   
+					rotate_up-=10;
+					level->down();
                 }
                 if ( event.key.keysym.sym == SDLK_LEFT )
 				{
                     // Move block left
                     if ((block_x > 0) && !properties[block_x - 1][block_y][block_z].block) {
                         --block_x;
-                    }
+                    }   
+					rotate_side-=10;
                 }
                 if ( event.key.keysym.sym == SDLK_RIGHT )
 				{
                     // Move block right
                     if ((block_x < (grid_width-1)) && !properties[block_x + 1][block_y][block_z].block) {
                         ++block_x;
-                    }
+                    }   
+					rotate_side+=10;
                 }
 				if(event.key.keysym.sym == SDLK_t)
 				{

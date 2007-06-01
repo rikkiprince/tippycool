@@ -10,6 +10,9 @@ Level::Level(int x, int y, int z)
 {
 	printf("Constructing Level!\n");
 
+	this->rotate = 0;
+	this->camera = new Camera();
+
 	this->blockSize = 1.0;
 
 //	char buf[256];
@@ -78,7 +81,8 @@ Level::Level(int x, int y, int z)
 	this->offsetY = -(float)(this->grid_height*this->blockSize)/2.0f;
 	this->offsetZ = -(float)(this->grid_depth*this->blockSize)/2.0f;
 
-	this->ball = new Ball(this->blockSize, this->offsetX + (startX * this->blockSize), this->offsetY + (startY * this->blockSize), this->offsetZ + (startZ * this->blockSize));
+	//this->ball = new Ball(this->blockSize, this->offsetX + (startX * this->blockSize), this->offsetY + (startY * this->blockSize), this->offsetZ + (startZ * this->blockSize));
+	this->ball = new Ball(this->blockSize, (startX * this->blockSize), (startY * this->blockSize), (startZ * this->blockSize));
 }
 
 Level::~Level()
@@ -89,9 +93,28 @@ Level::~Level()
 	delete [] block;
 }
 
+void Level::up()
+{
+	this->rotate+=1;
+}
+
+void Level::down()
+{
+	this->rotate-=1;
+}
+
 void Level::render()
 {
 	//printf("Render Level here\n");
+	glPushMatrix();
+	//printf("rotating: %d\n", this->rotate);
+	//glTranslatef(camera->getEyeX(), camera->getEyeY(), camera->getEyeZ());
+	//glRotatef(this->rotate, 1.0, 0.0, 0.0);
+	glTranslatef(-1.5,0.0,0.0);
+	glRotatef(this->rotate, 0.0, 0.0, 1.0);
+	glTranslatef(1.5,0.0,0.0);
+	//glTranslatef(-camera->getEyeX(), -camera->getEyeY(), -camera->getEyeZ());
+
 	glPushMatrix();
 	draw_grid();
 	glPopMatrix();
@@ -101,9 +124,16 @@ void Level::render()
 	draw_unit_cube();
 	glPopMatrix();*/
 
-	glPushMatrix();
+	/*glPushMatrix();
 	this->ball->render();
+	glPopMatrix();*/
+
 	glPopMatrix();
+}
+
+void Level::renderCamera()
+{
+	camera->render();
 }
 
 
@@ -196,6 +226,7 @@ void Level::draw_grid()
     // Draw the user controlled block
     //glTranslatef(block_x, block_y, block_z);
     //draw_unit_cube();
+	this->ball->render();
 	glPopMatrix();
 }
 
@@ -204,9 +235,14 @@ int Level::getOffset(int i, int j, int k)
 	return (i + (j * this->grid_width) + (k * this->grid_width * this->grid_height));
 }
 
-void Level::updateCameraPosition(Camera *c)
+void Level::updateCameraPosition(bool lookat)
 {
-	ball->lookAtMe(c);
+	ball->lookAtMe(camera);
+	camera->addEye(this->offsetX, this->offsetY, this->offsetZ);
+	camera->addAt(this->offsetX, this->offsetY, this->offsetZ);
+
+	if(lookat)
+		camera->updateLookAt();
 }
 
 void Level::turnLeft()
