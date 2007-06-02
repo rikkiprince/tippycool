@@ -153,6 +153,12 @@
 			<File
 				RelativePath=".\MenuSystem.h">
 			</File>
+			<File
+				RelativePath=".\StatusBar.cpp">
+			</File>
+			<File
+				RelativePath=".\StatusBar.h">
+			</File>
 		</Filter>
 	</Files>
 	<Globals>

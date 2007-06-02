@@ -3,7 +3,7 @@
 // Copyright (C) 2000,2004 Alistair Riddoch
 
 #include "headers.h"
- 
+#include "StatusBar.h"
 #include "MenuSystem.h";
 #include "MenuItem.h";
 #include "Menu.h";
@@ -14,9 +14,10 @@ static const int screen_width = 600;
 static const int screen_height = 400;
 
 //Menu m("Game Menu", screen_width, screen_height);
+StatusBar *sb;
 MenuSystem *ms;
 Menu *m1, *m2, *m3;
-TTF_Font *font24, *font20, *font16;
+TTF_Font *font24, *font20, *font16, *font14;
 
 // Number of squares in the grid. The number of points is this number +1.
 static const int grid_width = 12;
@@ -374,6 +375,7 @@ void render_interface()
 		//glEnable2D();
 		//glDisable(GL_DEPTH_TEST);
 		ms->render();
+		sb->render();
 		//glEnable(GL_DEPTH_TEST);
 		//glDisable2D();
 /*		SDL_GL_SwapBuffers( );
@@ -665,6 +667,11 @@ void init_fonts()
 		//return 1;
 	}
 
+	if(!(font14 = TTF_OpenFont(fontpath, 14))) {
+		printf("Error loading font: %s", TTF_GetError());
+		//return 1;
+	}
+
 	// load font.ttf, face 0, at size 16 into font
 	/*font=TTF_OpenFontIndex("arial.ttf", 16, 0);
 	if(!font) {
@@ -678,15 +685,23 @@ void uninit_fonts()
 {
 	// free the font
 	// TTF_Font *font;
+	TTF_CloseFont(font14);
 	TTF_CloseFont(font16);
 	TTF_CloseFont(font20);
 	TTF_CloseFont(font24);
+	font14=NULL; // to be safe...
 	font16=NULL; // to be safe...
 	font20=NULL; // to be safe...
 	font24=NULL; // to be safe...
 	TTF_Quit();
 }
 
+void createStatusBar()
+{
+	init_fonts();
+	sb = new StatusBar(font20, false, screen_width, screen_height);
+	sb->setText(font20, "Status Bar");
+}
 
 void createMenus()
 {
@@ -748,6 +763,8 @@ int main()
     }
 
 	createMenus();
+	
+	createStatusBar();
 
     // Intialise the game state
     setup();
