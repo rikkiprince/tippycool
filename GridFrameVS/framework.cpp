@@ -654,6 +654,10 @@ void handleEvents()
 					//rotate_side+=10;
 					level->right();
                 }
+				if(event.key.keysym.sym == SDLK_SPACE)
+				{
+					level->stop();
+				}
 				if(event.key.keysym.sym == SDLK_t)
 				{
 					testing = !testing;

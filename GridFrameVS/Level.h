@@ -54,6 +54,7 @@ public:
 	void down();
 	void left();
 	void right();
+	void stop();
 };
 
 #endif // __LEVEL_H__

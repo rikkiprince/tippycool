@@ -31,6 +31,7 @@ extern "C" {
 #include "primitives.h"
 #include "md3model.h"
 
-enum Orientation { NONE, TOP, BOTTOM, LEFT, RIGHT, FRONT, BACK, MAX_DIRS };
+				//   0    1      2      3     4      5      6       7
+enum Orientation { none, TOP, BOTTOM, LEFT, RIGHT, FRONT, BACK, MAX_DIRS };
 
 #endif // __HEADERS_H__
