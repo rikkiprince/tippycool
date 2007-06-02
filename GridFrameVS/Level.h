@@ -28,8 +28,11 @@ protected:
 
 	GLfloat velF;
 	GLfloat velS;
+	GLfloat accF;
+	GLfloat accS;
 
-	GLdouble rotate;
+	GLdouble rotF;
+	GLdouble rotS;
 
 	Camera *camera;
 
@@ -49,6 +52,8 @@ public:
 
 	void up();
 	void down();
+	void left();
+	void right();
 };
 
 #endif // __LEVEL_H__

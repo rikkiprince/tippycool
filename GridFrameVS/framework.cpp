@@ -624,7 +624,7 @@ void handleEvents()
                     if ((block_y < (grid_height-1)) && !properties[block_x][block_y + 1][block_z].block) {
                         ++block_y;
                     }
-					rotate_up+=10;
+					//rotate_up+=10;
 					level->up();
 				}
                 if ( event.key.keysym.sym == SDLK_DOWN )
@@ -633,7 +633,7 @@ void handleEvents()
                     if ((block_y > 0) && !properties[block_x][block_y - 1][block_z].block) {
                         --block_y;
                     }   
-					rotate_up-=10;
+					//rotate_up-=10;
 					level->down();
                 }
                 if ( event.key.keysym.sym == SDLK_LEFT )
@@ -642,7 +642,8 @@ void handleEvents()
                     if ((block_x > 0) && !properties[block_x - 1][block_y][block_z].block) {
                         --block_x;
                     }   
-					rotate_side-=10;
+					//rotate_side-=10;
+					level->left();
                 }
                 if ( event.key.keysym.sym == SDLK_RIGHT )
 				{
@@ -650,7 +651,8 @@ void handleEvents()
                     if ((block_x < (grid_width-1)) && !properties[block_x + 1][block_y][block_z].block) {
                         ++block_x;
                     }   
-					rotate_side+=10;
+					//rotate_side+=10;
+					level->right();
                 }
 				if(event.key.keysym.sym == SDLK_t)
 				{

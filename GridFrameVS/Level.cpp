@@ -10,14 +10,16 @@ Level::Level(int x, int y, int z)
 {
 	printf("Constructing Level!\n");
 
-	this->rotate = 0;
+	this->rotF = 0;
+	this->rotS = 0;
+
 	this->camera = new Camera();
 
 	this->blockSize = 1.0;
 
 //	char buf[256];
 	//GetPrivateProfileString("1,1,1", "type", NULL, buf, 256, ".\\test.ini");
-	char *filename = ".\\levels\\level1.ini";
+	char *filename = ".\\levels\\level2.ini";
 
 	char width[256], height[256], depth[256];
 	GetPrivateProfileString("settings", "width", NULL, width, 256, filename);
@@ -98,19 +100,77 @@ Level::~Level()
 
 void Level::up()
 {
-	this->rotate+=1;
-	this->velF+=0.1f;
+	this->rotF+=1;
+	this->accF+=0.01f;
 }
 
 void Level::down()
 {
-	this->rotate-=1;
-	this->velF-=0.1f;
+	this->rotF-=1;
+	this->accF-=0.01f;
 }
+
+void Level::left()
+{
+	this->rotS+=1;
+	this->accS+=0.01f;
+}
+
+void Level::right()
+{
+	this->rotS-=1;
+	this->accS-=0.01f;
+}
+
+GLfloat friction = -0.5f;
+
+// http://www.thescripts.com/forum/thread128445.html
+inline int sign(int a) { return (a == 0) ? 0 : (a<0 ? -1 : 1); }
 
 void Level::update()
 {
+	GLfloat prevX = ball->getX();
+	GLfloat prevY = ball->getY();
+	GLfloat prevZ = ball->getZ();
+
+	this->velF += accF + (sign(accF)*friction);
+	this->velS += accS + (sign(accS)*friction);
+
 	ball->move(this->velF, this->velS);
+	//printf("Ball:   (%f,%f,%f)\n", ball->getX(), ball->getY(), ball->getZ());
+
+	// backward
+	if(prevZ > ceil(ball->getZ())-(this->blockSize/2.0) && ball->getZ() <= ceil(ball->getZ())-(this->blockSize/2.0))
+	{
+		int last = (int)ceil(prevZ);
+		int next = (int)floor(ball->getZ());
+		/*printf("prevZ=%f, floor(prevZ)=%f, ceil(prevZ)=%f\n", prevZ, floor(prevZ), ceil(prevZ));
+		printf("ballZ=%f, floor(ballZ)=%f, ceil(ballZ)=%f\n", ball->getZ(), floor(ball->getZ()), ceil(ball->getZ()));
+		printf("Changed at %d <- %d\n", next, last);*/
+
+		int x = floor(ball->getX());
+		int y = floor(ball->getY());
+
+		if(next < 0)
+			printf("FALLOUT!");
+		else if(this->block[this->getOffset(x,y-1,next)] == NULL)
+			printf("FALLOUT!");
+	}
+	// forward
+	else if(prevZ <= floor(ball->getZ())+(this->blockSize/2.0) && ball->getZ() > floor(ball->getZ())+(this->blockSize/2.0))
+	{
+		int last = (int)floor(prevZ);
+		int next = (int)ceil(ball->getZ());
+		printf("Changed at %d -> %d\n", last, next);
+
+		int x = floor(ball->getX());
+		int y = floor(ball->getY());
+
+		if(next >= this->grid_width)
+			printf("FALLOUT!");
+		else if(this->block[this->getOffset(x,y-1,next)] == NULL)
+			printf("FALLOUT!");
+	}
 }
 
 void Level::render()
@@ -124,7 +184,9 @@ void Level::render()
 	
 	//glRotatef(this->rotate, 1.0, 0.0, 0.0);
 	//glTranslatef(-1.5,-0.5,-1.5);
-	glRotatef(this->rotate, 1.0, 0.0, 0.0);
+//	glRotatef(this->rotate, 1.0, 0.0, 0.0);
+		glRotatef(this->rotF, ball->getSideX(), ball->getSideY(), ball->getSideZ());
+		glRotatef(this->rotS, ball->getFacingX(), ball->getFacingY(), ball->getFacingZ());
 	//glTranslatef(1.5,0.5,1.5);
 	//camera->print();
 

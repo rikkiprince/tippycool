@@ -30,6 +30,13 @@ public:
 	GLfloat getX();
 	GLfloat getY();
 	GLfloat getZ();
+	
+	GLfloat getFacingX();
+	GLfloat getFacingY();
+	GLfloat getFacingZ();
+	GLfloat getSideX();
+	GLfloat getSideY();
+	GLfloat getSideZ();
 };
 
 #endif // __BALL_H__

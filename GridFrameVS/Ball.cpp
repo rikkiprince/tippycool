@@ -41,12 +41,34 @@ void Ball::render()
 	glPopMatrix();
 }
 
+typedef struct
+{
+	int x;
+	int y;
+	int z;
+} intXYZ;
+
+intXYZ facing_vector[MAX_DIRS] = 
+{
+	{ 0, 0, 0},	// None
+	{ 0, 1, 0},	// Top
+	{ 0,-1, 0},	// Bottom
+	{ 1, 0, 0},	// Left
+	{-1, 0, 0},	// Right
+	{ 0, 0,-1},	// Front
+	{ 0, 0, 1},	// Back
+};
+
 void Ball::lookAtMe(Camera *c)
 {
 	GLfloat udist = 3, adist = 3;
 	GLfloat ux=0, uy=1, uz=0;
 	GLfloat ax=0, ay=0, az=0;
-	switch(this->orientation)
+
+	ux = facing_vector[this->orientation].x;
+	uy = facing_vector[this->orientation].y;
+	uz = facing_vector[this->orientation].z;
+	/*switch(this->orientation)
 	{
 		case TOP:	ux= 0; uy= 1; uz= 0; break;
 		case BOTTOM:ux= 0; uy=-1; uz= 0; break;
@@ -65,7 +87,10 @@ void Ball::lookAtMe(Camera *c)
 		case FRONT:	ax= 0; ay= 0; az=-1; break;
 		case BACK:	ax= 0; ay= 0; az= 1; break;
 		default: ax=0; ay=0; ax=1; break;
-	}
+	}*/
+	ax = facing_vector[this->facing].x;
+	ay = facing_vector[this->facing].y;
+	az = facing_vector[this->facing].z;
 	/*gluLookAt(	(this->x+this->radius) + (ax*dist) + (ux*dist), (this->y+this->radius) + (ay*dist) + (uy*dist), (this->z+this->radius) + (az*dist) + (uz*dist),
 				this->x+this->radius, this->y+this->radius, this->z+this->radius,
 				ux,uy,uz
@@ -133,27 +158,17 @@ void Ball::turnRight()
 		this->facing = no;
 }
 
-typedef struct
+/*Orientation Ball::perpendicular(Orientation orientation, Orientation facing)
 {
-	int x;
-	int y;
-	int z;
-} intXYZ;
-
-intXYZ facing_vector[MAX_DIRS] = 
-{
-	{ 0, 0, 0},	// None
-	{ 0, 1, 0},	// Top
-	{ 0,-1, 0},	// Bottom
-	{ 1, 0, 0},	// Left
-	{-1, 0, 0},	// Right
-	{ 0, 0,-1},	// Front
-	{ 0, 0, 1},	// Back
-};
+	// might be left_facing?
+	right_facing[orientation][facing];
+}*/
 
 void Ball::move(GLfloat byF, GLfloat byS)
 {
-	this->z += byF;
+	this->x += (byF * -facing_vector[this->facing].x) + (byS * facing_vector[right_facing[orientation][facing]].x);
+	this->y += (byF * -facing_vector[this->facing].y) + (byS * facing_vector[right_facing[orientation][facing]].y);
+	this->z += (byF * -facing_vector[this->facing].z) + (byS * facing_vector[right_facing[orientation][facing]].z);;
 }
 
 GLfloat Ball::getX()
@@ -170,3 +185,35 @@ GLfloat Ball::getZ()
 {
 	return this->z;
 }
+
+
+GLfloat Ball::getFacingX()
+{
+	return facing_vector[this->facing].x;
+}
+
+GLfloat Ball::getFacingY()
+{
+	return facing_vector[this->facing].y;
+}
+
+GLfloat Ball::getFacingZ()
+{
+	return facing_vector[this->facing].z;
+}
+
+GLfloat Ball::getSideX()
+{
+	return facing_vector[right_facing[orientation][facing]].x;
+}
+
+GLfloat Ball::getSideY()
+{
+	return facing_vector[right_facing[orientation][facing]].y;
+}
+
+GLfloat Ball::getSideZ()
+{
+	return facing_vector[right_facing[orientation][facing]].z;
+}
+
