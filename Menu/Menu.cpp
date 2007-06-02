@@ -239,7 +239,7 @@ void Menu::render()
 	if(instructions)
 	{
 		int tempx = 50;
-		int tempy = height+45;
+		int tempy = height+20;
 		this->add(new MenuItem(font, tempx, tempy, screenWidth-(tempx*2), screenHeight-tempy-55, -1));
 	}
 	/*glColor3f(buttonColor.r/255.0f, buttonColor.g/255.0f, buttonColor.b/255.0f);
@@ -294,7 +294,7 @@ void Menu::mouseMotion(int x, int y)
 	}
 }
 
-void Menu::mouseDown(int x, int y)
+bool Menu::mouseDown(int x, int y)
 {
 	for(int i = 0; i < this->max; i++)
 	{
@@ -302,11 +302,16 @@ void Menu::mouseDown(int x, int y)
 		{
 			//if(this->items[i]->mouseDown(x, y))
 			//{
-				items[i]->mouseDown(x, y);//setPressed(state);
+				if(items[i]->mouseDown(x, y))
+				{
+					return true;
+				}
+				//setPressed(state);
 				//return items[i]->getMenu();
 			//}
 		}
 	}
+	return false;
 	//return -1;
 }
 

@@ -20,7 +20,7 @@ public:
 	void remove(int index);
 	void render();
 	int mouseUp(int x, int y);
-	void mouseDown(int x, int y);
+	bool mouseDown(int x, int y);
 };
 
 #endif

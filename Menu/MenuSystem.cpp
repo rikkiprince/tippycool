@@ -62,9 +62,9 @@ void MenuSystem::render()
 	}
 }
 
-void MenuSystem::mouseDown(int x, int y)
+bool MenuSystem::mouseDown(int x, int y)
 {
-	menus[selected]->mouseDown(x, y);
+	return menus[selected]->mouseDown(x, y);
 	/*int newMenu = this->menus[selected]->mouseDown(x, y);
 	if(newMenu > -1 && newMenu < 3)
 	{

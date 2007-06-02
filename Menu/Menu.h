@@ -29,7 +29,7 @@ public:
 	void render();
 	void setInstructions(bool state);
 	void SDL_GL_RenderText();
-	void mouseDown(int x, int y);
+	bool mouseDown(int x, int y);
 	int enter();
 	void preRenderFont();
 	void mouseMotion(int x, int y);

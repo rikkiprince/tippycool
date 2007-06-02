@@ -7,9 +7,9 @@
 #include "MenuSystem.h";
 #include "MenuItem.h";
 #include "Menu.h";
+#include "fmod.h"
 
 // Constants
-
 static const int screen_width = 600;
 static const int screen_height = 400;
 
@@ -54,17 +54,34 @@ int average_frames_per_second;
 GLuint textTexture;
 GLuint textBase;
 
+FSOUND_SAMPLE *click = NULL;
+
+bool init_audio() {	
+	return FSOUND_Init(44100, 32, 0);
+}
+
+void uninit_audio() {
+	FSOUND_Sample_Free(click);
+	FSOUND_Close();
+}
+
+void load_audio() {
+	click = FSOUND_Sample_Load (0, "click2.wav", 0, 0, 0); //http://www.partnersinrhyme.com/pirsounds/WEB_DESIGN_SOUNDS_WAV/BUTTONS.shtml
+	FSOUND_SetSFXMasterVolume(50);
+}
+
+void play_audio(int channel, FSOUND_SAMPLE *sound) {
+	FSOUND_PlaySound (channel, sound);
+}
+
 // Initialise the graphics subsystem. This is pretty much boiler plate
 // code with very little to worry about.
-bool init_graphics(/*SDL_Surface** screen*/)
+bool init_graphics()
 {
     // Initialise SDL
     if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_TIMER) != 0) {
-        // std::cerr << "Failed to initialise video" << std::endl << std::flush;
         return false;
 	}
-
-	//*screen = SDL_SetVideoMode(screen_width, screen_height, 0, SDL_OPENGL);
 
     SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 5);
     SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 5);
@@ -580,25 +597,23 @@ void loop()
                     break;
                 case SDL_MOUSEBUTTONDOWN:
                     if (event.button.button == SDL_BUTTON_LEFT) {
-						ms->mouseDown(event.button.x, event.button.y);
-						/*if(event.button.state == SDL_PRESSED)
+						if(ms->mouseDown(event.button.x, event.button.y))
 						{
-							ms->setPressed(true);
+							//play_audio(0, click1);
 						}
-						else if(event.button.state == SDL_RELEASED)
-						{
-							ms->setPressed(false);
-						*/	
-						//}
-						//mouse_click(event.button.x,
-                          //          screen_height - event.button.y);
                     }
                     break;
 				case SDL_MOUSEBUTTONUP:
 					if(event.button.button == SDL_BUTTON_LEFT)
 					{
-						if(ms->mouseUp(event.button.x, event.button.y) == 4)
+						int num = ms->mouseUp(event.button.x, event.button.y);
+						if(num > -1)
 						{
+							play_audio(0, click);
+						}
+						if(num == 4)
+						{
+							Sleep(100);
 							program_finished = true;
 						}
 					}
@@ -761,9 +776,12 @@ int main()
     if (!init_graphics()) {
         return 1;
     }
-
+	//Initialise the audio
+    if (!init_audio()) {
+        return 1;
+    }
+	load_audio();
 	createMenus();
-	
 	createStatusBar();
 
     // Intialise the game state

@@ -24,6 +24,7 @@
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
+				BufferSecurityCheck="FALSE"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="TRUE"
@@ -32,7 +33,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="SDL.lib opengl32.lib glu32.lib SDL_ttf.lib"
+				AdditionalDependencies="opengl32.lib glu32.lib SDL.lib SDL_mixer.lib libmodelfile.lib SDL_ttf.lib fmodvc.lib"
 				OutputFile="$(OutDir)/GridFrameVS.exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="lib"
@@ -69,8 +70,9 @@
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalIncludeDirectories="include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
-				RuntimeLibrary="4"
+				RuntimeLibrary="1"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="TRUE"
@@ -79,8 +81,10 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="opengl32.lib glu32.lib SDL.lib SDL_mixer.lib libmodelfile.lib SDL_ttf.lib"
 				OutputFile="$(OutDir)/GridFrameVS.exe"
-				LinkIncremental="1"
+				LinkIncremental="2"
+				AdditionalLibraryDirectories="lib"
 				GenerateDebugInformation="TRUE"
 				SubSystem="2"
 				OptimizeReferences="2"
