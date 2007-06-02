@@ -699,14 +699,14 @@ void createMenus()
 	//3 - Start Game
 	//4 - Exit Game
 
-	m1 = new Menu("Main Menu", screen_width, screen_height, font24);
+	m1 = new Menu("Main Menu", screen_width, screen_height, font20);
 	m1->add(new MenuItem("Start", font20, 3, true, true));
 	m1->add(new MenuItem("Select Level", font20, 1, true, true));
 	m1->add(new MenuItem("Instructions", font20, 2, true, true));
 	m1->add(new MenuItem("Exit", font20, 4, true, true));
 	m1->layout();
 
-	m2 = new Menu("Level Menu", screen_width, screen_height, font24);
+	m2 = new Menu("Level Menu", screen_width, screen_height, font20);
 	m2->add(new MenuItem("Level 1", font16, 3, true, true));
 	m2->add(new MenuItem("Level 2", font16, 3, true, true));
 	m2->add(new MenuItem("Level 3", font16, 3, true, true));
@@ -720,7 +720,7 @@ void createMenus()
 	m2->add(new MenuItem("Back to Main Menu", font20, 0, true, true));
 	m2->layout();
 
-	m3 = new Menu("Instructions Menu", screen_width, screen_height, font24);
+	m3 = new Menu("Instructions Menu", screen_width, screen_height, font20);
 	m3->add(new MenuItem(" ", font16, -1, false, false));
 	m3->add(new MenuItem("TextTextText", font16, -1, false, false));
 	m3->add(new MenuItem("TextTextText", font16, -1, false, false));

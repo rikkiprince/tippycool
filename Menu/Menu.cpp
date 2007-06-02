@@ -14,10 +14,10 @@ Menu::Menu(char *t, int w, int h, TTF_Font *font)
 	int minx,maxx,miny,maxy,advance;
 	TTF_GlyphMetrics(font,'M',&minx,&maxx,&miny,&maxy,&advance);
 	int length = strlen(title);	
-	this->width = (maxx-minx) * length;
+	this->width = screenWidth;
 	this->height = maxy-miny;
-	this->x = 30;
-	this->y = 30;
+	this->x = 0;
+	this->y = 0;
 
 	for(int i = 0; i < max; i++) 
 	{
@@ -28,8 +28,8 @@ Menu::Menu(char *t, int w, int h, TTF_Font *font)
 	textColor.b = 0;
 	
 	buttonColor.r = 255;
-	buttonColor.g = 202;
-	buttonColor.b = 148;
+	buttonColor.g = 153;
+	buttonColor.b = 0;
 
 	position.x = x;
 	position.y = y;
@@ -74,13 +74,13 @@ void Menu::preRenderFont()
 	oldh = initial->h;
 	
 	/* Convert the rendered text to a known format */
-	w = nextpoweroftwo(initial->w);
+	w = nextpoweroftwo(screenWidth);//initial->w);
 	h = nextpoweroftwo(initial->h);
 	
 	intermediary = SDL_CreateRGBSurface(0, w, h, 32, 
 			0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
 
-	centre.x = (w - oldw)/2;
+	centre.x = (screenWidth / 2) - (oldw / 2);//(w - oldw)/2;
 	centre.y = (h - oldh)/2;
 
 	SDL_FillRect(intermediary,NULL, SDL_MapRGB(intermediary->format, buttonColor.r /* 255*/, buttonColor.g /* 255*/, buttonColor.b /* 255*/));
@@ -131,8 +131,8 @@ void Menu::SDL_GL_RenderText()
 	glBindTexture(GL_TEXTURE_2D, texture);
 //	glColor3f(1.0f, 1.0f, 1.0f);
 	
-	int midwidth = screenWidth / 2;
-	int startx = midwidth - (this->width / 2);
+	//int midwidth = screenWidth / 2;
+	int startx = 0;//midwidth - (this->width / 2);
 
 	/* Draw a quad at location */
 	glBegin(GL_QUADS);
