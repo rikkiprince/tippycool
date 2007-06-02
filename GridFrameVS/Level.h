@@ -26,6 +26,9 @@ protected:
 	GLfloat offsetY;
 	GLfloat offsetZ;
 
+	GLfloat velF;
+	GLfloat velS;
+
 	GLdouble rotate;
 
 	Camera *camera;
@@ -41,6 +44,8 @@ public:
 
 	void turnLeft();
 	void turnRight();
+
+	void update();
 
 	void up();
 	void down();

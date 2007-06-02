@@ -24,6 +24,12 @@ public:
 
 	void turnLeft();
 	void turnRight();
+
+	void move(GLfloat byF, GLfloat byS);
+
+	GLfloat getX();
+	GLfloat getY();
+	GLfloat getZ();
 };
 
 #endif // __BALL_H__

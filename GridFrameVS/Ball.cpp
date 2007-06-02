@@ -43,7 +43,7 @@ void Ball::render()
 
 void Ball::lookAtMe(Camera *c)
 {
-	GLfloat dist = 0;
+	GLfloat udist = 3, adist = 3;
 	GLfloat ux=0, uy=1, uz=0;
 	GLfloat ax=0, ay=0, az=0;
 	switch(this->orientation)
@@ -70,7 +70,7 @@ void Ball::lookAtMe(Camera *c)
 				this->x+this->radius, this->y+this->radius, this->z+this->radius,
 				ux,uy,uz
 			 );*/
-	c->setEye( (this->x+this->radius) + (ax*dist) + (ux*dist), (this->y+this->radius) + (ay*dist) + (uy*dist), (this->z+this->radius) + (az*dist) + (uz*dist) );
+	c->setEye( (this->x+this->radius) + (ax*adist) + (ux*udist), (this->y+this->radius) + (ay*adist) + (uy*udist), (this->z+this->radius) + (az*adist) + (uz*udist) );
 	c->setAt( this->x+this->radius, this->y+this->radius, this->z+this->radius );
 	c->setUp(ux, uy, uz);
 }
@@ -151,4 +151,22 @@ intXYZ facing_vector[MAX_DIRS] =
 	{ 0, 0, 1},	// Back
 };
 
-//void move(
+void Ball::move(GLfloat byF, GLfloat byS)
+{
+	this->z += byF;
+}
+
+GLfloat Ball::getX()
+{
+	return this->x;
+}
+
+GLfloat Ball::getY()
+{
+	return this->y;
+}
+
+GLfloat Ball::getZ()
+{
+	return this->z;
+}

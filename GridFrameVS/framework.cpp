@@ -19,7 +19,7 @@ static const int grid_height = 4;
 static const int grid_depth = 4;
 
 // Number of milliseconds between steps in the game model.
-static const int step_time = 1000;
+static const int step_time = 100;
 
 // Variables that store the game state
 
@@ -597,6 +597,7 @@ void mouse_click(unsigned int x, unsigned int y)
 // moved down the grid.
 void step()
 {
+	level->update();
 }
 
 void handleEvents()

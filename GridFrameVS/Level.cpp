@@ -83,6 +83,9 @@ Level::Level(int x, int y, int z)
 
 	//this->ball = new Ball(this->blockSize, this->offsetX + (startX * this->blockSize), this->offsetY + (startY * this->blockSize), this->offsetZ + (startZ * this->blockSize));
 	this->ball = new Ball(this->blockSize, (startX * this->blockSize), (startY * this->blockSize), (startZ * this->blockSize));
+
+	this->velF = 0;
+	this->velS = 0;
 }
 
 Level::~Level()
@@ -96,11 +99,18 @@ Level::~Level()
 void Level::up()
 {
 	this->rotate+=1;
+	this->velF+=0.1f;
 }
 
 void Level::down()
 {
 	this->rotate-=1;
+	this->velF-=0.1f;
+}
+
+void Level::update()
+{
+	ball->move(this->velF, this->velS);
 }
 
 void Level::render()
@@ -108,12 +118,18 @@ void Level::render()
 	//printf("Render Level here\n");
 	glPushMatrix();
 	//printf("rotating: %d\n", this->rotate);
-	//glTranslatef(camera->getEyeX(), camera->getEyeY(), camera->getEyeZ());
+	
+//	glTranslatef(camera->getEyeX(), camera->getEyeY(), camera->getEyeZ());
+	glTranslatef(ball->getX()+this->offsetX+(this->blockSize/2), ball->getY()+this->offsetY+(this->blockSize/2), ball->getZ()+this->offsetZ+(this->blockSize/2));
+	
 	//glRotatef(this->rotate, 1.0, 0.0, 0.0);
-	glTranslatef(-1.5,0.0,0.0);
-	glRotatef(this->rotate, 0.0, 0.0, 1.0);
-	glTranslatef(1.5,0.0,0.0);
-	//glTranslatef(-camera->getEyeX(), -camera->getEyeY(), -camera->getEyeZ());
+	//glTranslatef(-1.5,-0.5,-1.5);
+	glRotatef(this->rotate, 1.0, 0.0, 0.0);
+	//glTranslatef(1.5,0.5,1.5);
+	//camera->print();
+
+	glTranslatef(-ball->getX()-this->offsetX-(this->blockSize/2), -ball->getY()-this->offsetY-(this->blockSize/2), -ball->getZ()-this->offsetZ-(this->blockSize/2));
+//	glTranslatef(-camera->getEyeX(), -camera->getEyeY(), -camera->getEyeZ());
 
 	glPushMatrix();
 	draw_grid();
