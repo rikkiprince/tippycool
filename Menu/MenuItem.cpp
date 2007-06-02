@@ -1,13 +1,38 @@
 #include "MenuItem.h"
-#define GL_BGRA	0x80e1
+//#define GL_BGRA	0x80e1
 
-MenuItem::MenuItem(char *t, TTF_Font *font, int gotoMenu, bool selectable)
+MenuItem::MenuItem(TTF_Font *font, int x, int y, int width, int height, int gotoMenu)
+{
+	this->gotoMenu = gotoMenu;
+	this->selectable = false;
+	this->outlined = false;
+	this->x = x;
+	this->y = y;
+	this->width = width;
+	this->height = height;
+	this->font = font;
+
+	textColor.r = 0;
+	textColor.g = 0;
+	textColor.b = 0;
+		
+	buttonColor.r = 61;
+	buttonColor.g = 184;
+	buttonColor.b = 184;
+		
+	strncpy(text, " ", 255);
+	text[255]='\0';
+	preRenderFont();
+}
+
+MenuItem::MenuItem(char *t, TTF_Font *font, int gotoMenu, bool selectable, bool outlined)
 {
 	strncpy(text,t,255);
 	text[255]='\0';
 
 	this->font = font;
 	this->pressed = false;
+	this->outlined = outlined;
 	this->gotoMenu = gotoMenu;
 	this->selectable = selectable;
 
@@ -20,7 +45,7 @@ MenuItem::MenuItem(char *t, TTF_Font *font, int gotoMenu, bool selectable)
 	textColor.r = 0;
 	textColor.g = 0;
 	textColor.b = 0;
-
+		
 	buttonColor.r = 61;
 	buttonColor.g = 184;
 	buttonColor.b = 184;
@@ -63,9 +88,6 @@ void MenuItem::preRenderFont()
 	int oldw,oldh;
 	SDL_Rect centre;
 	
-	/*buttonColor.r = 61;
-	buttonColor.g = 184;
-	buttonColor.b = 184;*/
 	/* Use SDL_TTF to render our text */
 	initial = TTF_RenderText_Blended(font, text, textColor);
 
@@ -82,7 +104,7 @@ void MenuItem::preRenderFont()
 	centre.x = (w - oldw)/2;
 	centre.y = (h - oldh)/2;
 
-	SDL_FillRect(intermediary,NULL, SDL_MapRGB(intermediary->format, buttonColor.r /* 255*/, buttonColor.b /* 255*/, buttonColor.g /* 255*/));
+	SDL_FillRect(intermediary, NULL, SDL_MapRGB(intermediary->format, buttonColor.r /* 255*/, buttonColor.g /* 255*/, buttonColor.b /* 255*/));
 
 	SDL_BlitSurface(initial, 0, intermediary, &centre);
 	
@@ -140,13 +162,16 @@ void MenuItem::render(bool highlighted)
 	//SDL_Rect location={x, y, width, height};
 	SDL_GL_RenderText();
 
-	glColor3f(0.0, 0.0, 0.0);
-	glBegin(GL_LINE_LOOP); 
-		glVertex2f(x, y-1); 
-		glVertex2f(x + width, y); 
-		glVertex2f(x + width, y + height);
-		glVertex2f(x, y + height);  
-	glEnd();
+	if(outlined)
+	{
+		glColor3f(0.0, 0.0, 0.0);
+		glBegin(GL_LINE_LOOP); 
+			glVertex2f(x, y-1); 
+			glVertex2f(x + width, y); 
+			glVertex2f(x + width, y + height);
+			glVertex2f(x, y + height);  
+		glEnd();
+	}
 
 	if(highlighted && selectable && !pressed)
 	{
@@ -175,8 +200,8 @@ void MenuItem::setPressed(bool state)
 	if(state && selectable)
 	{
 		buttonColor.r = 0;
-		buttonColor.g = 46;
-		buttonColor.b = 184;
+		buttonColor.g = 184;
+		buttonColor.b = 64;
 		deleteTexture();
 		preRenderFont();
 	}

@@ -10,7 +10,7 @@ protected:
 	int width, height;
 	char text[256];
 	int gotoMenu;
-	bool selectable;
+	bool selectable, outlined;
 	bool pressed;
 	TTF_Font *font;
 	SDL_Color textColor;
@@ -20,7 +20,8 @@ protected:
 	SDL_Surface *intermediary;
 	GLuint texture;
 public:
-	MenuItem(char *t, TTF_Font *font, int gotoMenu, bool selectable);
+	MenuItem(TTF_Font *font, int x, int y, int width, int height, int gotoMenu);
+	MenuItem(char *t, TTF_Font *font, int gotoMenu, bool selectable, bool outlined);
 	~MenuItem();
 	void setXY(int x, int y);
 	int getMenu();

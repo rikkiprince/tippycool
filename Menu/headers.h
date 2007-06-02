@@ -10,6 +10,7 @@
 
 #include <GL/gl.h>
 #include <GL/glu.h>
+#include <GL/glext.h>
 #include <math.h>
 
 #include "SDL_ttf.h" 

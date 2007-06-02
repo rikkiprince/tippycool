@@ -13,6 +13,7 @@ protected:
 	TTF_Font *font;
 	int screenWidth, screenHeight, width, height;
 	char title[256];
+	bool instructions;
 	SDL_Color textColor;
 	SDL_Rect position;
 	SDL_Color buttonColor;
@@ -26,6 +27,7 @@ public:
 	void remove(int index);
 	void layout();
 	void render();
+	void setInstructions(bool state);
 	void SDL_GL_RenderText();
 	void mouseDown(int x, int y);
 	int enter();

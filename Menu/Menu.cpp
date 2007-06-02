@@ -1,5 +1,5 @@
 #include "Menu.h"
-#define GL_BGRA	0x80e1
+//#define GL_BGRA	0x80e1
 
 Menu::Menu(char *t, int w, int h, TTF_Font *font)
 {
@@ -9,6 +9,7 @@ Menu::Menu(char *t, int w, int h, TTF_Font *font)
 	screenHeight = h;
 	selected = 0;
 	this->font = font;
+	this->instructions = false;
 
 	int minx,maxx,miny,maxy,advance;
 	TTF_GlyphMetrics(font,'M',&minx,&maxx,&miny,&maxy,&advance);
@@ -37,6 +38,11 @@ Menu::Menu(char *t, int w, int h, TTF_Font *font)
 
 	this->width = position.w;
 	this->height = position.h;
+}
+
+void Menu::setInstructions(bool state)
+{
+	this->instructions = state;
 }
 
 int round(double x)
@@ -123,7 +129,7 @@ void Menu::SDL_GL_RenderText()
 	/* prepare to render our texture */
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, texture);
-	glColor3f(1.0f, 1.0f, 1.0f);
+//	glColor3f(1.0f, 1.0f, 1.0f);
 	
 	int midwidth = screenWidth / 2;
 	int startx = midwidth - (this->width / 2);
@@ -158,7 +164,7 @@ void Menu::layout()
 		}
 	}
 
-	if(count > 5)
+	if(count > 10)
 	{
 		int numButtons = 5;//screenWidth / (items[0]->getWidth() * 2);
 		int gapWidth = (screenWidth - (items[0]->getWidth() * numButtons)) / (numButtons + 2);
@@ -230,7 +236,22 @@ void Menu::render()
 
 	SDL_GL_RenderText();
 
-	for(int i = 0; i < max; i++)
+	if(instructions)
+	{
+		int tempx = 50;
+		int tempy = height+45;
+		this->add(new MenuItem(font, tempx, tempy, screenWidth-(tempx*2), screenHeight-tempy-55, -1));
+	}
+	/*glColor3f(buttonColor.r/255.0f, buttonColor.g/255.0f, buttonColor.b/255.0f);
+		glBegin(GL_QUADS); 
+			glVertex2f(tempx, tempy); 
+			glVertex2f(tempx + (screenWidth-(tempx * 2)), tempy); 
+			glVertex2f(tempx + (screenWidth-(tempx * 2)), tempy + screenHeight-tempy-55); 
+			glVertex2f(tempx, tempy + screenHeight-tempy-55); 
+		glEnd();
+	}*/
+
+	for(int i = max-1; i >=0 ; i--)
 	{
 		if(items[i] != NULL)
 		{
