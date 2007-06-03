@@ -20,7 +20,7 @@ Level::Level(int x, int y, int z)
 	//GetPrivateProfileString("1,1,1", "type", NULL, buf, 256, ".\\test.ini");
 
 	//char *filename = ".\\levels\\test\\level2.ini";
-	char *filename = ".\\levels\\level7.ini";
+	char *filename = ".\\levels\\level10.ini";
 
 	IniFile ini(filename);
 
@@ -392,6 +392,7 @@ void Level::update()
 		if(validBlock(x,y,z) && this->block[this->getOffset(x,y,z)] != NULL)
 		{
 			printf("11 COLLISION!\n");
+			if(
 			if(dirF > 0)
 				ball->fallForward(-halfBlock, 0);
 			else

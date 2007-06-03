@@ -41,5 +41,9 @@ typedef struct
 	int z;
 } intXYZ;
 
+/*#ifdef NDEBUG
+	#define printf	//
+#endif*/
+
 
 #endif // __HEADERS_H__

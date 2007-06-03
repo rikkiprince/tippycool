@@ -6,16 +6,27 @@
 --------------------Configuration: GridFrameVS - Win32 Debug--------------------
 </h3>
 <h3>Command Lines</h3>
-Creating temporary file "C:\Users\rprince\AppData\Local\Temp\RSP1180.tmp" with contents
+Creating temporary file "C:\Users\rprince\AppData\Local\Temp\RSPF763.tmp" with contents
 [
 /nologo /MD /W3 /Gm /GX /ZI /Od /I ".\include" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /Fp"Debug/GridFrameVS.pch" /YX /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
+"C:\Users\rprince\Desktop\DEGREE\IES\Final\GridFrameVS\Camera.cpp"
 "C:\Users\rprince\Desktop\DEGREE\IES\Final\GridFrameVS\framework.cpp"
+"C:\Users\rprince\Desktop\DEGREE\IES\Final\GridFrameVS\IniFile.cpp"
+"C:\Users\rprince\Desktop\DEGREE\IES\Final\GridFrameVS\md3model.cpp"
+"C:\Users\rprince\Desktop\DEGREE\IES\Final\GridFrameVS\primitives.cpp"
+"C:\Users\rprince\Desktop\DEGREE\IES\Final\GridFrameVS\Ball.cpp"
+"C:\Users\rprince\Desktop\DEGREE\IES\Final\GridFrameVS\ButtonBlock.cpp"
+"C:\Users\rprince\Desktop\DEGREE\IES\Final\GridFrameVS\EndBlock.cpp"
 "C:\Users\rprince\Desktop\DEGREE\IES\Final\GridFrameVS\Level.cpp"
-"C:\Users\rprince\Desktop\DEGREE\IES\Final\GridFrameVS\NormalBlock.cpp"
 "C:\Users\rprince\Desktop\DEGREE\IES\Final\GridFrameVS\MovingBlock.cpp"
+"C:\Users\rprince\Desktop\DEGREE\IES\Final\GridFrameVS\NormalBlock.cpp"
+"C:\Users\rprince\Desktop\DEGREE\IES\Final\GridFrameVS\ShowerBlock.cpp"
+"C:\Users\rprince\Desktop\DEGREE\IES\Final\GridFrameVS\SpecialBlock.cpp"
+"C:\Users\rprince\Desktop\DEGREE\IES\Final\GridFrameVS\SpikeBlock.cpp"
+"C:\Users\rprince\Desktop\DEGREE\IES\Final\GridFrameVS\StarBlock.cpp"
 ]
-Creating command line "cl.exe @C:\Users\rprince\AppData\Local\Temp\RSP1180.tmp" 
-Creating temporary file "C:\Users\rprince\AppData\Local\Temp\RSP1181.tmp" with contents
+Creating command line "cl.exe @C:\Users\rprince\AppData\Local\Temp\RSPF763.tmp" 
+Creating temporary file "C:\Users\rprince\AppData\Local\Temp\RSPF764.tmp" with contents
 [
 SDL.LIB SDLmain.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib opengl32.lib glu32.lib libmodelfile.lib /nologo /subsystem:console /incremental:yes /pdb:"Debug/GridFrameVS.pdb" /debug /machine:I386 /nodefaultlib:"library" /out:"Debug/GridFrameVS.exe" /pdbtype:sept /libpath:".\lib\\" 
 .\Debug\Camera.obj
@@ -25,24 +36,34 @@ SDL.LIB SDLmain.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib 
 .\Debug\primitives.obj
 .\Debug\textures.obj
 .\Debug\Ball.obj
+.\Debug\ButtonBlock.obj
 .\Debug\EndBlock.obj
 .\Debug\Level.obj
+.\Debug\MovingBlock.obj
 .\Debug\NormalBlock.obj
-.\Debug\SpikeBlock.obj
-.\Debug\StarBlock.obj
-.\Debug\ButtonBlock.obj
 .\Debug\ShowerBlock.obj
 .\Debug\SpecialBlock.obj
-.\Debug\MovingBlock.obj
+.\Debug\SpikeBlock.obj
+.\Debug\StarBlock.obj
 ]
-Creating command line "link.exe @C:\Users\rprince\AppData\Local\Temp\RSP1181.tmp"
+Creating command line "link.exe @C:\Users\rprince\AppData\Local\Temp\RSPF764.tmp"
 <h3>Output Window</h3>
 Compiling...
+Camera.cpp
 Level.cpp
-NormalBlock.cpp
-Skipping... (no relevant changes detected)
 framework.cpp
+IniFile.cpp
+md3model.cpp
+primitives.cpp
+Ball.cpp
+ButtonBlock.cpp
+EndBlock.cpp
 MovingBlock.cpp
+NormalBlock.cpp
+ShowerBlock.cpp
+SpecialBlock.cpp
+SpikeBlock.cpp
+StarBlock.cpp
 Linking...
 
 
