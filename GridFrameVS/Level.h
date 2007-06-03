@@ -55,6 +55,8 @@ public:
 	void left();
 	void right();
 	void stop();
+
+	bool validBlock(int x, int y, int z);
 };
 
 #endif // __LEVEL_H__

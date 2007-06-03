@@ -349,7 +349,9 @@ double roundBlock(double a)
 
 void Ball::realign()
 {
-	this->x = roundBlock(this->x);
-	this->y = roundBlock(this->y);
-	this->z = roundBlock(this->z);
+	if(this->getOrientationX()!=0) this->x = roundBlock(this->x);
+	if(this->getOrientationY()!=0) this->y = roundBlock(this->y);
+	if(this->getOrientationZ()!=0) this->z = roundBlock(this->z);
 }
+
+

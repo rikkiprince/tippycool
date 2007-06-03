@@ -357,9 +357,9 @@ void setup()
 }
 
 float camera_rotation = 0.0f;
-float camera_rotation_x = 0.0f;
+float camera_rotation_x = 90.0f;
 float camera_rotation_y = 0.0f;
-float camera_dist = -20.0f;
+float camera_dist = -10.0f;
 
 void camera_pos()
 {
