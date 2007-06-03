@@ -40,7 +40,9 @@ public:
 	void setY(GLfloat ny);
 	void setZ(GLfloat nz);
 
-	void realign();
+	void realignToOrientation();
+	void realignToSide(int sx, int sy, int sz);
+	void realignToFacing(int fx, int fy, int fz);
 	
 	GLfloat getFacingX();
 	GLfloat getFacingY();

@@ -49,6 +49,7 @@ public:
 	void turnRight();
 
 	void update();
+	void update1();
 
 	void up();
 	void down();

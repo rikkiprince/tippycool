@@ -41,13 +41,6 @@ void Ball::render()
 	glPopMatrix();
 }
 
-typedef struct
-{
-	int x;
-	int y;
-	int z;
-} intXYZ;
-
 intXYZ facing_vector[MAX_DIRS] = 
 {
 	{ 0, 0, 0},	// None
@@ -280,7 +273,7 @@ void Ball::fallForward(GLfloat before, GLfloat after)
 	this->orientation = no;
 	this->facing = nf;
 
-	realign();
+	realignToOrientation();
 	move(after, 0);
 }
 
@@ -306,7 +299,7 @@ void Ball::fallBackward(GLfloat before, GLfloat after)
 	this->orientation = no;
 	this->facing = nf;
 
-	realign();
+	realignToOrientation();
 	move(after, 0);
 }
 
@@ -329,7 +322,7 @@ void Ball::fallLeft(GLfloat before, GLfloat after)
 
 	this->orientation = no;
 
-	realign();
+	realignToOrientation();
 	move(0, after);
 }
 
@@ -342,7 +335,7 @@ void Ball::fallRight(GLfloat before, GLfloat after)
 
 	this->orientation = no;
 
-	realign();
+	realignToOrientation();
 	move(0, after);
 }
 
@@ -373,7 +366,7 @@ double roundBlock(double a, int o)
 	else return a;
 }
 
-void Ball::realign()
+void Ball::realignToOrientation()
 {
 	/*if(this->getOrientationX()!=0) this->x = roundBlock(this->x);
 	if(this->getOrientationY()!=0) this->y = roundBlock(this->y);
@@ -383,4 +376,17 @@ void Ball::realign()
 	this->z = roundBlock(this->z, this->getOrientationZ());
 }
 
+void Ball::realignToSide(int sx, int sy, int sz)
+{
+	this->x = roundBlock(this->x, sx*this->getSideX());
+	this->y = roundBlock(this->y, sy*this->getSideY());
+	this->z = roundBlock(this->z, sz*this->getSideZ());
+}
+
+void Ball::realignToFacing(int fx, int fy, int fz)
+{
+	this->x = roundBlock(this->x, -fx*this->getFacingX());
+	this->y = roundBlock(this->y, -fy*this->getFacingY());
+	this->z = roundBlock(this->z, -fz*this->getFacingZ());
+}
 
