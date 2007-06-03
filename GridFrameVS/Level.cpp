@@ -46,9 +46,15 @@ Level::Level(int x, int y, int z)
 				sprintf(block_string, "%d,%d,%d", i, j, k);
 				GetPrivateProfileString(block_string, "type", NULL, type, 256, filename);
 				//printf("type = %s\n", type);
+				Orientation o = ini.getOrientation(block_string);
+				//printf("%s, orientation=%d\n", block_string, o);
 				if(strcmp(type, "Normal") == 0)
 				{
 					block[offset] = new NormalBlock(texture);
+				}
+				else if(strcmp(type, "End") == 0)
+				{
+					block[offset] = new EndBlock(o);
 				}
 				//else if(strcmp(buf, "Special") == 0)
 				else

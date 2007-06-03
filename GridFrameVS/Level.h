@@ -6,6 +6,8 @@
 
 #include "AbstractBlock.h"
 #include "NormalBlock.h"
+#include "EndBlock.h"
+
 #include "Ball.h"
 #include "Camera.h"
 #include "IniFile.h"

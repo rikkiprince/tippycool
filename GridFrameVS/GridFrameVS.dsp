@@ -173,11 +173,11 @@ SOURCE=.\Ball.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\EmptyBlock.cpp
+SOURCE=.\EndBlock.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\EmptyBlock.h
+SOURCE=.\EndBlock.h
 # End Source File
 # Begin Source File
 

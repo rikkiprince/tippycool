@@ -6,31 +6,31 @@
 --------------------Configuration: GridFrameVS - Win32 Debug--------------------
 </h3>
 <h3>Command Lines</h3>
-Creating temporary file "C:\Users\rprince\AppData\Local\Temp\RSP5B40.tmp" with contents
+Creating temporary file "C:\Users\rprince\AppData\Local\Temp\RSPA401.tmp" with contents
 [
 /nologo /MD /W3 /Gm /GX /ZI /Od /I ".\include" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /Fp"Debug/GridFrameVS.pch" /YX /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
-"C:\Users\rprince\Desktop\DEGREE\IES\Final\GridFrameVS\Ball.cpp"
+"C:\Users\rprince\Desktop\DEGREE\IES\Final\GridFrameVS\EndBlock.cpp"
 ]
-Creating command line "cl.exe @C:\Users\rprince\AppData\Local\Temp\RSP5B40.tmp" 
-Creating temporary file "C:\Users\rprince\AppData\Local\Temp\RSP5B50.tmp" with contents
+Creating command line "cl.exe @C:\Users\rprince\AppData\Local\Temp\RSPA401.tmp" 
+Creating temporary file "C:\Users\rprince\AppData\Local\Temp\RSPA412.tmp" with contents
 [
 SDL.LIB SDLmain.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib opengl32.lib glu32.lib libmodelfile.lib /nologo /subsystem:console /incremental:yes /pdb:"Debug/GridFrameVS.pdb" /debug /machine:I386 /nodefaultlib:"library" /out:"Debug/GridFrameVS.exe" /pdbtype:sept /libpath:".\lib\\" 
 .\Debug\Camera.obj
 .\Debug\framework.obj
+.\Debug\IniFile.obj
 .\Debug\md3model.obj
 .\Debug\primitives.obj
 .\Debug\textures.obj
 .\Debug\Ball.obj
-.\Debug\EmptyBlock.obj
 .\Debug\Level.obj
 .\Debug\NormalBlock.obj
 .\Debug\SpecialBlock.obj
-.\Debug\IniFile.obj
+.\Debug\EndBlock.obj
 ]
-Creating command line "link.exe @C:\Users\rprince\AppData\Local\Temp\RSP5B50.tmp"
+Creating command line "link.exe @C:\Users\rprince\AppData\Local\Temp\RSPA412.tmp"
 <h3>Output Window</h3>
 Compiling...
-Ball.cpp
+EndBlock.cpp
 Linking...
 
 
