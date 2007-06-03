@@ -25,10 +25,10 @@ public:
 	void turnLeft();
 	void turnRight();
 	
-	void fallForward();
-	void fallBackward();
-	void fallLeft();
-	void fallRight();
+	void fallForward(GLfloat before, GLfloat after);
+	void fallBackward(GLfloat before, GLfloat after);
+	void fallLeft(GLfloat before, GLfloat after);
+	void fallRight(GLfloat before, GLfloat after);
 
 	void move(GLfloat byF, GLfloat byS);
 

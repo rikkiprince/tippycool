@@ -100,26 +100,26 @@ Level::~Level()
 
 void Level::up()
 {
-	this->rotF-=1;
-	this->accF-=0.01f;
+	this->rotF-=5;
+	this->accF-=0.005f;
 }
 
 void Level::down()
 {
-	this->rotF+=1;
-	this->accF+=0.01f;
+	this->rotF+=5;
+	this->accF+=0.005f;
 }
 
 void Level::left()
 {
-	this->rotS-=1;
-	this->accS-=0.01f;
+	this->rotS-=5;
+	this->accS-=0.005f;
 }
 
 void Level::right()
 {
-	this->rotS+=1;
-	this->accS+=0.01f;
+	this->rotS+=5;
+	this->accS+=0.005f;
 }
 
 void Level::stop()
@@ -132,10 +132,12 @@ void Level::stop()
 	this->velF = 0;
 }
 
-GLfloat friction = -0.5f;
+const static double maxVelocity = 0.4;
+GLfloat friction = -0.0035f;
 
 // http://www.thescripts.com/forum/thread128445.html
 inline int sign(int a) { return (a == 0) ? 0 : (a<0 ? -1 : 1); }
+inline int sign(double a) { return (a == 0.0) ? 0 : (a<0.0 ? -1 : 1); }
 
 void Level::update()
 {
@@ -147,32 +149,43 @@ void Level::update()
 	GLfloat prevY = ball->getY();
 	GLfloat prevZ = ball->getZ();
 
+	// get +1 or -1 of the facing direction
 	int dirF=0;
-	if(ball->getFacingX()!=0)
-		dirF=ball->getFacingX();
-	else if(ball->getFacingY()!=0)
-		dirF=ball->getFacingY();
-	else if(ball->getFacingZ()!=0)
-		dirF=ball->getFacingZ();
+	if(ball->getFacingX()!=0) dirF=ball->getFacingX();
+	else if(ball->getFacingY()!=0) dirF=ball->getFacingY();
+	else if(ball->getFacingZ()!=0) dirF=ball->getFacingZ();
 	
+	// get +1 or -1 of the sideways moving direction
 	int dirS=0;
-	if(ball->getSideX()!=0)
-		dirS=ball->getSideX();
-	else if(ball->getSideY()!=0)
-		dirS=ball->getSideY();
-	else if(ball->getSideZ()!=0)
-		dirS=ball->getSideZ();
+	if(ball->getSideX()!=0) dirS=ball->getSideX();
+	else if(ball->getSideY()!=0) dirS=ball->getSideY();
+	else if(ball->getSideZ()!=0) dirS=ball->getSideZ();
 
+	// calculate the PREVIOUS co-ordinate in each of the facing and side directions.
 	GLfloat prevF = (fabs(ball->getFacingX())*ball->getX()) + (fabs(ball->getFacingY())*ball->getY()) + (fabs(ball->getFacingZ())*ball->getZ());
 	GLfloat prevS = (fabs(ball->getSideX())*ball->getX()) + (fabs(ball->getSideY())*ball->getY()) + (fabs(ball->getSideZ())*ball->getZ());
 	//printf("prevX=%f, prevY=%f, prevZ=%f, prevF=%f\n\n", prevX, prevY, prevZ, prevF);
 
+	// update the velocity value based on acceleration in each direction and some friction
 	this->velF += accF + (sign(accF)*friction);
 	this->velS += accS + (sign(accS)*friction);
 
+	if(fabs(this->velF) > maxVelocity){
+		printf("limiting velF from %f", this->velF);
+		this->velF = sign(this->velF) * maxVelocity;
+		printf(" to %f\n", this->velF);
+	}
+	if(fabs(this->velS) > maxVelocity){
+		printf("limiting velS from %f", this->velS);
+		this->velS = sign(this->velS) * maxVelocity;
+		printf(" to %f\n", this->velS);
+	}
+
+	// move the ball based on these new velocities.
 	ball->move(this->velF, this->velS);
 	//printf("Ball:   (%f,%f,%f)\n", ball->getX(), ball->getY(), ball->getZ());
 
+	// calculate the UPDATED co-ordinate in each of the facing and side directions.
 	GLfloat nextF = (fabs(ball->getFacingX())*ball->getX()) + (fabs(ball->getFacingY())*ball->getY()) + (fabs(ball->getFacingZ())*ball->getZ());
 	GLfloat nextS = (fabs(ball->getSideX())*ball->getX()) + (fabs(ball->getSideY())*ball->getY()) + (fabs(ball->getSideZ())*ball->getZ());
 
@@ -180,7 +193,10 @@ void Level::update()
 
 	GLfloat halfBlock = this->blockSize/2.0;
 
+	//printf("Ball before:   (%f,%f,%f)\n", ball->getX(), ball->getY(), ball->getZ());
+
 	// backward edges
+	// these occur if the ball is moving toward the negative
 	if(prevF > ceil(nextF)-(this->blockSize/2.0) && nextF <= ceil(nextF)-(this->blockSize/2.0))
 	{
 		//printf("got in here!\n");
@@ -189,8 +205,6 @@ void Level::update()
 		/*printf("prevZ=%f, floor(prevZ)=%f, ceil(prevZ)=%f\n", prevZ, floor(prevZ), ceil(prevZ));
 		printf("ballZ=%f, floor(ballZ)=%f, ceil(ballZ)=%f\n", ball->getZ(), floor(ball->getZ()), ceil(ball->getZ()));*/
 		printf("Changed at %d <- %d\n", next, last);
-
-		printf("Ball:   (%f,%f,%f)\n", ball->getX(), ball->getY(), ball->getZ());
 
 		int x = ((ball->getFacingX()!=0)?next:floor(ball->getX()+this->blockSize/2.0)) - (ball->getOrientationX() * this->blockSize);
 		int y = ((ball->getFacingY()!=0)?next:floor(ball->getY()+this->blockSize/2.0)) - (ball->getOrientationY() * this->blockSize);
@@ -207,17 +221,17 @@ void Level::update()
 			else if(ball->getFacingZ()!=0)*/
 			if(dirF > 0)
 			{
-				ball->move(halfBlock, 0);
-				ball->fallBackward();
-				ball->realign();
-				ball->move(halfBlock, 0);
+				//ball->move(halfBlock, 0);
+				ball->fallBackward(halfBlock, halfBlock);
+				//ball->realign();
+				//ball->move(halfBlock, 0);
 			}
 			else
 			{
-				ball->move(-halfBlock, 0);
-				ball->fallForward();
-				ball->realign();
-				ball->move(-halfBlock, 0);
+				//ball->move(-halfBlock, 0);
+				ball->fallForward(-halfBlock, -halfBlock);
+				//ball->realign();
+				//ball->move(-halfBlock, 0);
 			}
 		}
 		else if(this->block[this->getOffset(x,y,z)] == NULL)
@@ -228,21 +242,20 @@ void Level::update()
 			ball->move(halfBlock, 0);*/
 			if(dirF > 0)
 			{
-				ball->move(halfBlock, 0);
-				ball->fallBackward();
-				ball->realign();
-				ball->move(halfBlock, 0);
+				//ball->move(halfBlock, 0);
+				ball->fallBackward(halfBlock, halfBlock);
+				//ball->realign();
+				//ball->move(halfBlock, 0);
 			}
 			else
 			{
-				printf("choon!\n");
-				ball->move(-halfBlock, 0);
-				ball->fallForward();
-				ball->realign();
-				ball->move(-halfBlock, 0);
+				//printf("choon!\n");
+				//ball->move(-halfBlock, 0);
+				ball->fallForward(-halfBlock, -halfBlock);
+				//ball->realign();
+				//ball->move(-halfBlock, 0);
 			}
 		}
-		printf("Ball:   (%f,%f,%f)\n", ball->getX(), ball->getY(), ball->getZ());
 	}
 	// forward edges
 	else if(prevF <= floor(nextF)+(this->blockSize/2.0) && nextF > floor(nextF)+(this->blockSize/2.0))
@@ -250,8 +263,6 @@ void Level::update()
 		int last = (int)floor(prevF);
 		int next = (int)ceil(nextF);
 		//printf("Changed at %d -> %d\n", last, next);
-
-		//printf("Ball1:   (%f,%f,%f)\n", ball->getX(), ball->getY(), ball->getZ());
 
 		int x = ((ball->getFacingX()!=0)?next:floor(ball->getX()+this->blockSize/2.0)) - (ball->getOrientationX() * this->blockSize);
 		int y = ((ball->getFacingY()!=0)?next:floor(ball->getY()+this->blockSize/2.0)) - (ball->getOrientationY() * this->blockSize);
@@ -267,17 +278,17 @@ void Level::update()
 			ball->move(-halfBlock, 0);*/
 			if(dirF < 0)
 			{
-				ball->move(halfBlock, 0);
-				ball->fallBackward();
-				ball->realign();
-				ball->move(halfBlock, 0);
+				//ball->move(halfBlock, 0);
+				ball->fallBackward(halfBlock, halfBlock);
+				//ball->realign();
+				//ball->move(halfBlock, 0);
 			}
 			else
 			{
-				ball->move(-halfBlock, 0);
-				ball->fallForward();
-				ball->realign();
-				ball->move(-halfBlock, 0);
+				//ball->move(-halfBlock, 0);
+				ball->fallForward(-halfBlock, -halfBlock);
+				//ball->realign();
+				//ball->move(-halfBlock, 0);
 			}
 		}
 		else if(this->block[this->getOffset(x,y,z)] == NULL)
@@ -288,17 +299,17 @@ void Level::update()
 			ball->move(-halfBlock, 0);*/
 			if(dirF < 0)
 			{
-				ball->move(halfBlock, 0);
-				ball->fallBackward();
-				ball->realign();
-				ball->move(halfBlock, 0);
+				//ball->move(halfBlock, 0);
+				ball->fallBackward(halfBlock, halfBlock);
+				//ball->realign();
+				//ball->move(halfBlock, 0);
 			}
 			else
 			{
-				ball->move(-halfBlock, 0);
-				ball->fallForward();
-				ball->realign();
-				ball->move(-halfBlock, 0);
+				//ball->move(-halfBlock, 0);
+				ball->fallForward(-halfBlock, -halfBlock);
+				//ball->realign();
+				//ball->move(-halfBlock, 0);
 			}
 		}
 		printf("Ball:   (%f,%f,%f)\n", ball->getX(), ball->getY(), ball->getZ());
@@ -314,8 +325,6 @@ void Level::update()
 		printf("ballZ=%f, floor(ballZ)=%f, ceil(ballZ)=%f\n", ball->getZ(), floor(ball->getZ()), ceil(ball->getZ()));*/
 		printf("Changed at %d <- %d\n", next, last);
 
-		printf("Ball: (%f,%f,%f)\n", ball->getX(), ball->getY(), ball->getZ());
-
 		int x = ((ball->getFacingX()!=0)?next:floor(ball->getX()+this->blockSize/2.0))/* - (ball->getOrientationX() * this->blockSize)*/;
 		int y = ((ball->getFacingY()!=0)?next:floor(ball->getY()+this->blockSize/2.0))/* - (ball->getOrientationY() * this->blockSize)*/;
 		int z = ((ball->getFacingZ()!=0)?next:floor(ball->getZ()+this->blockSize/2.0))/* - (ball->getOrientationZ() * this->blockSize)*/;
@@ -330,17 +339,19 @@ void Level::update()
 			ball->setZ(prevZ);*/
 			if(dirF > 0)
 			{
-				ball->move(-halfBlock, 0);
-				ball->fallForward();
-				ball->realign();
-				//ball->move(-halfBlock, 0);*/
+				//ball->move(-halfBlock, 0);
+				ball->fallForward(-halfBlock, 0);
+				//ball->realign();
+
+				//////////ball->move(-halfBlock, 0);*/
 			}
 			else
 			{
-				ball->move(halfBlock, 0);
-				ball->fallBackward();
-				ball->realign();
-				//ball->move(halfBlock, 0);*/
+				//ball->move(halfBlock, 0);
+				ball->fallBackward(halfBlock, 0);
+				//ball->realign();
+
+				//////////ball->move(halfBlock, 0);*/
 			}
 		}
 		printf("Ball:   (%f,%f,%f)\n", ball->getX(), ball->getY(), ball->getZ());
@@ -351,8 +362,6 @@ void Level::update()
 		int last = (int)floor(prevF);
 		int next = (int)ceil(nextF);
 		printf("Changed at %d -> %d\n", last, next);
-
-		printf("Ball: (%f,%f,%f)\n", ball->getX(), ball->getY(), ball->getZ());
 
 		int x = ((ball->getFacingX()!=0)?next:floor(ball->getX()+this->blockSize/2.0))/* - (ball->getOrientationX() * this->blockSize)*/;
 		int y = ((ball->getFacingY()!=0)?next:floor(ball->getY()+this->blockSize/2.0))/* - (ball->getOrientationY() * this->blockSize)*/;
@@ -368,20 +377,21 @@ void Level::update()
 			ball->setZ(prevZ);*/
 			if(dirF > 0)
 			{
-				ball->move(halfBlock, 0);
-				ball->fallBackward();
-				ball->realign();
-				//ball->move(halfBlock, 0);*/
+				//ball->move(halfBlock, 0);
+				ball->fallBackward(halfBlock, 0);
+				//ball->realign();
+				
+				//////////ball->move(halfBlock, 0);*/
 			}
 			else
 			{
-				ball->move(-halfBlock, 0);
-				ball->fallForward();
-				ball->realign();
-				//ball->move(-halfBlock, 0);*/
+				//ball->move(-halfBlock, 0);
+				ball->fallForward(-halfBlock, 0);
+				//ball->realign();
+
+				//////////ball->move(-halfBlock, 0);*/
 			}
 		}
-		printf("Ball:   (%f,%f,%f)\n", ball->getX(), ball->getY(), ball->getZ());
 	}
 
 	
@@ -394,8 +404,6 @@ void Level::update()
 		/*printf("prevZ=%f, floor(prevZ)=%f, ceil(prevZ)=%f\n", prevZ, floor(prevZ), ceil(prevZ));
 		printf("ballZ=%f, floor(ballZ)=%f, ceil(ballZ)=%f\n", ball->getZ(), floor(ball->getZ()), ceil(ball->getZ()));*/
 		//printf("Changed at %d <- %d\n", next, last);
-
-		//printf("Ball:   (%f,%f,%f)\n", ball->getX(), ball->getY(), ball->getZ());
 
 		int x = ((ball->getSideX()!=0)?next:floor(ball->getX()+this->blockSize/2.0)) - (ball->getOrientationX() * this->blockSize);
 		int y = ((ball->getSideY()!=0)?next:floor(ball->getY()+this->blockSize/2.0)) - (ball->getOrientationY() * this->blockSize);
@@ -412,19 +420,19 @@ void Level::update()
 			else if(ball->getFacingZ()!=0)*/
 			if(dirS > 0)
 			{
-				ball->move(0, -halfBlock);
-				ball->fallLeft();
-				ball->realign();
-				ball->move(0, -halfBlock);
-				printf("new ball: (%f,%f,%f)\n", ball->getX(), ball->getY(), ball->getZ());
+				//ball->move(0, -halfBlock);
+				ball->fallLeft(-halfBlock, -halfBlock);
+				//ball->realign();
+				//ball->move(0, -halfBlock);
+				//printf("new ball: (%f,%f,%f)\n", ball->getX(), ball->getY(), ball->getZ());
 			}
 			else
 			{
-				ball->move(0, halfBlock);
-				ball->fallRight();
-				ball->realign();
-				ball->move(0, halfBlock);
-				printf("new ball: (%f,%f,%f)\n", ball->getX(), ball->getY(), ball->getZ());
+				//ball->move(0, halfBlock);
+				ball->fallRight(halfBlock, halfBlock);
+				//ball->realign();
+				//ball->move(0, halfBlock);
+				//printf("new ball: (%f,%f,%f)\n", ball->getX(), ball->getY(), ball->getZ());
 			}
 		}
 		else if(this->block[this->getOffset(x,y,z)] == NULL)
@@ -435,19 +443,19 @@ void Level::update()
 			ball->move(halfBlock, 0);*/
 			if(dirS > 0)
 			{
-				ball->move(0, -halfBlock);
-				ball->fallLeft();
-				ball->realign();
-				ball->move(0, -halfBlock);
-				printf("new ball: (%f,%f,%f)\n", ball->getX(), ball->getY(), ball->getZ());
+				//ball->move(0, -halfBlock);
+				ball->fallLeft(-halfBlock, -halfBlock);
+				//ball->realign();
+				//ball->move(0, -halfBlock);
+				//printf("new ball: (%f,%f,%f)\n", ball->getX(), ball->getY(), ball->getZ());
 			}
 			else
 			{
-				ball->move(0, halfBlock);
-				ball->fallRight();
-				ball->realign();
-				ball->move(0, halfBlock);
-				printf("new ball: (%f,%f,%f)\n", ball->getX(), ball->getY(), ball->getZ());
+				//ball->move(0, halfBlock);
+				ball->fallRight(halfBlock, halfBlock);
+				//ball->realign();
+				//ball->move(0, halfBlock);
+				//printf("new ball: (%f,%f,%f)\n", ball->getX(), ball->getY(), ball->getZ());
 			}
 		}
 	}
@@ -457,8 +465,6 @@ void Level::update()
 		int last = (int)floor(prevS);
 		int next = (int)ceil(nextS);
 		//printf("Changed at %d -> %d\n", last, next);
-
-		//printf("Ball:   (%f,%f,%f)\n", ball->getX(), ball->getY(), ball->getZ());
 
 		int x = ((ball->getSideX()!=0)?next:floor(ball->getX()+this->blockSize/2.0)) - (ball->getOrientationX() * this->blockSize);
 		int y = ((ball->getSideY()!=0)?next:floor(ball->getY()+this->blockSize/2.0)) - (ball->getOrientationY() * this->blockSize);
@@ -473,20 +479,20 @@ void Level::update()
 			if(dirS < 0)
 			{
 				printf("a\n");
-				ball->move(0, -halfBlock);
-				ball->fallLeft();
-				ball->realign();
-				ball->move(0, -halfBlock);
-				printf("new ball: (%f,%f,%f)\n", ball->getX(), ball->getY(), ball->getZ());
+				//ball->move(0, -halfBlock);
+				ball->fallLeft(-halfBlock, -halfBlock);
+				//ball->realign();
+				//ball->move(0, -halfBlock);
+				//printf("new ball: (%f,%f,%f)\n", ball->getX(), ball->getY(), ball->getZ());
 			}
 			else
 			{
 				printf("b\n");
-				ball->move(0, halfBlock);
-				ball->fallRight();
-				ball->realign();
-				ball->move(0, halfBlock);
-				printf("new ball: (%f,%f,%f)\n", ball->getX(), ball->getY(), ball->getZ());
+				//ball->move(0, halfBlock);
+				ball->fallRight(halfBlock, halfBlock);
+				//ball->realign();
+				//ball->move(0, halfBlock);
+				//printf("new ball: (%f,%f,%f)\n", ball->getX(), ball->getY(), ball->getZ());
 			}
 		}
 		else if(this->block[this->getOffset(x,y,z)] == NULL)
@@ -495,20 +501,20 @@ void Level::update()
 			if(dirS < 0)
 			{
 				printf("a\n");
-				ball->move(0, -halfBlock);
-				ball->fallLeft();
-				ball->realign();
-				ball->move(0, -halfBlock);
-				printf("new ball: (%f,%f,%f)\n", ball->getX(), ball->getY(), ball->getZ());
+				//ball->move(0, -halfBlock);
+				ball->fallLeft(-halfBlock, -halfBlock);
+				//ball->realign();
+				//ball->move(0, -halfBlock);
+				//printf("new ball: (%f,%f,%f)\n", ball->getX(), ball->getY(), ball->getZ());
 			}
 			else
 			{
 				printf("b\n");
-				ball->move(0, halfBlock);
-				ball->fallRight();
-				ball->realign();
-				ball->move(0, halfBlock);
-				printf("new ball: (%f,%f,%f)\n", ball->getX(), ball->getY(), ball->getZ());
+				//ball->move(0, halfBlock);
+				ball->fallRight(halfBlock, halfBlock);
+				//ball->realign();
+				//ball->move(0, halfBlock);
+				//printf("new ball: (%f,%f,%f)\n", ball->getX(), ball->getY(), ball->getZ());
 			}
 		}
 	}
@@ -524,8 +530,6 @@ void Level::update()
 		printf("ballZ=%f, floor(ballZ)=%f, ceil(ballZ)=%f\n", ball->getZ(), floor(ball->getZ()), ceil(ball->getZ()));*/
 		printf("Changed at %d <- %d\n", next, last);
 
-		printf("Ball: (%f,%f,%f)\n", ball->getX(), ball->getY(), ball->getZ());
-
 		int x = ((ball->getSideX()!=0)?next:floor(ball->getX()+this->blockSize/2.0))/* - (ball->getOrientationX() * this->blockSize)*/;
 		int y = ((ball->getSideY()!=0)?next:floor(ball->getY()+this->blockSize/2.0))/* - (ball->getOrientationY() * this->blockSize)*/;
 		int z = ((ball->getSideZ()!=0)?next:floor(ball->getZ()+this->blockSize/2.0))/* - (ball->getOrientationZ() * this->blockSize)*/;
@@ -540,17 +544,19 @@ void Level::update()
 			ball->setZ(prevZ);*/
 			if(dirS > 0)
 			{
-				ball->move(0, +halfBlock);
-				ball->fallRight();
-				ball->realign();
-				//ball->move(-halfBlock, 0);*/
+				//ball->move(0, +halfBlock);
+				ball->fallRight(halfBlock, 0);
+				//ball->realign();
+
+				////////////ball->move(-halfBlock, 0);*/
 			}
 			else
 			{
-				ball->move(0, -halfBlock);
-				ball->fallLeft();
-				ball->realign();
-				//ball->move(halfBlock, 0);*/
+				//ball->move(0, -halfBlock);
+				ball->fallLeft(-halfBlock, 0);
+				//ball->realign();
+				
+				////////////ball->move(halfBlock, 0);*/
 			}
 		}
 	}
@@ -560,8 +566,6 @@ void Level::update()
 		int last = (int)floor(prevS);
 		int next = (int)ceil(nextS);
 		printf("Changed at %d -> %d\n", last, next);
-
-		printf("Ball: (%f,%f,%f)\n", ball->getX(), ball->getY(), ball->getZ());
 
 		int x = ((ball->getSideX()!=0)?next:floor(ball->getX()+this->blockSize/2.0))/* - (ball->getOrientationX() * this->blockSize)*/;
 		int y = ((ball->getSideY()!=0)?next:floor(ball->getY()+this->blockSize/2.0))/* - (ball->getOrientationY() * this->blockSize)*/;
@@ -577,20 +581,24 @@ void Level::update()
 			ball->setZ(prevZ);*/
 			if(dirS > 0)
 			{
-				ball->move(0, -halfBlock);
-				ball->fallLeft();
-				ball->realign();
-				//ball->move(halfBlock, 0);*/
+				//ball->move(0, -halfBlock);
+				ball->fallLeft(-halfBlock, 0);
+				//ball->realign();
+
+				//////////ball->move(halfBlock, 0);*/
 			}
 			else
 			{
-				ball->move(0, +halfBlock);
-				ball->fallRight();
-				ball->realign();
-				//ball->move(-halfBlock, 0);*/
+				//ball->move(0, +halfBlock);
+				ball->fallRight(halfBlock, 0);
+				//ball->realign();
+
+				////////////ball->move(-halfBlock, 0);*/
 			}
 		}
 	}
+	
+	//printf("Ball after: (%f,%f,%f)\n", ball->getX(), ball->getY(), ball->getZ());
 }
 
 bool Level::validBlock(int x, int y, int z)

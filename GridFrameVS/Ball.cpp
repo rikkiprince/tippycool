@@ -267,7 +267,7 @@ Orientation fall_forward_facing[MAX_DIRS] = {
 		{	none,	TOP,	BOTTOM,	LEFT,	RIGHT,	none,	none},	// orientation = BACK
 };*/
 
-void Ball::fallForward()
+void Ball::fallForward(GLfloat before, GLfloat after)
 {
 	Orientation nf = fall_forward_facing[this->orientation];
 	Orientation no = this->facing;
@@ -275,8 +275,13 @@ void Ball::fallForward()
 	//printf("\norientation %d -> %d\n", this->orientation, no);
 	//printf("facing      %d -> %d\n\n", this->facing, nf);
 
+	move(before, 0);
+
 	this->orientation = no;
 	this->facing = nf;
+
+	realign();
+	move(after, 0);
 }
 
 /*Orientation fall_backward_orientation[MAX_DIRS] = {
@@ -288,7 +293,7 @@ void Ball::fallForward()
 	BACK,	// facing = FRONT
 	FRONT,	// facing = BACK
 };*/
-void Ball::fallBackward()
+void Ball::fallBackward(GLfloat before, GLfloat after)
 {
 	Orientation nf = this->orientation;	//fall_forward_facing[this->orientation];
 	Orientation no = fall_forward_facing[this->facing];
@@ -296,8 +301,13 @@ void Ball::fallBackward()
 	//printf("\norientation %d -> %d\n", this->orientation, no);
 	//printf("facing      %d -> %d\n\n", this->facing, nf);
 
+	move(before, 0);
+
 	this->orientation = no;
 	this->facing = nf;
+
+	realign();
+	move(after, 0);
 }
 
 Orientation fall_left_orientation[MAX_DIRS][MAX_DIRS] = {
@@ -310,20 +320,30 @@ Orientation fall_left_orientation[MAX_DIRS][MAX_DIRS] = {
 		{	none,	LEFT,	RIGHT,	BOTTOM,	TOP,	none,	none},	// orientation = FRONT
 		{	none,	RIGHT,	LEFT,	TOP,	BOTTOM,	none,	none},	// orientation = BACK
 };
-void Ball::fallLeft()
+void Ball::fallLeft(GLfloat before, GLfloat after)
 {
 	//Orientation nf = this->facing;
 	Orientation no = fall_left_orientation[this->orientation][this->facing];
 
+	move(0, before);
+
 	this->orientation = no;
+
+	realign();
+	move(0, after);
 }
 
-void Ball::fallRight()
+void Ball::fallRight(GLfloat before, GLfloat after)
 {
 	//Orientation nf = this->facing;
 	Orientation no = fall_left_orientation[this->facing][this->orientation];
 
+	move(0, before);
+
 	this->orientation = no;
+
+	realign();
+	move(0, after);
 }
 
 void Ball::setX(GLfloat nx)
