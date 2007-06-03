@@ -339,19 +339,28 @@ void Ball::setZ(GLfloat nz)
 	this->z = nz;
 }
 
-double roundBlock(double a)
+double roundBlock(double a, int o)
 {
-	if(a < 0.0)
+	/*if(a < 0.0)
 		return ceil(a);
 	else
-		return floor(a);
+		return floor(a);*/
+
+	if(a < 0.0 && o < 0) return ceil(a);
+	else if(a < 0.0 && o > 0) return floor(a);
+	else if(a > 0.0 && o < 0) return ceil(a);
+	else if(a > 0.0 && o > 0) return floor(a);
+	else return a;
 }
 
 void Ball::realign()
 {
-	if(this->getOrientationX()!=0) this->x = roundBlock(this->x);
+	/*if(this->getOrientationX()!=0) this->x = roundBlock(this->x);
 	if(this->getOrientationY()!=0) this->y = roundBlock(this->y);
-	if(this->getOrientationZ()!=0) this->z = roundBlock(this->z);
+	if(this->getOrientationZ()!=0) this->z = roundBlock(this->z);*/
+	this->x = roundBlock(this->x, this->getOrientationX());
+	this->y = roundBlock(this->y, this->getOrientationY());
+	this->z = roundBlock(this->z, this->getOrientationZ());
 }
 
 
