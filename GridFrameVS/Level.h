@@ -8,6 +8,7 @@
 #include "NormalBlock.h"
 #include "Ball.h"
 #include "Camera.h"
+#include "IniFile.h"
 
 
 class Level

@@ -101,6 +101,10 @@ SOURCE=.\framework.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\IniFile.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\md3model.cpp
 # End Source File
 # Begin Source File
@@ -126,6 +130,10 @@ SOURCE=.\font.h
 # Begin Source File
 
 SOURCE=.\headers.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\IniFile.h
 # End Source File
 # Begin Source File
 

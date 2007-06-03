@@ -17,7 +17,7 @@ protected:
 
 	libmd3_file *model;
 public:
-	Ball(GLfloat blockSize, GLfloat offsetX, GLfloat offsetY, GLfloat offsetZ);
+	Ball(Orientation o, Orientation f, GLfloat blockSize, GLfloat offsetX, GLfloat offsetY, GLfloat offsetZ);
 	~Ball();
 	void render();
 	void lookAtMe(Camera *c);

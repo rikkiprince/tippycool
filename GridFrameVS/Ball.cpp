@@ -1,6 +1,6 @@
 #include "Ball.h"
 
-Ball::Ball(GLfloat blockSize, GLfloat offsetX, GLfloat offsetY, GLfloat offsetZ)
+Ball::Ball(Orientation o, Orientation f, GLfloat blockSize, GLfloat offsetX, GLfloat offsetY, GLfloat offsetZ)
 {
 	this->scale = 1.0f;
 
@@ -12,8 +12,10 @@ Ball::Ball(GLfloat blockSize, GLfloat offsetX, GLfloat offsetY, GLfloat offsetZ)
 
 	this->radius = (blockSize * this->scale)/2;
 
-	this->orientation = TOP;
-	this->facing = FRONT;
+	/*this->orientation = TOP;
+	this->facing = FRONT;*/
+	this->orientation = o;
+	this->facing = f;
 
 	this->model = NULL;
 
@@ -30,6 +32,8 @@ Ball::~Ball()
 void Ball::render()
 {
 	glPushMatrix();
+
+	glColor3f(1.0, 0.0, 0.0);
 
 	glTranslatef(this->x, this->y, this->z);
 	if(this->model == NULL)

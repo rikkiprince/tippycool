@@ -10,8 +10,7 @@ Level::Level(int x, int y, int z)
 {
 	printf("Constructing Level!\n");
 
-	this->rotF = 0;
-	this->rotS = 0;
+	stop();		// sets movement related variables to zero
 
 	this->camera = new Camera();
 
@@ -19,20 +18,14 @@ Level::Level(int x, int y, int z)
 
 //	char buf[256];
 	//GetPrivateProfileString("1,1,1", "type", NULL, buf, 256, ".\\test.ini");
+
 	char *filename = ".\\levels\\test\\level2.ini";
 
-	char width[256], height[256], depth[256];
-	GetPrivateProfileString("settings", "width", NULL, width, 256, filename);
-	GetPrivateProfileString("settings", "height", NULL, height, 256, filename);
-	GetPrivateProfileString("settings", "depth", NULL, depth, 256, filename);
-	//GetPrivateProfileString("settings", "", NULL, , 256, filename);
-	int x1 = atoi(width);
-	int y1 = atoi(height);
-	int z1 = atoi(depth);
-	
-	this->grid_width = x1;
-	this->grid_height = y1;
-	this->grid_depth = z1;
+	IniFile ini(filename);
+
+	this->grid_width	= ini.getInt("settings", "width");
+	this->grid_height	= ini.getInt("settings", "height");
+	this->grid_depth	= ini.getInt("settings", "depth");
 
 	// allocate block array
 	// thanks to http://www.phptr.com/articles/article.asp?p=31783&seqNum=7&rl=1
@@ -71,9 +64,12 @@ Level::Level(int x, int y, int z)
 	GetPrivateProfileString("start", "y", NULL, sy, 256, filename);
 	GetPrivateProfileString("start", "z", NULL, sz, 256, filename);
 //	ini.getInt("start", "x");
-	int startX = atoi(sx);
-	int startY = atoi(sy);
-	int startZ = atoi(sz);
+	int startX = ini.getInt("start", "x");		//atoi(sx);
+	int startY = ini.getInt("start", "y");		//atoi(sy);
+	int startZ = ini.getInt("start", "z");		//atoi(sz);
+
+	Orientation o = ini.getOrientation("start");
+	Orientation f = ini.getOrientation("start", "facing");
 
 	/*char or[256];
 	ini.getString("start", "orientation", 256, buf);
@@ -84,10 +80,7 @@ Level::Level(int x, int y, int z)
 	this->offsetZ = -(float)(this->grid_depth*this->blockSize)/2.0f;
 
 	//this->ball = new Ball(this->blockSize, this->offsetX + (startX * this->blockSize), this->offsetY + (startY * this->blockSize), this->offsetZ + (startZ * this->blockSize));
-	this->ball = new Ball(this->blockSize, (startX * this->blockSize), (startY * this->blockSize), (startZ * this->blockSize));
-
-	this->velF = 0;
-	this->velS = 0;
+	this->ball = new Ball(o, f, this->blockSize, (startX * this->blockSize), (startY * this->blockSize), (startZ * this->blockSize));
 }
 
 Level::~Level()
