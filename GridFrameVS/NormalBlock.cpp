@@ -5,6 +5,7 @@ NormalBlock::NormalBlock()
 	printf("Constructing NormalBlock!\n");
 
 	this->textured = false;
+	this->moveable = false;
 }
 
 NormalBlock::NormalBlock(GLuint texture)
@@ -13,6 +14,16 @@ NormalBlock::NormalBlock(GLuint texture)
 	this->texture[0] = this->texture[1] = this->texture[2] = this->texture[3] = this->texture[4] = this->texture[5] = texture;
 
 	this->textured = true;
+	this->moveable = false;
+}
+
+NormalBlock::NormalBlock(GLuint texture, bool m)
+{
+	printf("Constructing NormalBlock with texture %d!\n", texture);
+	this->texture[0] = this->texture[1] = this->texture[2] = this->texture[3] = this->texture[4] = this->texture[5] = texture;
+
+	this->textured = true;
+	this->moveable = m;
 }
 
 NormalBlock::~NormalBlock()

@@ -16,6 +16,7 @@ protected:
 public:
 	NormalBlock();
 	NormalBlock(GLuint texture);
+	NormalBlock(GLuint texture, bool m);
 	~NormalBlock();
 	void render();
 	void print(int i);

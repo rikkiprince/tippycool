@@ -2,10 +2,10 @@
 #ifndef __STAR_BLOCK_H__
 #define __STAR_BLOCK_H__
 
-#include "AbstractBlock.h"
+#include "SpecialBlock.h"
 #include "primitives.h"
 
-class StarBlock : public AbstractBlock
+class StarBlock : public SpecialBlock
 {
 protected:
 	Orientation orientation;
@@ -14,7 +14,6 @@ protected:
 public:
 	StarBlock(Orientation o);
 	~StarBlock();
-	void render();
 	void print(int i);
 };
 

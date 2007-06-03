@@ -7,6 +7,11 @@
 #include "AbstractBlock.h"
 #include "NormalBlock.h"
 #include "EndBlock.h"
+#include "SpikeBlock.h"
+#include "StarBlock.h"
+#include "ButtonBlock.h"
+#include "ShowerBlock.h"
+#include "MovingBlock.h"
 
 #include "Ball.h"
 #include "Camera.h"

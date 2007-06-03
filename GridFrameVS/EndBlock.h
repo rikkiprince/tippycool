@@ -2,19 +2,16 @@
 #ifndef __END_BLOCK_H__
 #define __END_BLOCK_H__
 
-#include "AbstractBlock.h"
+#include "SpecialBlock.h"
 #include "primitives.h"
 
-class EndBlock : public AbstractBlock
+class EndBlock : public SpecialBlock
 {
 protected:
-	Orientation orientation;
-	libmd3_file *model;
 
 public:
 	EndBlock(Orientation o);
 	~EndBlock();
-	void render();
 	void print(int i);
 };
 

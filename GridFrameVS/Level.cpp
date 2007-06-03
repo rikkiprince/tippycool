@@ -19,7 +19,8 @@ Level::Level(int x, int y, int z)
 //	char buf[256];
 	//GetPrivateProfileString("1,1,1", "type", NULL, buf, 256, ".\\test.ini");
 
-	char *filename = ".\\levels\\test\\level2.ini";
+	//char *filename = ".\\levels\\test\\level2.ini";
+	char *filename = ".\\levels\\level7.ini";
 
 	IniFile ini(filename);
 
@@ -50,12 +51,37 @@ Level::Level(int x, int y, int z)
 				//printf("%s, orientation=%d\n", block_string, o);
 				if(strcmp(type, "Normal") == 0)
 				{
-					block[offset] = new NormalBlock(texture);
+					char mov[5];
+					ini.getString(block_string, "moveable", mov, 5);
+					if(strlen(mov) > 0)
+						block[offset] = new NormalBlock(texture, true);
+					else
+						block[offset] = new NormalBlock(texture);
 				}
 				else if(strcmp(type, "End") == 0)
 				{
 					block[offset] = new EndBlock(o);
 				}
+				else if(strcmp(type, "Spikes") == 0)
+				{
+					block[offset] = new SpikeBlock(o);
+				}
+				else if(strcmp(type, "Button") == 0)
+				{
+					block[offset] = new ButtonBlock(o);
+				}
+				else if(strcmp(type, "Shower") == 0)
+				{
+					block[offset] = new ShowerBlock(o);
+				}
+				else if(strcmp(type, "Star") == 0)
+				{
+					block[offset] = new StarBlock(o);
+				}
+				/*else if(strcmp(type, "Moving") == 0)
+				{
+					block[offset] = new MovingBlock();
+				}*/
 				//else if(strcmp(buf, "Special") == 0)
 				else
 				{

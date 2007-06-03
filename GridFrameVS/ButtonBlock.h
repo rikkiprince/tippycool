@@ -2,19 +2,16 @@
 #ifndef __BUTTON_BLOCK_H__
 #define __BUTTON_BLOCK_H__
 
-#include "AbstractBlock.h"
+#include "SpecialBlock.h"
 #include "primitives.h"
 
-class ButtonBlock : public AbstractBlock
+class ButtonBlock : public SpecialBlock
 {
 protected:
-	Orientation orientation;
-	libmd3_file *model;
 
 public:
 	ButtonBlock(Orientation o);
 	~ButtonBlock();
-	void render();
 	void print(int i);
 };
 

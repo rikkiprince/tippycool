@@ -173,6 +173,14 @@ SOURCE=.\Ball.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\ButtonBlock.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\ButtonBlock.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\EndBlock.cpp
 # End Source File
 # Begin Source File
@@ -189,6 +197,14 @@ SOURCE=.\Level.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\MovingBlock.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\MovingBlock.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\NormalBlock.cpp
 # End Source File
 # Begin Source File
@@ -197,11 +213,35 @@ SOURCE=.\NormalBlock.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\ShowerBlock.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\ShowerBlock.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\SpecialBlock.cpp
 # End Source File
 # Begin Source File
 
 SOURCE=.\SpecialBlock.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\SpikeBlock.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\SpikeBlock.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\StarBlock.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\StarBlock.h
 # End Source File
 # End Group
 # End Target
