@@ -31,6 +31,8 @@ static const int step_time = 1000;
 static int block_x = 4;
 static int block_y = 11;
 
+int score;
+
 // Structure to hold the properties of a single square on the grid.
 // If you want to add more information to the grid, add new members here.
 typedef struct block_properties {
@@ -54,6 +56,7 @@ int average_frames_per_second;
 GLuint textTexture;
 GLuint textBase;
 
+//FMOD tutorial: http://www.gamedev.net/reference/articles/article2098.asp
 FSOUND_SAMPLE *click = NULL;
 
 bool init_audio() {	
@@ -657,6 +660,13 @@ void loop()
         SDL_GL_SwapBuffers();
     }
 }
+
+int gotStar()
+{
+	score = score + 100;
+	return score;
+}
+
 
 char fontpath[] = "arial.ttf";
 
