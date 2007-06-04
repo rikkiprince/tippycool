@@ -197,14 +197,6 @@ SOURCE=.\Level.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\MovingBlock.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\MovingBlock.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\NormalBlock.cpp
 # End Source File
 # Begin Source File

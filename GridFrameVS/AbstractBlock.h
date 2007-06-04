@@ -5,6 +5,7 @@ class AbstractBlock
 {
 protected:
 	bool moveable;
+	bool solid;
 
 public:
 	virtual void render() = 0;
@@ -13,6 +14,10 @@ public:
 	bool isMoveable()
 	{
 		return this->moveable;
+	}
+	bool isSolid()
+	{
+		return this->solid;
 	}
 };
 

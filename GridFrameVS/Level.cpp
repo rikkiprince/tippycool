@@ -20,7 +20,7 @@ Level::Level(int x, int y, int z)
 	//GetPrivateProfileString("1,1,1", "type", NULL, buf, 256, ".\\test.ini");
 
 	//char *filename = ".\\levels\\test\\level2.ini";
-	char *filename = ".\\levels\\level10.ini";
+	char *filename = ".\\levels\\level8.ini";
 
 	IniFile ini(filename);
 
@@ -58,6 +58,10 @@ Level::Level(int x, int y, int z)
 					else
 						block[offset] = new NormalBlock(texture);
 				}
+				else if(strcmp(type, "Moving") == 0)
+				{
+					block[offset] = new NormalBlock(texture, true);
+				}
 				else if(strcmp(type, "End") == 0)
 				{
 					block[offset] = new EndBlock(o);
@@ -78,10 +82,6 @@ Level::Level(int x, int y, int z)
 				{
 					block[offset] = new StarBlock(o);
 				}
-				/*else if(strcmp(type, "Moving") == 0)
-				{
-					block[offset] = new MovingBlock();
-				}*/
 				//else if(strcmp(buf, "Special") == 0)
 				else
 				{
@@ -392,11 +392,13 @@ void Level::update()
 		if(validBlock(x,y,z) && this->block[this->getOffset(x,y,z)] != NULL)
 		{
 			printf("11 COLLISION!\n");
-			if(
-			if(dirF > 0)
-				ball->fallForward(-halfBlock, 0);
-			else
-				ball->fallBackward(halfBlock, 0);
+			if(this->block[this->getOffset(x,y,z)]->isSolid())
+			{
+				if(dirF > 0)
+					ball->fallForward(-halfBlock, 0);
+				else
+					ball->fallBackward(halfBlock, 0);
+			}
 		}
 	}
 	// facing direction, positive change, block collision
