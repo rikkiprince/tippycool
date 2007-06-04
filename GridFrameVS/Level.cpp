@@ -218,7 +218,7 @@ inline int sign(double a) { return (a == 0.0) ? 0 : (a<0.0 ? -1 : 1); }
 
 void Level::update1()
 {
-	GLfloat prevX = ball->getX();
+	/*GLfloat prevX = ball->getX();
 	GLfloat prevY = ball->getY();
 	GLfloat prevZ = ball->getZ();
 
@@ -278,8 +278,8 @@ void Level::update()
 	//printf("prevX=%f, prevY=%f, prevZ=%f, prevF=%f\n\n", prevX, prevY, prevZ, prevF);
 
 	// update the velocity value based on acceleration in each direction and some friction
-	this->velF += accF + (sign(accF)*friction);
-	this->velS += accS + (sign(accS)*friction);
+	this->velF += accF + (sign(velF)*friction);
+	this->velS += accS + (sign(velS)*friction);
 
 	if(fabs(this->velF) > maxVelocity){
 		printf("limiting velF from %f", this->velF);
@@ -697,11 +697,13 @@ void Level::handleCollisionWith(AbstractBlock *block)
 	switch(result)
 	{
 		case DIE:					printf("RESET LEVEL!\n");
+									reset();
 									break;
 		case COLLECT_COLLECTABLE:	this->remainingCollectables--;
 									printf("You have %d of %d left to collect!\n", this->remainingCollectables, this->totalCollectables);
 									break;
 		case COMPLETE_LEVEL:		printf("LEVEL COMPLETED!\n");
+									this->completed = true;
 									break;
 		case CHANGE_COLOUR:			//sb = dynamic_cast<ShowerBlock*>(block);
 									//ball->addColour(sb->getR(),sb->getR(),sb->getR());
@@ -713,6 +715,11 @@ void Level::handleCollisionWith(AbstractBlock *block)
 									break;
 		default:					break;
 	}
+}
+
+bool Level::isCompleted()
+{
+	return this->completed;
 }
 
 intXYZ facing_vector_1[MAX_DIRS] = 
