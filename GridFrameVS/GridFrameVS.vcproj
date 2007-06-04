@@ -89,7 +89,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories=".\include"
+				AdditionalIncludeDirectories=".\include;&quot;C:\Program Files\Microsoft Platform SDK\Include&quot;;C:\WINDDK\3790.1830\inc\wxp"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
@@ -110,7 +110,7 @@
 				OutputFile=".\Release/GridFrameVS.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories=".\lib\"
+				AdditionalLibraryDirectories=".\lib\;C:\WINDDK\3790.1830\lib\wxp\i386"
 				ProgramDatabaseFile=".\Release/GridFrameVS.pdb"
 				SubSystem="2"
 				TargetMachine="1"/>
