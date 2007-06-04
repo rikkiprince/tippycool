@@ -12,6 +12,7 @@ protected:
 
 public:
 	StarBlock(Orientation o);
+	StarBlock(Orientation o, bool m);
 	~StarBlock();
 	void render();
 	void print(int i);

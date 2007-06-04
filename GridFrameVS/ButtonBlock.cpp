@@ -4,7 +4,7 @@
 
 ButtonBlock::ButtonBlock(Orientation o, Orientation f)
 {
-	printf("Constructing ButtonBlock!\n");
+	printf("Constructing ButtonBlock with facing = %d!\n", f);
 
 	this->model = NULL;
 
@@ -15,6 +15,31 @@ ButtonBlock::ButtonBlock(Orientation o, Orientation f)
 
 	this->orientation = o;
 	this->facing = f;
+
+	this->moveable = false;
+
+	this->moved = false;
+
+	printf("Finished constructing\n");
+}
+
+ButtonBlock::ButtonBlock(Orientation o, Orientation f, bool m)
+{
+	printf("Constructing ButtonBlock with facing = %d!\n", f);
+
+	this->model = NULL;
+
+	if((this->model = load_model("models/button.md3")) == NULL)
+	{
+		printf("Could not load model!\n");
+	}
+
+	this->orientation = o;
+	this->facing = f;
+
+	this->moveable = m;
+
+	this->moved = false;
 
 	printf("Finished constructing\n");
 }

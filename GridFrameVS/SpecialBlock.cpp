@@ -7,6 +7,10 @@ SpecialBlock::SpecialBlock()
 	printf("Constructing SpecialBlock!\n");
 
 	this->solid = false;
+
+	this->moveable = false;
+
+	this->moved = false;
 }
 
 SpecialBlock::~SpecialBlock()

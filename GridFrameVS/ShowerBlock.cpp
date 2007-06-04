@@ -8,6 +8,26 @@ ShowerBlock::ShowerBlock(Orientation o)
 
 	this->model = NULL;
 	this->orientation = o;
+	this->facing = none;
+
+	this->moveable = false;
+
+	this->moved = false;
+
+	printf("Finished constructing\n");
+}
+
+ShowerBlock::ShowerBlock(Orientation o, bool m)
+{
+	printf("Constructing ShowerBlock!\n");
+
+	this->model = NULL;
+	this->orientation = o;
+	this->facing = none;
+
+	this->moveable = m;
+
+	this->moved = false;
 
 	printf("Finished constructing\n");
 }

@@ -11,6 +11,7 @@ protected:
 
 public:
 	EndBlock(Orientation o);
+	EndBlock(Orientation o, bool m);
 	~EndBlock();
 	void print(int i);
 	CollisionResult collision();

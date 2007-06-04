@@ -31,15 +31,8 @@ extern "C" {
 #include "primitives.h"
 #include "md3model.h"
 
-				//   0    1      2      3     4      5      6       7
-enum Orientation { none, TOP, BOTTOM, LEFT, RIGHT, FRONT, BACK, MAX_DIRS };
+#include "types.h"
 
-typedef struct
-{
-	int x;
-	int y;
-	int z;
-} intXYZ;
 
 /*#ifdef NDEBUG
 	#define printf	//

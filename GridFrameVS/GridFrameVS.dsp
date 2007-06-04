@@ -151,6 +151,10 @@ SOURCE=.\primitives.h
 
 SOURCE=.\textures.h
 # End Source File
+# Begin Source File
+
+SOURCE=.\types.h
+# End Source File
 # End Group
 # Begin Group "Resource Files"
 

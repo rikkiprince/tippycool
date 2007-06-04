@@ -11,6 +11,7 @@ protected:
 
 public:
 	ShowerBlock(Orientation o);
+	ShowerBlock(Orientation o, bool m);
 	~ShowerBlock();
 	void print(int i);
 	CollisionResult collision();

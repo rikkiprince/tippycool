@@ -676,7 +676,7 @@ void Level::handleCollisionWith(AbstractBlock *block)
 									//ball->addColour(sb->getR(),sb->getR(),sb->getR());
 									// updateShowers();
 									break;
-		case MOVE_MOVEABLE:			bb = dynamic_cast<ButtonBlock*>(block);
+		case MOVE_MOVEABLE:			//bb = dynamic_cast<ButtonBlock*>(block);
 									f = bb->getFacing();
 									this->moveMoveablesToward(f);
 									break;
@@ -684,8 +684,58 @@ void Level::handleCollisionWith(AbstractBlock *block)
 	}
 }
 
+intXYZ facing_vector_1[MAX_DIRS] = 
+{
+	{ 0, 0, 0},	// None
+	{ 0, 1, 0},	// Top
+	{ 0,-1, 0},	// Bottom
+	{-1, 0, 0},	// Left
+	{ 1, 0, 0},	// Right
+	{ 0, 0, 1},	// Front
+	{ 0, 0,-1},	// Back
+};
+
 void Level::moveMoveablesToward(Orientation f)
 {
+	for(int k=0; k<this->grid_depth; k++)
+	{
+		for(int j=0; j<this->grid_height; j++)
+		{
+			for(int i=0; i<this->grid_width; i++)
+			{
+				int offset = this->getOffset(i,j,k);
+
+				int x = i + facing_vector_1[f].x;
+				int y = j + facing_vector_1[f].y;
+				int z = k + facing_vector_1[f].z;
+
+				int newOffset = this->getOffset(x,y,z);
+
+				if(validBlock(i,j,k) && block[offset] != NULL && block[offset]->isMoveable() && !block[offset]->hasMoved() && validBlock(x,y,z) && block[offset] == NULL)
+				{
+					block[newOffset] = block[offset];
+					block[offset] = NULL;
+					block[newOffset]->setMoved(true);
+				}
+			}
+		}
+	}
+
+	
+	for(int k=0; k<this->grid_depth; k++)
+	{
+		for(int j=0; j<this->grid_height; j++)
+		{
+			for(int i=0; i<this->grid_width; i++)
+			{
+				int offset = this->getOffset(i,j,k);
+				if(validBlock(i,j,k) && block[offset] != NULL)
+				{
+					block[offset]->setMoved(false);
+				}
+			}
+		}
+	}
 }
 
 bool Level::validBlock(int x, int y, int z)

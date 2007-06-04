@@ -43,12 +43,17 @@ protected:
 
 	Camera *camera;
 
-	int remainingCollectables, totalCollectables;
+	IniFile *ini;
 
+	int remainingCollectables, totalCollectables;
+	bool completed;
+
+	void load();
+	void destroy();
 	void draw_grid();
 	int getOffset(int i, int j, int k);
 public:
-	Level(int x, int y, int z);
+	Level(char *fn);
 	~Level();
 	void render();
 	void updateCameraPosition(bool lookat);
@@ -62,6 +67,7 @@ public:
 
 	void handleCollisionWith(AbstractBlock *block);
 	void moveMoveablesToward(Orientation f);
+	bool isCompleted();
 
 	void up();
 	void down();

@@ -11,6 +11,7 @@ protected:
 
 public:
 	SpikeBlock(Orientation o);
+	SpikeBlock(Orientation o, bool m);
 	~SpikeBlock();
 	void print(int i);
 	CollisionResult collision();

@@ -17,6 +17,7 @@ protected:
 
 public:
 	SpecialBlock();
+	SpecialBlock(Orientation o, bool m);
 	~SpecialBlock();
 	void render();
 	void print(int i);

@@ -44,7 +44,6 @@ void Ball::render()
 
 	glPopMatrix();
 }
-
 intXYZ facing_vector[MAX_DIRS] = 
 {
 	{ 0, 0, 0},	// None

@@ -7,6 +7,8 @@ NormalBlock::NormalBlock()
 	this->textured = false;
 	this->moveable = false;
 	this->solid = true;
+	
+	this->facing = none;
 }
 
 NormalBlock::NormalBlock(GLuint texture)
@@ -17,6 +19,10 @@ NormalBlock::NormalBlock(GLuint texture)
 	this->textured = true;
 	this->moveable = false;
 	this->solid = true;
+
+	this->facing = none;
+
+	this->moved = false;
 }
 
 NormalBlock::NormalBlock(GLuint texture, bool m)
@@ -27,6 +33,10 @@ NormalBlock::NormalBlock(GLuint texture, bool m)
 	this->textured = true;
 	this->moveable = m;
 	this->solid = true;
+	
+	this->facing = none;
+
+	this->moved = false;
 }
 
 NormalBlock::~NormalBlock()

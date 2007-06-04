@@ -14,8 +14,36 @@ StarBlock::StarBlock(Orientation o)
 	}
 
 	this->orientation = o;
+	this->facing = none;
 
 	this->collected = false;
+
+	this->moveable = false;
+
+	this->moved = false;
+
+	printf("Finished constructing\n");
+}
+
+StarBlock::StarBlock(Orientation o, bool m)
+{
+	printf("Constructing StarBlock!\n");
+
+	this->model = NULL;
+
+	if((this->model = load_model("models/star.md3")) == NULL)
+	{
+		printf("Could not load model!\n");
+	}
+
+	this->orientation = o;
+	this->facing = none;
+
+	this->collected = false;
+
+	this->moveable = m;
+
+	this->moved = false;
 
 	printf("Finished constructing\n");
 }
