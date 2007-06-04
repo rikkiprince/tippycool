@@ -57,19 +57,37 @@ GLuint textTexture;
 GLuint textBase;
 
 //FMOD tutorial: http://www.gamedev.net/reference/articles/article2098.asp
-FSOUND_SAMPLE *click = NULL;
+FSOUND_SAMPLE *menuclick = NULL;
+FSOUND_SAMPLE *buttonblockclick = NULL;
+FSOUND_SAMPLE *getstar = NULL;
+FSOUND_SAMPLE *goal = NULL;
+FSOUND_SAMPLE *blockmove = NULL;
+FSOUND_SAMPLE *shower = NULL;
+FSOUND_SAMPLE *hitspikes = NULL;
 
 bool init_audio() {	
 	return FSOUND_Init(44100, 32, 0);
 }
 
 void uninit_audio() {
-	FSOUND_Sample_Free(click);
+	FSOUND_Sample_Free(menuclick);
+	FSOUND_Sample_Free(buttonblockclick);
+	FSOUND_Sample_Free(getstar);
+	FSOUND_Sample_Free(goal);
+	FSOUND_Sample_Free(blockmove);
+	FSOUND_Sample_Free(shower);
+	FSOUND_Sample_Free(hitspikes);
 	FSOUND_Close();
 }
 
 void load_audio() {
-	click = FSOUND_Sample_Load (0, "click2.wav", 0, 0, 0); //http://www.partnersinrhyme.com/pirsounds/WEB_DESIGN_SOUNDS_WAV/BUTTONS.shtml
+	menuclick = FSOUND_Sample_Load (0, "audio//click2.wav", 0, 0, 0); //http://www.partnersinrhyme.com/pirsounds/WEB_DESIGN_SOUNDS_WAV/BUTTONS.shtml
+	buttonblockclick = FSOUND_Sample_Load (0, "audio//buttonblockclick.wav", 0, 0, 0); //http://www.wavsource.com/sfx/sfx.htm
+	getstar = FSOUND_Sample_Load (0, "audio//getstar.wav", 0, 0, 0); //http://www.wavsource.com/sfx/sfx.htm
+	goal = FSOUND_Sample_Load (0, "audio//goal.wav", 0, 0, 0); //http://www.wavsource.com/sfx/sfx.htm
+	blockmove = FSOUND_Sample_Load (0, "audio//blockmove.wav", 0, 0, 0); //http://www.a1freesoundeffects.com/button.html
+	shower = FSOUND_Sample_Load (0, "audio//shower.wav", 0, 0, 0); //http://www.a1freesoundeffects.com/button.html
+	hitspikes = FSOUND_Sample_Load (0, "audio//hitspikes.wav", 0, 0, 0); //http://www.wavsource.com/sfx/sfx2.htm
 	FSOUND_SetSFXMasterVolume(50);
 }
 
@@ -561,37 +579,18 @@ void loop()
                         program_finished = true;
                     }
                     if ( event.key.keysym.sym == SDLK_UP ) {
-                        /*if ((block_y < (grid_height-1)) && !properties[block_x][block_y + 1].block) {
-                            ++block_y;
-                        }*/
 						ms->changeSelected(-1);
                     }
                     if ( event.key.keysym.sym == SDLK_DOWN ) {
-                        // Move block down
-                        /*if ((block_y > 0) && !properties[block_x][block_y - 1].block) {
-                            --block_y;
-                        }*/
 						ms->changeSelected(1);
                     }
                     if ( event.key.keysym.sym == SDLK_LEFT ) {
-                        // Move block left
-                        /*if ((block_x > 0) && !properties[block_x - 1][block_y].block) {
-                            --block_x;
-                        }*/
 						ms->changeSelected(-1);
                     }
                     if ( event.key.keysym.sym == SDLK_RIGHT ) {
-                        // Move block right
-                        /*if ((block_x < (grid_width-1)) && !properties[block_x + 1][block_y].block) {
-                            ++block_x;
-                        }*/
 						ms->changeSelected(1);
                     }
                     if ( event.key.keysym.sym == SDLK_RETURN ) {
-                        // Move block right
-                        /*if ((block_x < (grid_width-1)) && !properties[block_x + 1][block_y].block) {
-                            ++block_x;
-                        }*/
 						if(ms->enter() == 4)
 						{
 							program_finished = true;
@@ -600,10 +599,7 @@ void loop()
                     break;
                 case SDL_MOUSEBUTTONDOWN:
                     if (event.button.button == SDL_BUTTON_LEFT) {
-						if(ms->mouseDown(event.button.x, event.button.y))
-						{
-							//play_audio(0, click1);
-						}
+						ms->mouseDown(event.button.x, event.button.y);
                     }
                     break;
 				case SDL_MOUSEBUTTONUP:
@@ -612,7 +608,7 @@ void loop()
 						int num = ms->mouseUp(event.button.x, event.button.y);
 						if(num > -1)
 						{
-							play_audio(0, click);
+							play_audio(0,  menuclick);
 						}
 						if(num == 4)
 						{
@@ -667,8 +663,8 @@ int gotStar()
 	return score;
 }
 
-
-char fontpath[] = "arial.ttf";
+//load font for menus
+char fontpath[] = "font//arial.ttf";
 
 void init_fonts()
 {
@@ -696,28 +692,19 @@ void init_fonts()
 		printf("Error loading font: %s", TTF_GetError());
 		//return 1;
 	}
-
-	// load font.ttf, face 0, at size 16 into font
-	/*font=TTF_OpenFontIndex("arial.ttf", 16, 0);
-	if(!font) {
-		printf("TTF_OpenFontIndex: %s\n", TTF_GetError());
-		// handle error
-	}*/
 }
-
 
 void uninit_fonts()
 {
 	// free the font
-	// TTF_Font *font;
 	TTF_CloseFont(font14);
 	TTF_CloseFont(font16);
 	TTF_CloseFont(font20);
 	TTF_CloseFont(font24);
-	font14=NULL; // to be safe...
-	font16=NULL; // to be safe...
-	font20=NULL; // to be safe...
-	font24=NULL; // to be safe...
+	font14=NULL;
+	font16=NULL;
+	font20=NULL;
+	font24=NULL;
 	TTF_Quit();
 }
 
@@ -768,7 +755,6 @@ void createMenus()
 	m3->add(new MenuItem("TextTextText", font16, -1, false, false));
 	m3->add(new MenuItem(" ", font16, -1, false, false));
 	m3->add(new MenuItem(" ", font16, -1, false, false));
-//	m3->add(new MenuItem(" ", font16, -1, false, false));
 	m3->add(new MenuItem("Back to Main Menu", font20, 0, true, true));
 	m3->setInstructions(true);
 	m3->layout();
@@ -777,7 +763,6 @@ void createMenus()
 	ms->add(m1);
 	ms->add(m2);
 	ms->add(m3);
-
 }
 
 int main()
@@ -791,6 +776,7 @@ int main()
         return 1;
     }
 	load_audio();
+
 	createMenus();
 	createStatusBar();
 
