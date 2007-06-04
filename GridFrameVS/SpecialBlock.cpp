@@ -12,13 +12,25 @@ SpecialBlock::~SpecialBlock()
 	printf("Destructing SpecialBlock!\n");
 }
 
-void SpecialBlock::render()
+void SpecialBlock::preRender()
 {
 	glPushMatrix();
 	//printf("Hello\n");
 
-	GLfloat col[4];
-	glGetFloatv(GL_CURRENT_COLOR, col);
+	glGetFloatv(GL_CURRENT_COLOR, this->currentColour);
+}
+
+void SpecialBlock::postRender()
+{
+	glColor4f(currentColour[0], currentColour[1], currentColour[2], currentColour[3]);
+
+	glPopMatrix();
+}
+
+void SpecialBlock::render()
+{
+	preRender();
+
 	glColor3f(0.435294f, 0.192f, 0.596f);
 
 	glTranslatef(0.5, 0.5, 0.5);
@@ -34,6 +46,8 @@ void SpecialBlock::render()
 		glRotatef(0, 1.0, 0.0, 0.0);
 	else if(this->orientation == BACK)
 		glRotatef(-180, 1.0, 0.0, 0.0);
+
+	glRotatef(90, 0.0, 0.0, 1.0);
 	glTranslatef(-0.5, -0.5, -0.5);
 	
 	if(this->model == NULL)
@@ -41,9 +55,7 @@ void SpecialBlock::render()
 	else
 		draw_md3_file(this->model);
 
-	glColor4f(col[0], col[1], col[2], col[3]);
-
-	glPopMatrix();
+	postRender();
 }
 
 void SpecialBlock::print(int i)

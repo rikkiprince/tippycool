@@ -64,6 +64,8 @@ public:
 	void right();
 	void stop();
 
+	void reset();
+
 	bool validBlock(int x, int y, int z);
 };
 

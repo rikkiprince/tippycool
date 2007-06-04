@@ -8,10 +8,12 @@
 class ButtonBlock : public SpecialBlock
 {
 protected:
+	Orientation facing;
 
 public:
-	ButtonBlock(Orientation o);
+	ButtonBlock(Orientation o, Orientation f);
 	~ButtonBlock();
+	void render();
 	void print(int i);
 };
 

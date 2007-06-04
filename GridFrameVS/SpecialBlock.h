@@ -10,6 +10,10 @@ class SpecialBlock : public AbstractBlock
 protected:
 	Orientation orientation;
 	libmd3_file *model;
+	GLfloat currentColour[4];
+
+	void preRender();
+	void postRender();
 
 public:
 	SpecialBlock();

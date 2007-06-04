@@ -19,8 +19,8 @@ Level::Level(int x, int y, int z)
 //	char buf[256];
 	//GetPrivateProfileString("1,1,1", "type", NULL, buf, 256, ".\\test.ini");
 
-	//char *filename = ".\\levels\\test\\level2.ini";
-	char *filename = ".\\levels\\level8.ini";
+	char *filename = ".\\levels\\test\\level2.ini";
+	//char *filename = ".\\levels\\level8.ini";
 
 	IniFile ini(filename);
 
@@ -72,7 +72,8 @@ Level::Level(int x, int y, int z)
 				}
 				else if(strcmp(type, "Button") == 0)
 				{
-					block[offset] = new ButtonBlock(o);
+					Orientation f = ini.getOrientation(block_string, "facing");
+					block[offset] = new ButtonBlock(o, f);
 				}
 				else if(strcmp(type, "Shower") == 0)
 				{
@@ -155,6 +156,12 @@ void Level::stop()
 	this->accF = 0;
 	this->velS = 0;
 	this->velF = 0;
+}
+
+void Level::reset()
+{
+	stop();
+
 }
 
 const static double maxVelocity = 0.4;
