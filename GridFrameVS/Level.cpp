@@ -6,7 +6,7 @@
 	printf("const int i = %d\n", i);
 }*/
 
-Level::Level(int x, int y, int z)
+Level::Level(char *fn)
 {
 	printf("Constructing Level!\n");
 
@@ -21,14 +21,19 @@ Level::Level(int x, int y, int z)
 //	char buf[256];
 	//GetPrivateProfileString("1,1,1", "type", NULL, buf, 256, ".\\test.ini");
 
-	char *filename = ".\\levels\\test\\level2.ini";
+	//char *filename = ".\\levels\\test\\level2.ini";
 	//char *filename = ".\\levels\\level8.ini";
 
-	IniFile ini(filename);
+	this->ini =new IniFile(fn);
 
-	this->grid_width	= ini.getInt("settings", "width");
-	this->grid_height	= ini.getInt("settings", "height");
-	this->grid_depth	= ini.getInt("settings", "depth");
+	load();
+}
+
+void Level::load()
+{
+	this->grid_width	= ini->getInt("settings", "width");
+	this->grid_height	= ini->getInt("settings", "height");
+	this->grid_depth	= ini->getInt("settings", "depth");
 
 	// allocate block array
 	// thanks to http://www.phptr.com/articles/article.asp?p=31783&seqNum=7&rl=1
@@ -47,14 +52,15 @@ Level::Level(int x, int y, int z)
 				int offset = this->getOffset(i, j, k);
 				char block_string[256], type[256];
 				sprintf(block_string, "%d,%d,%d", i, j, k);
-				GetPrivateProfileString(block_string, "type", NULL, type, 256, filename);
+				//GetPrivateProfileString(block_string, "type", NULL, type, 256, filename);
+				ini->getString(block_string, "type", type, 256);
 				//printf("type = %s\n", type);
-				Orientation o = ini.getOrientation(block_string);
+				Orientation o = ini->getOrientation(block_string);
 				//printf("%s, orientation=%d\n", block_string, o);
 				if(strcmp(type, "Normal") == 0)
 				{
 					char mov[5];
-					ini.getString(block_string, "moveable", mov, 5);
+					ini->getString(block_string, "moveable", mov, 5);
 					if(strlen(mov) > 0)
 						block[offset] = new NormalBlock(texture, true);
 					else
@@ -74,7 +80,7 @@ Level::Level(int x, int y, int z)
 				}
 				else if(strcmp(type, "Button") == 0)
 				{
-					Orientation f = ini.getOrientation(block_string, "facing");
+					Orientation f = ini->getOrientation(block_string, "facing");
 					block[offset] = new ButtonBlock(o, f);
 				}
 				else if(strcmp(type, "Shower") == 0)
@@ -95,20 +101,20 @@ Level::Level(int x, int y, int z)
 		}
 	}
 
-	char sx[256], sy[256], sz[256];
+	/*char sx[256], sy[256], sz[256];
 	GetPrivateProfileString("start", "x", NULL, sx, 256, filename);
 	GetPrivateProfileString("start", "y", NULL, sy, 256, filename);
-	GetPrivateProfileString("start", "z", NULL, sz, 256, filename);
-//	ini.getInt("start", "x");
-	int startX = ini.getInt("start", "x");		//atoi(sx);
-	int startY = ini.getInt("start", "y");		//atoi(sy);
-	int startZ = ini.getInt("start", "z");		//atoi(sz);
+	GetPrivateProfileString("start", "z", NULL, sz, 256, filename);*/
+//	ini->getInt("start", "x");
+	int startX = ini->getInt("start", "x");		//atoi(sx);
+	int startY = ini->getInt("start", "y");		//atoi(sy);
+	int startZ = ini->getInt("start", "z");		//atoi(sz);
 
-	Orientation o = ini.getOrientation("start");
-	Orientation f = ini.getOrientation("start", "facing");
+	Orientation o = ini->getOrientation("start");
+	Orientation f = ini->getOrientation("start", "facing");
 
 	/*char or[256];
-	ini.getString("start", "orientation", 256, buf);
+	ini->getString("start", "orientation", 256, buf);
 	GetPrivateProfileString("start", "orientation", NULL, or, 256, filename);*/
 
 	this->remainingCollectables = this->totalCollectables;
@@ -125,8 +131,30 @@ Level::~Level()
 {
 	printf("Destructing Level!\n");
 
+	destroy();
+
+	delete this->ini;
+}
+
+void Level::destroy()
+{
+	for(int k=0; k<this->grid_depth; k++)
+	{
+		for(int j=0; j<this->grid_height; j++)
+		{
+			for(int i=0; i<this->grid_width; i++)
+			{
+				int offset = this->getOffset(i, j, k);
+				if(block[offset] != NULL)
+					delete block[offset];
+			}
+		}
+	}
+
 	// clean up block array
 	delete [] block;
+
+	delete this->ball;
 }
 
 void Level::up()
@@ -659,8 +687,8 @@ void Level::update()
 void Level::handleCollisionWith(AbstractBlock *block)
 {
 	CollisionResult result = block->collision();
-	ButtonBlock *bb;
-	ShowerBlock *sb;
+//	ButtonBlock *bb;
+//	ShowerBlock *sb;
 	Orientation f;
 
 	switch(result)
@@ -672,12 +700,12 @@ void Level::handleCollisionWith(AbstractBlock *block)
 									break;
 		case COMPLETE_LEVEL:		printf("LEVEL COMPLETED!\n");
 									break;
-		case CHANGE_COLOUR:			sb = dynamic_cast<ShowerBlock*>(block);
+		case CHANGE_COLOUR:			//sb = dynamic_cast<ShowerBlock*>(block);
 									//ball->addColour(sb->getR(),sb->getR(),sb->getR());
 									// updateShowers();
 									break;
 		case MOVE_MOVEABLE:			//bb = dynamic_cast<ButtonBlock*>(block);
-									f = bb->getFacing();
+									f = block->getFacing();
 									this->moveMoveablesToward(f);
 									break;
 		default:					break;
@@ -722,7 +750,7 @@ void Level::moveMoveablesToward(Orientation f)
 	}
 
 	
-	for(int k=0; k<this->grid_depth; k++)
+	for(k=0; k<this->grid_depth; k++)
 	{
 		for(int j=0; j<this->grid_height; j++)
 		{
