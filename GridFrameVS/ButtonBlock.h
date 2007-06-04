@@ -15,6 +15,8 @@ public:
 	~ButtonBlock();
 	void render();
 	void print(int i);
+	CollisionResult collision();
+	Orientation getFacing();
 };
 
 #endif // __BUTTON_BLOCK_H__

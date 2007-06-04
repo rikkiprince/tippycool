@@ -13,6 +13,7 @@ public:
 	EndBlock(Orientation o);
 	~EndBlock();
 	void print(int i);
+	CollisionResult collision();
 };
 
 #endif // __END_BLOCK_H__

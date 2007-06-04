@@ -16,6 +16,8 @@ Level::Level(int x, int y, int z)
 
 	this->blockSize = 1.0;
 
+	this->totalCollectables = 0;
+
 //	char buf[256];
 	//GetPrivateProfileString("1,1,1", "type", NULL, buf, 256, ".\\test.ini");
 
@@ -82,6 +84,7 @@ Level::Level(int x, int y, int z)
 				else if(strcmp(type, "Star") == 0)
 				{
 					block[offset] = new StarBlock(o);
+					this->totalCollectables++;
 				}
 				//else if(strcmp(buf, "Special") == 0)
 				else
@@ -107,6 +110,8 @@ Level::Level(int x, int y, int z)
 	/*char or[256];
 	ini.getString("start", "orientation", 256, buf);
 	GetPrivateProfileString("start", "orientation", NULL, or, 256, filename);*/
+
+	this->remainingCollectables = this->totalCollectables;
 
 	this->offsetX = -(float)(this->grid_width*this->blockSize)/2.0f;
 	this->offsetY = -(float)(this->grid_height*this->blockSize)/2.0f;
@@ -146,6 +151,15 @@ void Level::right()
 {
 	this->rotS+=5;
 	this->accS+=0.005f;
+}
+
+void Level::setAcceleration(GLfloat f, GLfloat s)
+{
+	this->rotF = f*5;
+	this->accF = f*0.005f;
+	
+	this->rotS = s*5;
+	this->accS = s*0.005f;
 }
 
 void Level::stop()
@@ -303,7 +317,7 @@ void Level::update()
 				ball->fallForward(-halfBlock, -halfBlock);
 		}
 		else */
-		if(!validBlock(x,y,z) || this->block[this->getOffset(x,y,z)] == NULL)
+		if(!validBlock(x,y,z) || this->block[this->getOffset(x,y,z)] == NULL || !this->block[this->getOffset(x,y,z)]->isSolid())
 		{
 			printf("2 FALLOUT!\n");
 			if(dirF > 0)
@@ -311,10 +325,16 @@ void Level::update()
 			else
 				ball->fallForward(-halfBlock, -halfBlock);
 
+			if(validBlock(x,y,z) && this->block[this->getOffset(x,y,z)] != NULL)
+			{
+				 this->handleCollisionWith(this->block[this->getOffset(x,y,z)]);
+			}
+
 			if(validBlock(besideX, besideY, besideZ) && this->block[this->getOffset(besideX, besideY, besideZ)] != NULL)
 			{
 				printf("displace!\n");
 				ball->realignToSide(sX,sY,sZ);
+				this->handleCollisionWith(this->block[this->getOffset(besideX,besideY,besideZ)]);
 			}
 		}
 	}
@@ -363,7 +383,7 @@ void Level::update()
 		}
 		// PUT VALID BLOCK IN HERE!
 		else */
-		if(!validBlock(x,y,z) || this->block[this->getOffset(x,y,z)] == NULL)
+		if(!validBlock(x,y,z) || this->block[this->getOffset(x,y,z)] == NULL || !this->block[this->getOffset(x,y,z)]->isSolid())
 		{
 			printf("4 FALLOUT!\n");
 			if(dirF < 0)
@@ -371,10 +391,16 @@ void Level::update()
 			else
 				ball->fallForward(-halfBlock, -halfBlock);
 
+			if(validBlock(x,y,z) && this->block[this->getOffset(x,y,z)] != NULL)
+			{
+				 this->handleCollisionWith(this->block[this->getOffset(x,y,z)]);
+			}
+
 			if(validBlock(besideX, besideY, besideZ) && this->block[this->getOffset(besideX, besideY, besideZ)] != NULL)
 			{
 				printf("displace!\n");
 				ball->realignToSide(sX,sY,sZ);
+				this->handleCollisionWith(this->block[this->getOffset(besideX,besideY,besideZ)]);
 			}
 		}
 		printf("Ball:   (%f,%f,%f)\n", ball->getX(), ball->getY(), ball->getZ());
@@ -406,6 +432,10 @@ void Level::update()
 				else
 					ball->fallBackward(halfBlock, 0);
 			}
+			else
+			{
+				handleCollisionWith(this->block[this->getOffset(x,y,z)]);
+			}
 		}
 	}
 	// facing direction, positive change, block collision
@@ -425,10 +455,17 @@ void Level::update()
 		if(validBlock(x,y,z) && this->block[this->getOffset(x,y,z)] != NULL)
 		{
 			printf("13 COLLISION!\n");
-			if(dirF > 0)
-				ball->fallBackward(halfBlock, 0);
+			if(this->block[this->getOffset(x,y,z)]->isSolid())
+			{
+				if(dirF > 0)
+					ball->fallBackward(halfBlock, 0);
+				else
+					ball->fallForward(-halfBlock, 0);
+			}
 			else
-				ball->fallForward(-halfBlock, 0);
+			{
+				handleCollisionWith(this->block[this->getOffset(x,y,z)]);
+			}
 		}
 	}
 
@@ -479,7 +516,7 @@ void Level::update()
 				ball->fallRight(halfBlock, halfBlock);
 		}
 		else */
-		if(!validBlock(x,y,z) || this->block[this->getOffset(x,y,z)] == NULL)
+		if(!validBlock(x,y,z) || this->block[this->getOffset(x,y,z)] == NULL || !this->block[this->getOffset(x,y,z)]->isSolid())
 		{
 			printf("6 FALLOUT!\n");
 			if(dirS > 0)
@@ -487,10 +524,16 @@ void Level::update()
 			else
 				ball->fallRight(halfBlock, halfBlock);
 
+			if(validBlock(x,y,z) && this->block[this->getOffset(x,y,z)] != NULL)
+			{
+				 this->handleCollisionWith(this->block[this->getOffset(x,y,z)]);
+			}
+
 			if(validBlock(besideX, besideY, besideZ) && this->block[this->getOffset(besideX, besideY, besideZ)] != NULL)
 			{
 				printf("displace!\n");
 				ball->realignToFacing(sX,sY,sZ);
+				this->handleCollisionWith(this->block[this->getOffset(besideX,besideY,besideZ)]);
 			}
 		}
 	}
@@ -539,7 +582,7 @@ void Level::update()
 				ball->fallRight(halfBlock, halfBlock);
 		}
 		else */
-		if(!validBlock(x,y,z) || this->block[this->getOffset(x,y,z)] == NULL)
+		if(!validBlock(x,y,z) || this->block[this->getOffset(x,y,z)] == NULL || !this->block[this->getOffset(x,y,z)]->isSolid())
 		{
 			printf("8 FALLOUT! ");
 			if(dirS < 0)
@@ -547,10 +590,16 @@ void Level::update()
 			else
 				ball->fallRight(halfBlock, halfBlock);
 
+			if(validBlock(x,y,z) && this->block[this->getOffset(x,y,z)] != NULL)
+			{
+				this->handleCollisionWith(this->block[this->getOffset(x,y,z)]);
+			}
+
 			if(validBlock(besideX, besideY, besideZ) && this->block[this->getOffset(besideX, besideY, besideZ)] != NULL)
 			{
 				printf("displace!\n");
 				ball->realignToFacing(sX,sY,sZ);
+				this->handleCollisionWith(this->block[this->getOffset(besideX,besideY,besideZ)]);
 			}
 		}
 	}
@@ -605,6 +654,38 @@ void Level::update()
 	}
 	
 	//printf("Ball after: (%f,%f,%f)\n", ball->getX(), ball->getY(), ball->getZ());
+}
+
+void Level::handleCollisionWith(AbstractBlock *block)
+{
+	CollisionResult result = block->collision();
+	ButtonBlock *bb;
+	ShowerBlock *sb;
+	Orientation f;
+
+	switch(result)
+	{
+		case DIE:					printf("RESET LEVEL!\n");
+									break;
+		case COLLECT_COLLECTABLE:	this->remainingCollectables--;
+									printf("You have %d of %d left to collect!\n", this->remainingCollectables, this->totalCollectables);
+									break;
+		case COMPLETE_LEVEL:		printf("LEVEL COMPLETED!\n");
+									break;
+		case CHANGE_COLOUR:			sb = dynamic_cast<ShowerBlock*>(block);
+									//ball->addColour(sb->getR(),sb->getR(),sb->getR());
+									// updateShowers();
+									break;
+		case MOVE_MOVEABLE:			bb = dynamic_cast<ButtonBlock*>(block);
+									f = bb->getFacing();
+									this->moveMoveablesToward(f);
+									break;
+		default:					break;
+	}
+}
+
+void Level::moveMoveablesToward(Orientation f)
+{
 }
 
 bool Level::validBlock(int x, int y, int z)

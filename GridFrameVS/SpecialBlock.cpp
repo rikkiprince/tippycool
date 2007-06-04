@@ -5,6 +5,8 @@
 SpecialBlock::SpecialBlock()
 {
 	printf("Constructing SpecialBlock!\n");
+
+	this->solid = false;
 }
 
 SpecialBlock::~SpecialBlock()

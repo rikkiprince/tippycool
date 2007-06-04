@@ -20,6 +20,7 @@ public:
 	~NormalBlock();
 	void render();
 	void print(int i);
+	CollisionResult collision();
 };
 
 #endif // __NORMAL_BLOCK_H__

@@ -27,3 +27,8 @@ void SpikeBlock::print(int i)
 {
 	printf("Hello\n");
 }
+
+CollisionResult SpikeBlock::collision()
+{
+	return DIE;
+}

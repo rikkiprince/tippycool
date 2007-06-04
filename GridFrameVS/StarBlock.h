@@ -8,14 +8,14 @@
 class StarBlock : public SpecialBlock
 {
 protected:
-	Orientation orientation;
-	libmd3_file *model;
+	bool collected;
 
 public:
 	StarBlock(Orientation o);
 	~StarBlock();
 	void render();
 	void print(int i);
+	CollisionResult collision();
 };
 
 #endif // __STAR_BLOCK_H__

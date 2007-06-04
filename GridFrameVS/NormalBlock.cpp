@@ -6,6 +6,7 @@ NormalBlock::NormalBlock()
 
 	this->textured = false;
 	this->moveable = false;
+	this->solid = true;
 }
 
 NormalBlock::NormalBlock(GLuint texture)
@@ -15,6 +16,7 @@ NormalBlock::NormalBlock(GLuint texture)
 
 	this->textured = true;
 	this->moveable = false;
+	this->solid = true;
 }
 
 NormalBlock::NormalBlock(GLuint texture, bool m)
@@ -24,6 +26,7 @@ NormalBlock::NormalBlock(GLuint texture, bool m)
 
 	this->textured = true;
 	this->moveable = m;
+	this->solid = true;
 }
 
 NormalBlock::~NormalBlock()
@@ -42,4 +45,9 @@ void NormalBlock::render()
 void NormalBlock::print(int i)
 {
 	printf("i = %d\n", i);
+}
+
+CollisionResult NormalBlock::collision()
+{
+	return NONE;
 }

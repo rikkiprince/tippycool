@@ -13,6 +13,7 @@ public:
 	ShowerBlock(Orientation o);
 	~ShowerBlock();
 	void print(int i);
+	CollisionResult collision();
 };
 
 #endif // __SHOWER_BLOCK_H__

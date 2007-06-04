@@ -43,6 +43,8 @@ protected:
 
 	Camera *camera;
 
+	int remainingCollectables, totalCollectables;
+
 	void draw_grid();
 	int getOffset(int i, int j, int k);
 public:
@@ -58,11 +60,15 @@ public:
 	void update();
 	void update1();
 
+	void handleCollisionWith(AbstractBlock *block);
+	void moveMoveablesToward(Orientation f);
+
 	void up();
 	void down();
 	void left();
 	void right();
 	void stop();
+	void setAcceleration(GLfloat f, GLfloat s);
 
 	void reset();
 

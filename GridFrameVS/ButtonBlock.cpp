@@ -86,3 +86,14 @@ void ButtonBlock::print(int i)
 {
 	printf("Hello\n");
 }
+
+CollisionResult ButtonBlock::collision()
+{
+	return MOVE_MOVEABLE;
+}
+
+Orientation ButtonBlock::getFacing()
+{
+	return this->facing;
+}
+

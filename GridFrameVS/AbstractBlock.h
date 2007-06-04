@@ -1,6 +1,8 @@
 #ifndef __ABSTRACT_BLOCK_H__
 #define __ABSTRACT_BLOCK_H__
 
+enum CollisionResult { NONE, DIE, COLLECT_COLLECTABLE, COMPLETE_LEVEL, CHANGE_COLOUR, MOVE_MOVEABLE };
+
 class AbstractBlock
 {
 protected:
@@ -10,6 +12,7 @@ protected:
 public:
 	virtual void render() = 0;
 	virtual void print(int i) = 0;
+	virtual CollisionResult collision() = 0;
 
 	bool isMoveable()
 	{

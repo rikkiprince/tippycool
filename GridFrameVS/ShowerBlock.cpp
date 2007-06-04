@@ -21,3 +21,8 @@ void ShowerBlock::print(int i)
 {
 	printf("Hello\n");
 }
+
+CollisionResult ShowerBlock::collision()
+{
+	return CHANGE_COLOUR;
+}

@@ -697,6 +697,7 @@ void handleEvents()
 				{
 					mouse_down = false;
 					printf("x=%d; y=%d;\n", event.button.x, event.button.y);
+						level->setAcceleration(0, 0);
 				}
 				break;
 			case SDL_MOUSEMOTION:
@@ -708,6 +709,11 @@ void handleEvents()
 						//camera_rotation += (event.motion.x - mouse_down_x) * M_PI/180;
 						camera_rotation_x += 15 * (event.motion.xrel) * M_PI/180;
 						camera_rotation_y += 15 * (event.motion.yrel) * M_PI/180;
+					}
+					else
+					{
+						GLfloat m = 0.05;
+						level->setAcceleration((mouse_down_y - event.button.y)*m, (event.button.x - mouse_down_x)*m);
 					}
 				}
             default:

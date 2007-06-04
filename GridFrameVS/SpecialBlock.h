@@ -20,6 +20,7 @@ public:
 	~SpecialBlock();
 	void render();
 	void print(int i);
+	virtual CollisionResult collision() = 0;
 };
 
 #endif // __SPECIAL_BLOCK_H__

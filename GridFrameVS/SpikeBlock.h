@@ -13,6 +13,7 @@ public:
 	SpikeBlock(Orientation o);
 	~SpikeBlock();
 	void print(int i);
+	CollisionResult collision();
 };
 
 #endif // __SPIKE_BLOCK_H__

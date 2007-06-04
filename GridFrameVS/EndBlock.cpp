@@ -31,3 +31,8 @@ void EndBlock::print(int i)
 {
 	printf("Hello\n");
 }
+
+CollisionResult EndBlock::collision()
+{
+	return COMPLETE_LEVEL;
+}
