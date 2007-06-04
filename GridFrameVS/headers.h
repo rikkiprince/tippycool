@@ -36,7 +36,6 @@ extern "C" {
 
 #include "types.h"
 
-
 /*#ifdef NDEBUG
 	#define printf	//
 #endif*/

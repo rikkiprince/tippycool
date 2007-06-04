@@ -11,15 +11,15 @@ Build Log
 </h3>
 </pre></table><table width=100% bgcolor=#DFDFE5><tr><td><font face=arial size=+2>
 Command Lines
-</font></table><table width=* cellspacing=0 cellpadding=0><tr><td width=0 bgcolor=#EDEDF5>&nbsp;</td><td width=0 bgcolor=#FFFFFF>&nbsp;</td><td width=*><pre>Creating temporary file "c:\Documents and Settings\Emma Lee-Choon\Desktop\Year 4\COMP6005 IES - copied2305\Project\GridFrameVS\Debug\RSP000017.rsp" with contents
+</font></table><table width=* cellspacing=0 cellpadding=0><tr><td width=0 bgcolor=#EDEDF5>&nbsp;</td><td width=0 bgcolor=#FFFFFF>&nbsp;</td><td width=*><pre>Creating temporary file "c:\Documents and Settings\Emma Lee-Choon\Desktop\Year 4\COMP6005 IES - copied2305\Project\GridFrameVS\Debug\RSP000094.rsp" with contents
 [
-/Od /I ".\include" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /FD /EHsc /RTC1 /MD /YX"stdafx.h" /Fp".\Debug/GridFrameVS.pch" /Fo".\Debug/" /Fd".\Debug/" /W3 /c /ZI
-".\Menu.cpp"
+/Od /I ".\include" /I "C:\Program Files\Microsoft Platform SDK\Include" /I "C:\WINDDK\3790.1830\inc\wxp" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /FD /EHsc /RTC1 /MD /YX"stdafx.h" /Fp".\Debug/GridFrameVS.pch" /Fo".\Debug/" /Fd".\Debug/" /W3 /c /ZI
+".\framework.cpp"
 ]
-Creating command line "cl.exe @"c:\Documents and Settings\Emma Lee-Choon\Desktop\Year 4\COMP6005 IES - copied2305\Project\GridFrameVS\Debug\RSP000017.rsp" /nologo"
-Creating temporary file "c:\Documents and Settings\Emma Lee-Choon\Desktop\Year 4\COMP6005 IES - copied2305\Project\GridFrameVS\Debug\RSP000018.rsp" with contents
+Creating command line "cl.exe @"c:\Documents and Settings\Emma Lee-Choon\Desktop\Year 4\COMP6005 IES - copied2305\Project\GridFrameVS\Debug\RSP000094.rsp" /nologo"
+Creating temporary file "c:\Documents and Settings\Emma Lee-Choon\Desktop\Year 4\COMP6005 IES - copied2305\Project\GridFrameVS\Debug\RSP000095.rsp" with contents
 [
-/OUT:".\Debug/GridFrameVS.exe" /INCREMENTAL:NO /NOLOGO /LIBPATH:".\lib\\" /NODEFAULTLIB:"library" /DEBUG /PDB:".\Debug/GridFrameVS.pdb" /SUBSYSTEM:CONSOLE /MACHINE:X86 SDL.LIB SDLmain.lib SDL_mixer.lib SDL_ttf.lib fmodvc.lib odbc32.lib odbccp32.lib opengl32.lib glu32.lib libmodelfile.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib ".\lib\SDL.lib" ".\lib\SDLmain.lib" ".\lib\SDL_mixer.lib" ".\lib\SDL_ttf.lib" ".\lib\fmodvc.lib" ".\lib\libmodelfile.lib"
+/OUT:".\Debug/GridFrameVS.exe" /INCREMENTAL:NO /NOLOGO /LIBPATH:"lib" /LIBPATH:"C:\WINDDK\3790.1830\lib\wxp\i386" /NODEFAULTLIB:"library" /DEBUG /PDB:".\Debug/GridFrameVS.pdb" /SUBSYSTEM:CONSOLE /MACHINE:X86 SDL.lib SDLmain.lib odbc32.lib odbccp32.lib opengl32.lib glu32.lib libmodelfile.lib  SDL_mixer.lib SDL_ttf.lib fmodvc.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib ".\lib\SDL.lib" ".\lib\SDLmain.lib" "\Winddk\3790.1830\lib\wxp\i386\odbc32.lib" "\Winddk\3790.1830\lib\wxp\i386\odbccp32.lib" "\Winddk\3790.1830\lib\wxp\i386\opengl32.lib" "\Winddk\3790.1830\lib\wxp\i386\glu32.lib" ".\lib\libmodelfile.lib" ".\lib\SDL_mixer.lib" ".\lib\SDL_ttf.lib" ".\lib\fmodvc.lib" "\Winddk\3790.1830\lib\wxp\i386\kernel32.lib" "\Winddk\3790.1830\lib\wxp\i386\user32.lib" "\Winddk\3790.1830\lib\wxp\i386\gdi32.lib" "\Winddk\3790.1830\lib\wxp\i386\winspool.lib" "\Winddk\3790.1830\lib\wxp\i386\comdlg32.lib" "\Winddk\3790.1830\lib\wxp\i386\advapi32.lib" "\Winddk\3790.1830\lib\wxp\i386\shell32.lib" "\Winddk\3790.1830\lib\wxp\i386\ole32.lib" "\Winddk\3790.1830\lib\wxp\i386\oleaut32.lib" "\Winddk\3790.1830\lib\wxp\i386\uuid.lib"
 ".\Debug\Camera.obj"
 ".\Debug\framework.obj"
 ".\Debug\IniFile.obj"
@@ -39,23 +39,19 @@ Creating temporary file "c:\Documents and Settings\Emma Lee-Choon\Desktop\Year 4
 ".\Debug\MenuItem.obj"
 ".\Debug\MenuSystem.obj"
 ".\Debug\StatusBar.obj"
+".\Debug\wiimote.obj"
+".\Debug\hiddevice.obj"
 ]
-Creating command line "link.exe @"c:\Documents and Settings\Emma Lee-Choon\Desktop\Year 4\COMP6005 IES - copied2305\Project\GridFrameVS\Debug\RSP000018.rsp""
+Creating command line "link.exe @"c:\Documents and Settings\Emma Lee-Choon\Desktop\Year 4\COMP6005 IES - copied2305\Project\GridFrameVS\Debug\RSP000095.rsp""
 </pre></table><table width=100% bgcolor=#DFDFE5><tr><td><font face=arial size=+2>
 Output Window
 </font></table><table width=* cellspacing=0 cellpadding=0><tr><td width=0 bgcolor=#EDEDF5>&nbsp;</td><td width=0 bgcolor=#FFFFFF>&nbsp;</td><td width=*><pre>Compiling...
-Menu.cpp
-c:\Documents and Settings\Emma Lee-Choon\Desktop\Year 4\COMP6005 IES - copied2305\Project\GridFrameVS\Menu.cpp(62) : warning C4101: 'rect' : unreferenced local variable
-c:\Documents and Settings\Emma Lee-Choon\Desktop\Year 4\COMP6005 IES - copied2305\Project\GridFrameVS\Menu.cpp(143) : warning C4244: 'argument' : conversion from 'int' to 'GLfloat', possible loss of data
-c:\Documents and Settings\Emma Lee-Choon\Desktop\Year 4\COMP6005 IES - copied2305\Project\GridFrameVS\Menu.cpp(143) : warning C4244: 'argument' : conversion from 'int' to 'GLfloat', possible loss of data
-c:\Documents and Settings\Emma Lee-Choon\Desktop\Year 4\COMP6005 IES - copied2305\Project\GridFrameVS\Menu.cpp(145) : warning C4244: 'argument' : conversion from 'int' to 'GLfloat', possible loss of data
-c:\Documents and Settings\Emma Lee-Choon\Desktop\Year 4\COMP6005 IES - copied2305\Project\GridFrameVS\Menu.cpp(145) : warning C4244: 'argument' : conversion from 'int' to 'GLfloat', possible loss of data
-c:\Documents and Settings\Emma Lee-Choon\Desktop\Year 4\COMP6005 IES - copied2305\Project\GridFrameVS\Menu.cpp(147) : warning C4244: 'argument' : conversion from 'int' to 'GLfloat', possible loss of data
-c:\Documents and Settings\Emma Lee-Choon\Desktop\Year 4\COMP6005 IES - copied2305\Project\GridFrameVS\Menu.cpp(147) : warning C4244: 'argument' : conversion from 'int' to 'GLfloat', possible loss of data
-c:\Documents and Settings\Emma Lee-Choon\Desktop\Year 4\COMP6005 IES - copied2305\Project\GridFrameVS\Menu.cpp(149) : warning C4244: 'argument' : conversion from 'int' to 'GLfloat', possible loss of data
-c:\Documents and Settings\Emma Lee-Choon\Desktop\Year 4\COMP6005 IES - copied2305\Project\GridFrameVS\Menu.cpp(149) : warning C4244: 'argument' : conversion from 'int' to 'GLfloat', possible loss of data
-c:\Documents and Settings\Emma Lee-Choon\Desktop\Year 4\COMP6005 IES - copied2305\Project\GridFrameVS\Menu.cpp(235) : warning C4244: 'argument' : conversion from 'int' to 'GLfloat', possible loss of data
-c:\Documents and Settings\Emma Lee-Choon\Desktop\Year 4\COMP6005 IES - copied2305\Project\GridFrameVS\Menu.cpp(243) : warning C4244: 'argument' : conversion from 'double' to 'int', possible loss of data
+framework.cpp
+c:\Documents and Settings\Emma Lee-Choon\Desktop\Year 4\COMP6005 IES - copied2305\Project\GridFrameVS\framework.cpp(8) : warning C4067: unexpected tokens following preprocessor directive - expected a newline
+c:\Documents and Settings\Emma Lee-Choon\Desktop\Year 4\COMP6005 IES - copied2305\Project\GridFrameVS\framework.cpp(9) : warning C4067: unexpected tokens following preprocessor directive - expected a newline
+c:\Documents and Settings\Emma Lee-Choon\Desktop\Year 4\COMP6005 IES - copied2305\Project\GridFrameVS\framework.cpp(10) : warning C4067: unexpected tokens following preprocessor directive - expected a newline
+c:\Documents and Settings\Emma Lee-Choon\Desktop\Year 4\COMP6005 IES - copied2305\Project\GridFrameVS\framework.cpp(98) : warning C4800: 'signed char' : forcing value to bool 'true' or 'false' (performance warning)
+c:\Documents and Settings\Emma Lee-Choon\Desktop\Year 4\COMP6005 IES - copied2305\Project\GridFrameVS\framework.cpp(1163) : warning C4305: 'initializing' : truncation from 'double' to 'GLfloat'
 Linking...
 LINK : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/INCREMENTAL:NO' specification
 LINK : warning LNK4098: defaultlib 'LIBC' conflicts with use of other libs; use /NODEFAULTLIB:library
@@ -63,5 +59,5 @@ LINK : warning LNK4098: defaultlib 'LIBC' conflicts with use of other libs; use 
 Results
 </font></table><table width=* cellspacing=0 cellpadding=0><tr><td width=0 bgcolor=#EDEDF5>&nbsp;</td><td width=0 bgcolor=#FFFFFF>&nbsp;</td><td width=*><pre>
 Build log was saved at "file://c:\Documents and Settings\Emma Lee-Choon\Desktop\Year 4\COMP6005 IES - copied2305\Project\GridFrameVS\Debug\BuildLog.htm"
-GridFrameVS - 0 error(s), 13 warning(s)</pre></table><table   width=100% height=20 bgcolor=#CFCFE5><tr><td><font face=arial size=+2>
+GridFrameVS - 0 error(s), 7 warning(s)</pre></table><table   width=100% height=20 bgcolor=#CFCFE5><tr><td><font face=arial size=+2>
 </font></table></body></html>

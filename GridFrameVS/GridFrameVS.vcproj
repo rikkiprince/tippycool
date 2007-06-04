@@ -21,7 +21,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories=".\include"
+				AdditionalIncludeDirectories=".\include;&quot;C:\Program Files\Microsoft Platform SDK\Include&quot;;C:\WINDDK\3790.1830\inc\wxp"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="2"
@@ -38,11 +38,11 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="SDL.LIB SDLmain.lib SDL_mixer.lib SDL_ttf.lib fmodvc.lib odbc32.lib odbccp32.lib opengl32.lib glu32.lib libmodelfile.lib"
+				AdditionalDependencies="SDL.lib SDLmain.lib odbc32.lib odbccp32.lib opengl32.lib glu32.lib libmodelfile.lib  SDL_mixer.lib SDL_ttf.lib fmodvc.lib"
 				OutputFile=".\Debug/GridFrameVS.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories=".\lib\"
+				AdditionalLibraryDirectories="lib;C:\WINDDK\3790.1830\lib\wxp\i386"
 				IgnoreDefaultLibraryNames="library"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\Debug/GridFrameVS.pdb"
@@ -106,7 +106,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="SDL.LIB SDLmain.lib odbc32.lib odbccp32.lib opengl32.lib glu32.lib libmodelfile.lib"
+				AdditionalDependencies="SDL.LIB SDL_mixer.lib SDL_ttf.lib fmodvc.lib SDLmain.lib odbc32.lib odbccp32.lib opengl32.lib glu32.lib libmodelfile.lib"
 				OutputFile=".\Release/GridFrameVS.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
@@ -191,6 +191,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\hiddevice.cpp">
+			</File>
+			<File
 				RelativePath="IniFile.cpp">
 				<FileConfiguration
 					Name="Debug|Win32">
@@ -270,6 +273,9 @@
 						PreprocessorDefinitions=""/>
 				</FileConfiguration>
 			</File>
+			<File
+				RelativePath=".\wiimote.cpp">
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -278,10 +284,19 @@
 				RelativePath="Camera.h">
 			</File>
 			<File
+				RelativePath=".\fmod.h">
+			</File>
+			<File
+				RelativePath=".\fmod_errors.h">
+			</File>
+			<File
 				RelativePath="font.h">
 			</File>
 			<File
 				RelativePath="headers.h">
+			</File>
+			<File
+				RelativePath=".\hiddevice.h">
 			</File>
 			<File
 				RelativePath="IniFile.h">
@@ -300,6 +315,9 @@
 			</File>
 			<File
 				RelativePath="types.h">
+			</File>
+			<File
+				RelativePath=".\wiimote.h">
 			</File>
 		</Filter>
 		<Filter

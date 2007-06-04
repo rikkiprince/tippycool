@@ -10,6 +10,12 @@
 #include "Menu.h";
 #include "fmod.h"
 
+#include "wiimote.h"
+
+	cWiiMote wiimote;
+	bool isWiimote;
+	
+
 bool testing = false;
 
 int rotate_up=0, rotate_side=0;
@@ -104,13 +110,13 @@ void uninit_audio() {
 }
 
 void load_audio() {
-	menuclick = FSOUND_Sample_Load (0, "audio//menuclick.wav", 0, 0, 0); //http://www.partnersinrhyme.com/pirsounds/WEB_DESIGN_SOUNDS_WAV/BUTTONS.shtml
-	buttonblockclick = FSOUND_Sample_Load (0, "audio//buttonblockclick.wav", 0, 0, 0); //http://www.wavsource.com/sfx/sfx.htm
-	getstar = FSOUND_Sample_Load (0, "audio//getstar.wav", 0, 0, 0); //http://www.wavsource.com/sfx/sfx.htm
-	goal = FSOUND_Sample_Load (0, "audio//goal.wav", 0, 0, 0); //http://www.wavsource.com/sfx/sfx.htm
-	blockmove = FSOUND_Sample_Load (0, "audio//blockmove.wav", 0, 0, 0); //http://www.a1freesoundeffects.com/button.html
-	shower = FSOUND_Sample_Load (0, "audio//shower.wav", 0, 0, 0); //http://www.a1freesoundeffects.com/button.html
-	hitspikes = FSOUND_Sample_Load (0, "audio//hitspikes.wav", 0, 0, 0); //http://www.wavsource.com/sfx/sfx2.htm
+	menuclick = FSOUND_Sample_Load (FSOUND_FREE, ".\\audio\\click3.wav", 0, 0, 0); //http://www.partnersinrhyme.com/pirsounds/WEB_DESIGN_SOUNDS_WAV/BUTTONS.shtml
+	buttonblockclick = FSOUND_Sample_Load (FSOUND_FREE, "audio//buttonblockclick.wav", 0, 0, 0); //http://www.wavsource.com/sfx/sfx.htm
+	getstar = FSOUND_Sample_Load (FSOUND_FREE, "audio//getstar.wav", 0, 0, 0); //http://www.wavsource.com/sfx/sfx.htm
+	goal = FSOUND_Sample_Load (FSOUND_FREE, "audio//goal.wav", 0, 0, 0); //http://www.wavsource.com/sfx/sfx.htm
+	blockmove = FSOUND_Sample_Load (FSOUND_FREE, "audio//blockmove.wav", 0, 0, 0); //http://www.a1freesoundeffects.com/button.html
+	shower = FSOUND_Sample_Load (FSOUND_FREE, "audio//shower.wav", 0, 0, 0); //http://www.a1freesoundeffects.com/button.html
+	hitspikes = FSOUND_Sample_Load (FSOUND_FREE, "audio//hitspikes.wav", 0, 0, 0); //http://www.wavsource.com/sfx/sfx2.htm
 	FSOUND_SetSFXMasterVolume(50);
 }
 
@@ -326,7 +332,7 @@ bool init_graphics()
 
     SDL_Surface * screen;
 
-	SDL_WM_SetCaption("Title-Bar", "Icon name");
+	SDL_WM_SetCaption("TippyCool", "Icon name");
 	SDL_WM_SetIcon(SDL_LoadBMP("icon.bmp"), NULL);
 
     // Create the window
@@ -964,39 +970,41 @@ void handleEvents()
 						if(num > -1)
 						{
 							play_audio(0,  menuclick);
-						}
-						if(num == STARTMENU)
-						{
-							paused = false;
-							int newLevel = ms->getLevel();
-							if(newLevel > 0)
+							if(num == STARTMENU)
 							{
-								start(newLevel);
+								paused = false;
+								printf("selected is: %d\n", ms->getSelected());
+								int newLevel = ms->getLevel();
+								printf("newlevel is: %d\n", newLevel);
+								if(newLevel > 0)
+								{
+									start(newLevel);
+								}
+								else
+								{
+									start(1);
+								}
+							}
+							else if(num == RESET)
+							{
+								paused = false;
+								ms->enter(BLANK);
+								level->reset();
+							}
+							else if(num == CONTINUE)
+							{
+								paused = false;
+								ms->enter(BLANK);
+							}
+							else if(num == EXITGAME)
+							{
+								Sleep(100);
+								program_finished = true;
 							}
 							else
 							{
-								start(1);
+								ms->enter(num);
 							}
-						}
-						else if(num == RESET)
-						{
-							paused = false;
-							ms->enter(BLANK);
-							level->reset();
-						}
-						else if(num == CONTINUE)
-						{
-							paused = false;
-							ms->enter(BLANK);
-						}
-						else if(num == EXITGAME)
-						{
-							Sleep(100);
-							program_finished = true;
-						}
-						else
-						{
-							ms->enter(num);
 						}
 					}
                 }
@@ -1178,6 +1186,30 @@ void loop()
     // This is the main program loop. It will run until something sets
     // the flag to indicate we are done.
     while (!program_finished) {
+		
+		
+		if(ms->getSelected() == BLANK)
+		{
+			if(isWiimote)
+			{
+				wiimote.HeartBeat();
+				//wiimote.PrintStatus();
+
+				float wX,wY,wZ;
+				/*float cX,cY,cZ;
+				float sX,sY;
+				float irX,irY;*/
+		
+				wX=wY=wZ=0.0f;	//cX=cY=cZ=sX=sY=irX=irY=0.f;
+
+				wiimote.GetCalibratedAcceleration(wX,wY,wZ);
+				//printf("W:[%+1.2f %+1.2f %+1.2f] ",wX,wY,wZ);
+				GLfloat mF = -5, mS = 5;
+				level->setAcceleration(wY*mF, wX*mS);
+				printf("F: %f, S: %f\n", wY*mF, wX*mS);
+			}
+		}
+
         // Check for events
         handleEvents();
 
@@ -1203,6 +1235,8 @@ void loop()
 					else
 					{
 						ms->enter(LEVELCOMPLETED);
+						//setStatusBarText(topsb, "Level Completed!");
+						//setStatusBarText(bottomsb, "Select an option");
 					}
 				}
 			}
@@ -1247,6 +1281,19 @@ int main( int argc, char **argv )
         return 1;
     }
 	
+	if (wiimote.ConnectToDevice() &&
+		wiimote.StartDataStream())
+	{
+		printf("Wiimote connected!\n");
+		isWiimote = true;
+	}
+	else
+	{
+		printf("Wiimote failed\n");
+		isWiimote = false;
+		//return 1;
+	}
+	
 	if(!init_models()) {
 		return 1;
 	}
@@ -1256,6 +1303,8 @@ int main( int argc, char **argv )
         return 1;
     }
 	load_audio();
+
+
 
 	createGameMenuSystem();
 
