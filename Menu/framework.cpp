@@ -81,7 +81,7 @@ void uninit_audio() {
 }
 
 void load_audio() {
-	menuclick = FSOUND_Sample_Load (0, "audio//click2.wav", 0, 0, 0); //http://www.partnersinrhyme.com/pirsounds/WEB_DESIGN_SOUNDS_WAV/BUTTONS.shtml
+	menuclick = FSOUND_Sample_Load (0, "audio//menuclick.wav", 0, 0, 0); //http://www.partnersinrhyme.com/pirsounds/WEB_DESIGN_SOUNDS_WAV/BUTTONS.shtml
 	buttonblockclick = FSOUND_Sample_Load (0, "audio//buttonblockclick.wav", 0, 0, 0); //http://www.wavsource.com/sfx/sfx.htm
 	getstar = FSOUND_Sample_Load (0, "audio//getstar.wav", 0, 0, 0); //http://www.wavsource.com/sfx/sfx.htm
 	goal = FSOUND_Sample_Load (0, "audio//goal.wav", 0, 0, 0); //http://www.wavsource.com/sfx/sfx.htm
