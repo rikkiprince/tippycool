@@ -18,12 +18,15 @@ extern "C" {
 #include <GL/gl.h>
 #include <GL/glu.h>
 
+#include "SDL_ttf.h" 
 #include "font.h"
 
 #include <stdio.h>
-
+#include <conio.h>
 #include <iostream>
-
+#include <time.h>
+#include <math.h>
+#include <GL/glext.h>
 #include <cmath>
 #include <cstring>
 

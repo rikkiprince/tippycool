@@ -3,15 +3,38 @@
 // Copyright (C) 2000,2004 Alistair Riddoch
 
 #include "main.h"
+#include "headers.h"
+#include "StatusBar.h"
+#include "MenuSystem.h";
+#include "MenuItem.h";
+#include "Menu.h";
+#include "fmod.h"
 
-bool testing = true;
+bool testing = false;
 
 int rotate_up=0, rotate_side=0;
+
+#define GAME			(0)
+#define SELECTLEVEL		(1)
+#define INSTRUCTIONS	(2)
+#define PAUSE			(3)
+#define LEVELCOMPLETED	(4)
+#define GAMECOMPLETED	(5)
+#define RESET			(6)
+#define CONTINUE		(7)
+#define BLANK			(8)
+#define STARTMENU		(9)
+#define EXITGAME		(10)
 
 // Constants
 
 static const int screen_width = 600;
 static const int screen_height = 400;
+
+StatusBar *topsb, *bottomsb;
+MenuSystem *ms;
+Menu *game, *selectLevel, *instructions, *pause, *completeLevel, *completeGame, *blank;
+TTF_Font *font24, *font20, *font16, *font14;
 
 // Number of squares in the grid. The number of points is this number +1.
 static const int grid_width = 4;
@@ -27,6 +50,9 @@ static int block_x = 2;
 static int block_y = 2;
 static int block_z = 0;
 
+int score = -1;
+int currentLevel = -1;
+bool paused = false;
 
 // Structure to hold the properties of a single square on the grid.
 // If you want to add more information to the grid, add new members here.
@@ -53,6 +79,44 @@ Level *level;
 AbstractBlock* blocks[grid_width][grid_height][grid_depth];
 
 GLuint texture;
+
+FSOUND_SAMPLE *menuclick = NULL;
+FSOUND_SAMPLE *buttonblockclick = NULL;
+FSOUND_SAMPLE *getstar = NULL;
+FSOUND_SAMPLE *goal = NULL;
+FSOUND_SAMPLE *blockmove = NULL;
+FSOUND_SAMPLE *shower = NULL;
+FSOUND_SAMPLE *hitspikes = NULL;
+
+bool init_audio() {	
+	return FSOUND_Init(44100, 32, 0);
+}
+
+void uninit_audio() {
+	FSOUND_Sample_Free(menuclick);
+	FSOUND_Sample_Free(buttonblockclick);
+	FSOUND_Sample_Free(getstar);
+	FSOUND_Sample_Free(goal);
+	FSOUND_Sample_Free(blockmove);
+	FSOUND_Sample_Free(shower);
+	FSOUND_Sample_Free(hitspikes);
+	FSOUND_Close();
+}
+
+void load_audio() {
+	menuclick = FSOUND_Sample_Load (0, "audio//menuclick.wav", 0, 0, 0); //http://www.partnersinrhyme.com/pirsounds/WEB_DESIGN_SOUNDS_WAV/BUTTONS.shtml
+	buttonblockclick = FSOUND_Sample_Load (0, "audio//buttonblockclick.wav", 0, 0, 0); //http://www.wavsource.com/sfx/sfx.htm
+	getstar = FSOUND_Sample_Load (0, "audio//getstar.wav", 0, 0, 0); //http://www.wavsource.com/sfx/sfx.htm
+	goal = FSOUND_Sample_Load (0, "audio//goal.wav", 0, 0, 0); //http://www.wavsource.com/sfx/sfx.htm
+	blockmove = FSOUND_Sample_Load (0, "audio//blockmove.wav", 0, 0, 0); //http://www.a1freesoundeffects.com/button.html
+	shower = FSOUND_Sample_Load (0, "audio//shower.wav", 0, 0, 0); //http://www.a1freesoundeffects.com/button.html
+	hitspikes = FSOUND_Sample_Load (0, "audio//hitspikes.wav", 0, 0, 0); //http://www.wavsource.com/sfx/sfx2.htm
+	FSOUND_SetSFXMasterVolume(50);
+}
+
+void play_audio(int channel, FSOUND_SAMPLE *sound) {
+	FSOUND_PlaySound (channel, sound);
+}
 
 void init_grid()
 {
@@ -361,6 +425,179 @@ void setup()
 
 }
 
+//load font for menus
+char fontpath[] = "font//arial.ttf";
+
+void init_fonts()
+{
+	if(TTF_Init()==-1) {
+		printf("TTF_Init: %s\n", TTF_GetError());
+		exit(2);
+	}
+
+	if(!(font24 = TTF_OpenFont(fontpath, 24))) {
+		printf("Error loading font: %s", TTF_GetError());
+		//return 1;
+	}
+
+	if(!(font20 = TTF_OpenFont(fontpath, 20))) {
+		printf("Error loading font: %s", TTF_GetError());
+		//return 1;
+	}
+
+	if(!(font16 = TTF_OpenFont(fontpath, 16))) {
+		printf("Error loading font: %s", TTF_GetError());
+		//return 1;
+	}
+
+	if(!(font14 = TTF_OpenFont(fontpath, 14))) {
+		printf("Error loading font: %s", TTF_GetError());
+		//return 1;
+	}
+}
+
+void uninit_fonts()
+{
+	// free the font
+	TTF_CloseFont(font14);
+	TTF_CloseFont(font16);
+	TTF_CloseFont(font20);
+	TTF_CloseFont(font24);
+	font14=NULL;
+	font16=NULL;
+	font20=NULL;
+	font24=NULL;
+	TTF_Quit();
+}
+
+void createTopStatusBar()
+{
+	init_fonts();
+	topsb = new StatusBar(font20, true, screen_width, screen_height);
+}
+
+void createBottomStatusBar()
+{
+	init_fonts();
+	bottomsb = new StatusBar(font20, false, screen_width, screen_height);
+}
+
+void setStatusBarText(StatusBar *sb, char *text)
+{
+	sb->setText(font20, text);
+}
+
+void createGameMenuSystem()
+{
+	init_fonts();
+
+	//-1 - No Menu
+	//0 - Game Menu
+	//1 - Level Menu
+	//2 - Instructions Menu
+	//3 - Pause Menu
+	//4 - Completed Level Menu
+	//5 - Completed Game
+	//6 - Reset
+	//7 - Unpause
+	//8 - Blank Menu
+	//9 - Start Game
+	//10 - Exit Game
+
+	game = new Menu("Main Menu", screen_width, screen_height, font20);
+	game->add(new MenuItem("Start", font20, STARTMENU, true, true, 1));
+	game->add(new MenuItem("Select Level", font20, SELECTLEVEL, true, true));
+	game->add(new MenuItem("Instructions", font20, INSTRUCTIONS, true, true));
+	game->add(new MenuItem("Exit", font20, EXITGAME, true, true));
+	game->layout();
+
+	selectLevel = new Menu("Level Menu", screen_width, screen_height, font20);
+	selectLevel->add(new MenuItem("Level 1", font16, STARTMENU, true, true, 1));
+	selectLevel->add(new MenuItem("Level 2", font16, STARTMENU, true, true, 2));
+	selectLevel->add(new MenuItem("Level 3", font16, STARTMENU, true, true, 3));
+	selectLevel->add(new MenuItem("Level 4", font16, STARTMENU, true, true, 4));
+	selectLevel->add(new MenuItem("Level 5", font16, STARTMENU, true, true, 5));
+	selectLevel->add(new MenuItem("Level 6", font16, STARTMENU, true, true, 6));
+	selectLevel->add(new MenuItem("Level 7", font16, STARTMENU, true, true, 7));
+	selectLevel->add(new MenuItem("Level 8", font16, STARTMENU, true, true, 8));
+	selectLevel->add(new MenuItem("Level 9", font16, STARTMENU, true, true, 9));
+	selectLevel->add(new MenuItem("Level 10", font16, STARTMENU, true, true, 10));
+	selectLevel->add(new MenuItem("Back to Main Menu", font20, GAME, true, true));
+	selectLevel->layout();
+
+	instructions = new Menu("Instructions Menu", screen_width, screen_height, font20);
+	instructions->add(new MenuItem(" ", font16, -1, false, false));
+	instructions->add(new MenuItem("TextTextText", font16, -1, false, false));
+	instructions->add(new MenuItem("TextTextText", font16, -1, false, false));
+	instructions->add(new MenuItem("TextTextText", font16, -1, false, false));
+	instructions->add(new MenuItem("TextTextText", font16, -1, false, false));
+	instructions->add(new MenuItem(" ", font16, -1, false, false));
+	instructions->add(new MenuItem(" ", font16, -1, false, false));
+	instructions->add(new MenuItem("Back to Main Menu", font20, GAME, true, true));
+	instructions->setInstructions(true);
+	instructions->layout();
+
+	completeLevel = new Menu("Level Complete", screen_width, screen_height, font20);
+	completeLevel->add(new MenuItem("Continue", font20, CONTINUE, true, true, currentLevel+1));
+	completeLevel->add(new MenuItem("Retry Level", font20, RESET, true, true, currentLevel));
+	completeLevel->add(new MenuItem("Select Level", font20, SELECTLEVEL, true, true));
+	completeLevel->add(new MenuItem("Back to Main Menu", font20, GAME, true, true));
+	completeLevel->layout();
+
+	pause = new Menu("Game Paused", screen_width, screen_height, font20);
+	pause->add(new MenuItem("Resume Game", font20, CONTINUE, true, true));
+	pause->add(new MenuItem("Restart Level", font20, RESET, true, true, currentLevel));
+	pause->add(new MenuItem("Instructions", font20, INSTRUCTIONS, true, true));
+	pause->add(new MenuItem("Back to Main Menu", font20, GAME, true, true));
+	pause->layout();
+
+	completeGame = new Menu("Game Completed!", screen_width, screen_height, font20);
+	completeGame->add(new MenuItem("Retry Level", font20, RESET, true, true, currentLevel));
+	completeGame->add(new MenuItem("Select Level", font20, SELECTLEVEL, true, true));
+	completeGame->add(new MenuItem("Back to Main Menu", font20, GAME, true, true));
+	completeGame->add(new MenuItem("Exit", font20, EXITGAME, true, true));
+	completeGame->layout();
+
+	blank = new Menu(" ", screen_width, screen_height, font20);
+	blank->layout();
+
+	ms = new MenuSystem();
+	ms->add(game);
+	ms->add(selectLevel);
+	ms->add(instructions);
+	ms->add(completeLevel);
+	ms->add(pause);
+	ms->add(completeGame);
+	ms->add(blank);
+}
+
+void start(int l)
+{
+	printf("Level: %d\n", l);
+//	setup();
+	currentLevel = l;
+	char filename[256];
+	printf("Level Loaded");
+	sprintf(filename, ".\\levels\\level%d.ini", l);
+	level = new Level(filename);
+
+	if(ms->getSelected() != BLANK)
+	{
+		ms->enter(BLANK);
+	}
+
+	createTopStatusBar();
+	char message[256];
+	sprintf(message, "Level %d", currentLevel);
+	setStatusBarText(topsb, message);
+
+
+	createBottomStatusBar();
+	setStatusBarText(bottomsb, "Game Hints");
+}
+
+
+
 float camera_rotation = 0.0f;
 float camera_rotation_x = 90.0f;
 float camera_rotation_y = 0.0f;
@@ -478,6 +715,19 @@ void render_interface()
     glColor3f(1.f, 1.f, 1.f);
     sprintf(buf, "FPS: %d", average_frames_per_second);
     gl_print(buf);
+
+	if(ms != NULL)
+	{
+		ms->render();
+	}
+	if(topsb != NULL)
+	{
+		topsb->render();
+	}
+	if(bottomsb != NULL)
+	{
+		bottomsb->render();
+	}
 }
 
 // Handle a mouse click. Call this function with the screen coordinates where
@@ -605,6 +855,13 @@ void step()
 	level->update();
 }
 
+void unpause()
+{
+	paused = false;
+	ms->enter(BLANK);
+	setStatusBarText(bottomsb, " ");
+}
+
 void handleEvents()
 {
     SDL_Event event;
@@ -619,6 +876,20 @@ void handleEvents()
                 break;
             case SDL_KEYDOWN:
                 // We have a keypress
+                if ( event.key.keysym.sym == SDLK_p ) {
+					if(ms->getSelected() == BLANK)
+					{
+						paused = !paused;
+					}
+					if(paused)
+					{
+						setStatusBarText(bottomsb, "Game Paused");
+					}
+					else
+					{
+						unpause();
+					}
+                }
                 if ( event.key.keysym.sym == SDLK_ESCAPE )
 				{
                     // quit
@@ -630,7 +901,14 @@ void handleEvents()
                         ++block_y;
                     }
 					//rotate_up+=10;
-					level->up();
+					if(ms->getSelected() == BLANK)
+					{
+						level->up();
+					}
+					else
+					{
+						ms->changeSelected(-1);
+					}
 				}
                 if ( event.key.keysym.sym == SDLK_DOWN )
 				{
@@ -639,7 +917,14 @@ void handleEvents()
                         --block_y;
                     }   
 					//rotate_up-=10;
-					level->down();
+					if(ms->getSelected() == BLANK)
+					{
+						level->down();
+					}
+					else
+					{
+						ms->changeSelected(1);
+					}
                 }
                 if ( event.key.keysym.sym == SDLK_LEFT )
 				{
@@ -648,7 +933,14 @@ void handleEvents()
                         --block_x;
                     }   
 					//rotate_side-=10;
-					level->left();
+					if(ms->getSelected() == BLANK)
+					{
+						level->left();
+					}
+					else
+					{
+						ms->changeSelected(-1);
+					}
                 }
                 if ( event.key.keysym.sym == SDLK_RIGHT )
 				{
@@ -657,85 +949,219 @@ void handleEvents()
                         ++block_x;
                     }   
 					//rotate_side+=10;
-					level->right();
+					if(ms->getSelected() == BLANK)
+					{
+						level->right();
+					}
+					else
+					{
+						ms->changeSelected(1);
+					}
+                }
+                if ( event.key.keysym.sym == SDLK_RETURN ) {
+					if(ms->getSelected() != BLANK)
+					{
+						int num = ms->mouseUp(event.button.x, event.button.y);
+						printf("num is: %d", num);
+						if(num > -1)
+						{
+							play_audio(0,  menuclick);
+						}
+						if(num == STARTMENU)
+						{
+							paused = false;
+							int newLevel = ms->getLevel();
+							if(newLevel > 0)
+							{
+								start(newLevel);
+							}
+							else
+							{
+								start(1);
+							}
+						}
+						else if(num == RESET)
+						{
+							paused = false;
+							ms->enter(BLANK);
+							level->reset();
+						}
+						else if(num == CONTINUE)
+						{
+							paused = false;
+							ms->enter(BLANK);
+						}
+						else if(num == EXITGAME)
+						{
+							Sleep(100);
+							program_finished = true;
+						}
+						else
+						{
+							ms->enter(num);
+						}
+					}
                 }
 				if(event.key.keysym.sym == SDLK_SPACE)
 				{
-					level->stop();
+					if(ms->getSelected() == BLANK)
+					{
+						level->stop();
+					}
 				}
 				if(event.key.keysym.sym == SDLK_t)
 				{
-					testing = !testing;
+					if(ms->getSelected() == BLANK)
+					{
+						testing = !testing;
+					}
 				}
 				if(event.key.keysym.sym == SDLK_q)
 				{
-					//if(!testing)
+					if(ms->getSelected() == BLANK)
+					{
 						level->turnLeft();
+					}
 				}
 				if(event.key.keysym.sym == SDLK_w)
 				{
-					//if(!testing)
+					if(ms->getSelected() == BLANK)
+					{
 						level->turnRight();
+					}
 				}
                 break;
             case SDL_MOUSEBUTTONDOWN:
                 if (event.button.button == SDL_BUTTON_LEFT)
 				{
-                    mouse_click(event.button.x, screen_height - event.button.y);
-					mouse_down = true;
-					mouse_down_x = event.button.x;
-					mouse_down_y = event.button.y;
+					if(ms->getSelected() == BLANK)
+					{
+						mouse_click(event.button.x, screen_height - event.button.y);
+						mouse_down = true;
+						mouse_down_x = event.button.x;
+						mouse_down_y = event.button.y;
 
-					mouse_left = true;
+						mouse_left = true;
+					}
+					else
+					{
+						ms->mouseDown(event.button.x, event.button.y);
+					}
                 }
                 if (event.button.button == SDL_BUTTON_RIGHT)
 				{
-					mouse_right = true;
+					if(ms->getSelected() == BLANK)
+					{
+						mouse_right = true;
+					}
                 }
 				else if(event.button.button == 4)
 				{
-					if(testing)
-						camera_dist++;
+					if(ms->getSelected() == BLANK)
+					{
+						if(testing)
+							camera_dist++;
+					}
 				}
 				else if(event.button.button == 5)
 				{
-					if(testing)
-						camera_dist--;
+					if(ms->getSelected() == BLANK)
+					{
+						if(testing)
+							camera_dist--;
+					}
 				}
                 break;
 			case SDL_MOUSEBUTTONUP:
 				if(event.button.button == SDL_BUTTON_LEFT)
 				{
-					mouse_down = false;
-					printf("x=%d; y=%d;\n", event.button.x, event.button.y);
-						level->setAcceleration(0, 0);
+					if(ms->getSelected() == BLANK)
+					{
+						mouse_down = false;
+						printf("x=%d; y=%d;\n", event.button.x, event.button.y);
+							level->setAcceleration(0, 0);
 
-					mouse_left = false;
-					if(mouse_right)
-						level->turnRight();
+						mouse_left = false;
+						if(mouse_right)
+							level->turnRight();
+					}
+					else
+					{
+						int num = ms->mouseUp(event.button.x, event.button.y);
+						printf("num is: %d", num);
+						if(num > -1)
+						{
+							play_audio(0,  menuclick);
+							if(num == STARTMENU)
+							{
+								paused = false;
+								printf("selected is: %d\n", ms->getSelected());
+								int newLevel = ms->getLevel();
+								printf("newlevel is: %d\n", newLevel);
+								if(newLevel > 0)
+								{
+									start(newLevel);
+								}
+								else
+								{
+									start(1);
+								}
+							}
+							else if(num == RESET)
+							{
+								paused = false;
+								ms->enter(BLANK);
+								level->reset();
+							}
+							else if(num == CONTINUE)
+							{
+								paused = false;
+								ms->enter(BLANK);
+							}
+							else if(num == EXITGAME)
+							{
+								Sleep(100);
+								program_finished = true;
+							}
+							else
+							{
+								ms->enter(num);
+							}
+						}
+					}
 				}
                 if (event.button.button == SDL_BUTTON_RIGHT)
 				{
-					mouse_right = false;
-					if(mouse_left)
-						level->turnLeft();
+					if(ms->getSelected() == BLANK)
+					{
+						mouse_right = false;
+						if(mouse_left)
+							level->turnLeft();
+					}
                 }
 				break;
 			case SDL_MOUSEMOTION:
 				//printf("%d %d %d %d\n", event.motion.x, event.motion.xrel, event.motion.y, event.motion.yrel);
-				if(mouse_down)
+				if(ms->getSelected() == BLANK)
 				{
-					if(testing)
+					if(mouse_down)
 					{
-						//camera_rotation += (event.motion.x - mouse_down_x) * M_PI/180;
-						camera_rotation_x += 15 * (event.motion.xrel) * M_PI/180;
-						camera_rotation_y += 15 * (event.motion.yrel) * M_PI/180;
+						if(testing)
+						{
+							//camera_rotation += (event.motion.x - mouse_down_x) * M_PI/180;
+							camera_rotation_x += 15 * (event.motion.xrel) * M_PI/180;
+							camera_rotation_y += 15 * (event.motion.yrel) * M_PI/180;
+						}
+						else
+						{
+							GLfloat m = 0.05;
+							level->setAcceleration((event.button.y - mouse_down_y)*m, (event.button.x - mouse_down_x)*m);
+						}
 					}
-					else
-					{
-						GLfloat m = 0.05;
-						level->setAcceleration((event.button.y - mouse_down_y)*m, (event.button.x - mouse_down_x)*m);
-					}
+				}
+				else
+				{
+					ms->mouseMotion(event.motion.x, event.motion.y);
 				}
             default:
                 break;
@@ -767,7 +1193,28 @@ void loop()
             last_step = ticks;
             average_frames_per_second = frame_count;
             frame_count = 0;
-            step();
+            //step();
+			if(!paused) {
+				step();
+				if(level->isCompleted())
+				{
+					if(currentLevel == 10)
+					{
+						ms->enter(GAMECOMPLETED);
+					}
+					else
+					{
+						ms->enter(LEVELCOMPLETED);
+					}
+				}
+			}
+			else
+			{
+				if(ms->getSelected() == BLANK)
+				{
+					ms->enter(PAUSE);
+				}
+			}
         }
 
         // Calculate the time in seconds since the last frame
@@ -789,6 +1236,12 @@ void loop()
     }
 }
 
+int gotStar()
+{
+	score = score + 100;
+	return score;
+}
+
 int main( int argc, char **argv )
 {
     // Initialise the graphics
@@ -800,7 +1253,15 @@ int main( int argc, char **argv )
 		return 1;
 	}
 
-    // Intialise the game state
+	//Initialise the audio
+    if (!init_audio()) {
+        return 1;
+    }
+	load_audio();
+
+	createGameMenuSystem();
+
+	// Intialise the game state
     setup();
 
     // Run the game

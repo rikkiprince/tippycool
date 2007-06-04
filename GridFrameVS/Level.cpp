@@ -8,7 +8,7 @@
 
 Level::Level(char *fn)
 {
-	printf("Constructing Level!\n");
+	printf("Constructing Level %s!\n", fn);
 
 	stop();		// sets movement related variables to zero
 
@@ -123,6 +123,8 @@ void Level::load()
 
 	//this->ball = new Ball(this->blockSize, this->offsetX + (startX * this->blockSize), this->offsetY + (startY * this->blockSize), this->offsetZ + (startZ * this->blockSize));
 	this->ball = new Ball(o, f, this->blockSize, (startX * this->blockSize), (startY * this->blockSize), (startZ * this->blockSize));
+
+	this->completed = false;
 }
 
 Level::~Level()
@@ -204,6 +206,7 @@ void Level::setAcceleration(GLfloat f, GLfloat s)
 
 void Level::stop()
 {
+	printf("stop!\n");
 	this->rotS = 0;
 	this->rotF = 0;
 	this->accS = 0;
@@ -247,7 +250,7 @@ void Level::update1()
 	int dmsY = (ball->getSideY()!=0)?sign(nextY-prevY):0;
 	int dmsZ = (ball->getSideZ()!=0)?sign(nextZ-prevZ):0;*/
 
-	printf("direction of movement F %f S %f\n", movementFacing, movementSideways);
+	//printf("direction of movement F %f S %f\n", movementFacing, movementSideways);
 }
 
 void Level::update()
