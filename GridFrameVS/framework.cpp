@@ -526,13 +526,11 @@ void createGameMenuSystem()
 	selectLevel->layout();
 
 	instructions = new Menu("Instructions Menu", screen_width, screen_height, font20);
-	instructions->add(new MenuItem(" ", font16, -1, false, false));
-	instructions->add(new MenuItem("TextTextText", font16, -1, false, false));
-	instructions->add(new MenuItem("TextTextText", font16, -1, false, false));
-	instructions->add(new MenuItem("TextTextText", font16, -1, false, false));
-	instructions->add(new MenuItem("TextTextText", font16, -1, false, false));
-	instructions->add(new MenuItem(" ", font16, -1, false, false));
-	instructions->add(new MenuItem(" ", font16, -1, false, false));
+	instructions->add(new MenuItem("Move the ball over the platforms to reach the goal signpost.", font16, -1, false, false));
+	instructions->add(new MenuItem("Avoid spikes, and gain points by collecting the stars.", font16, -1, false, false));
+	instructions->add(new MenuItem("Your score will decrease the longer you take to complete the level", font16, -1, false, false));
+	instructions->add(new MenuItem("Use the arrowed buttons to move certain blocks.", font16, -1, false, false));
+	instructions->add(new MenuItem("Control the ball using the keyboard, mouse or Nintendo Wii controllers.", font16, -1, false, false));
 	instructions->add(new MenuItem("Back to Main Menu", font20, GAME, true, true));
 	instructions->setInstructions(true);
 	instructions->layout();

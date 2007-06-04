@@ -206,7 +206,7 @@ void Menu::layout()
 		int midWidth = screenWidth / 2;
 
 		int tempx = 0;
-		int tempy = 0 + rowHeight;
+		int tempy = 0;
 
 		for(int i = 0; i < max; i++)
 		{
@@ -238,9 +238,9 @@ void Menu::render()
 
 	if(instructions)
 	{
-		int tempx = 50;
-		int tempy = height+20;
-		this->add(new MenuItem(font, tempx, tempy, screenWidth-(tempx*2), screenHeight-tempy-55, -1));
+		int tempx = 20;
+		int tempy = height+10;
+		this->add(new MenuItem(font, tempx, tempy, screenWidth-(tempx*1.5), screenHeight-tempy-85, -1));
 	}
 	/*glColor3f(buttonColor.r/255.0f, buttonColor.g/255.0f, buttonColor.b/255.0f);
 		glBegin(GL_QUADS); 
