@@ -21,8 +21,6 @@ Level::Level(char *fn)
 //	char buf[256];
 	//GetPrivateProfileString("1,1,1", "type", NULL, buf, 256, ".\\test.ini");
 
-	//char *filename = ".\\levels\\test\\level2.ini";
-	//char *filename = ".\\levels\\level8.ini";
 
 	this->ini =new IniFile(fn);
 
@@ -157,37 +155,51 @@ void Level::destroy()
 	delete this->ball;
 }
 
+void Level::reset()
+{
+	stop();
+
+	destroy();
+
+	load();
+}
+
+
+const static double maxVelocity = 0.4;
+GLfloat acc = 0.005f;
+GLfloat friction = -0.0015f;
+
 void Level::up()
 {
 	this->rotF-=5;
-	this->accF-=0.005f;
+	this->accF-=acc;
 }
 
 void Level::down()
 {
 	this->rotF+=5;
-	this->accF+=0.005f;
+	this->accF+=acc;
 }
 
 void Level::left()
 {
 	this->rotS-=5;
-	this->accS-=0.005f;
+	this->accS-=acc;
 }
 
 void Level::right()
 {
 	this->rotS+=5;
-	this->accS+=0.005f;
+	this->accS+=acc;
 }
 
 void Level::setAcceleration(GLfloat f, GLfloat s)
 {
 	this->rotF = f*5;
-	this->accF = f*0.005f;
+	this->accF = f*acc;
 	
 	this->rotS = s*5;
-	this->accS = s*0.005f;
+	this->accS = s*acc;
 }
 
 void Level::stop()
@@ -200,15 +212,6 @@ void Level::stop()
 	this->velF = 0;
 }
 
-void Level::reset()
-{
-	stop();
-
-}
-
-const static double maxVelocity = 0.4;
-GLfloat friction = -0.0035f;
-
 // http://www.thescripts.com/forum/thread128445.html
 inline int sign(int a) { return (a == 0) ? 0 : (a<0 ? -1 : 1); }
 inline int sign(double a) { return (a == 0.0) ? 0 : (a<0.0 ? -1 : 1); }
@@ -220,8 +223,8 @@ void Level::update1()
 	GLfloat prevZ = ball->getZ();
 
 	// update the velocity value based on acceleration in each direction and some friction
-	this->velF += accF + (sign(accF)*friction);
-	this->velS += accS + (sign(accS)*friction);
+	this->velF += accF + (sign(velF)*friction);
+	this->velS += accS + (sign(velS)*friction);
 
 	if(fabs(this->velF) > maxVelocity) this->velF = sign(this->velF) * maxVelocity;
 	if(fabs(this->velS) > maxVelocity) this->velS = sign(this->velS) * maxVelocity;

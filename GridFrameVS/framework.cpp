@@ -56,7 +56,9 @@ GLuint texture;
 
 void init_grid()
 {
-	level = new Level(4,4,4);
+	char *filename = ".\\levels\\test\\level2.ini";
+	//char *filename = ".\\levels\\level8.ini";
+	level = new Level(filename);
 //	camera = new Camera();
 	texture = LoadGLTexture("texture.bmp");
 /*
@@ -127,6 +129,9 @@ GLuint textBase;
 bool mouse_down = false;
 int mouse_down_x = 0;
 int mouse_down_y = 0;
+
+bool mouse_left = false;
+bool mouse_right = false;
 
 
 
@@ -680,6 +685,12 @@ void handleEvents()
 					mouse_down = true;
 					mouse_down_x = event.button.x;
 					mouse_down_y = event.button.y;
+
+					mouse_left = true;
+                }
+                if (event.button.button == SDL_BUTTON_RIGHT)
+				{
+					mouse_right = true;
                 }
 				else if(event.button.button == 4)
 				{
@@ -698,7 +709,17 @@ void handleEvents()
 					mouse_down = false;
 					printf("x=%d; y=%d;\n", event.button.x, event.button.y);
 						level->setAcceleration(0, 0);
+
+					mouse_left = false;
+					if(mouse_right)
+						level->turnRight();
 				}
+                if (event.button.button == SDL_BUTTON_RIGHT)
+				{
+					mouse_right = false;
+					if(mouse_left)
+						level->turnLeft();
+                }
 				break;
 			case SDL_MOUSEMOTION:
 				//printf("%d %d %d %d\n", event.motion.x, event.motion.xrel, event.motion.y, event.motion.yrel);
@@ -713,7 +734,7 @@ void handleEvents()
 					else
 					{
 						GLfloat m = 0.05;
-						level->setAcceleration((mouse_down_y - event.button.y)*m, (event.button.x - mouse_down_x)*m);
+						level->setAcceleration((event.button.y - mouse_down_y)*m, (event.button.x - mouse_down_x)*m);
 					}
 				}
             default:

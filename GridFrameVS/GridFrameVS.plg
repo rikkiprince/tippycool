@@ -6,14 +6,13 @@
 --------------------Configuration: GridFrameVS - Win32 Debug--------------------
 </h3>
 <h3>Command Lines</h3>
-Creating temporary file "C:\Users\rprince\AppData\Local\Temp\RSP15A6.tmp" with contents
+Creating temporary file "C:\Users\rprince\AppData\Local\Temp\RSP46B5.tmp" with contents
 [
 /nologo /MD /W3 /Gm /GX /ZI /Od /I ".\include" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /Fp"Debug/GridFrameVS.pch" /YX /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
 "C:\Users\rprince\Desktop\DEGREE\IES\Final\GridFrameVS\framework.cpp"
-"C:\Users\rprince\Desktop\DEGREE\IES\Final\GridFrameVS\Level.cpp"
 ]
-Creating command line "cl.exe @C:\Users\rprince\AppData\Local\Temp\RSP15A6.tmp" 
-Creating temporary file "C:\Users\rprince\AppData\Local\Temp\RSP15A7.tmp" with contents
+Creating command line "cl.exe @C:\Users\rprince\AppData\Local\Temp\RSP46B5.tmp" 
+Creating temporary file "C:\Users\rprince\AppData\Local\Temp\RSP46B6.tmp" with contents
 [
 SDL.LIB SDLmain.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib opengl32.lib glu32.lib libmodelfile.lib /nologo /subsystem:console /incremental:yes /pdb:"Debug/GridFrameVS.pdb" /debug /machine:I386 /nodefaultlib:"library" /out:"Debug/GridFrameVS.exe" /pdbtype:sept /libpath:".\lib\\" 
 .\Debug\Camera.obj
@@ -32,19 +31,17 @@ SDL.LIB SDLmain.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib 
 .\Debug\SpikeBlock.obj
 .\Debug\StarBlock.obj
 ]
-Creating command line "link.exe @C:\Users\rprince\AppData\Local\Temp\RSP15A7.tmp"
+Creating command line "link.exe @C:\Users\rprince\AppData\Local\Temp\RSP46B6.tmp"
 <h3>Output Window</h3>
 Compiling...
 framework.cpp
-c:\users\rprince\desktop\degree\ies\final\gridframevs\framework.cpp(59) : error C2661: 'Level::Level' : no overloaded function takes 3 parameters
-c:\users\rprince\desktop\degree\ies\final\gridframevs\framework.cpp(715) : warning C4305: 'initializing' : truncation from 'const double' to 'float'
-Level.cpp
-Error executing cl.exe.
+C:\Users\rprince\Desktop\DEGREE\IES\Final\GridFrameVS\framework.cpp(736) : warning C4305: 'initializing' : truncation from 'const double' to 'float'
+Linking...
 
 
 
 <h3>Results</h3>
-GridFrameVS.exe - 1 error(s), 1 warning(s)
+GridFrameVS.exe - 0 error(s), 1 warning(s)
 </pre>
 </body>
 </html>
